@@ -5,13 +5,19 @@ import {
 	createRootRoute,
 	HeadContent,
 	Scripts,
+	createRootRouteWithContext,
 } from "@tanstack/react-router";
 import globalStyle from "@/styles/globals.css?url";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import Header from "@/components/header";
-export const Route = createRootRoute({
+import type { QueryClient } from "@tanstack/react-query";
+import type { User } from "better-auth";
+export const Route = createRootRouteWithContext<{
+	queryClient: QueryClient;
+	user: User | null;
+}>()({
 	head: () => ({
 		meta: [
 			{

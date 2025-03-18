@@ -10,6 +10,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 	SidebarRail,
+	SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Link, type LinkOptions } from "@tanstack/react-router";
 import {
@@ -63,7 +64,8 @@ const user = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	return (
-		<Sidebar {...props}>
+		<Sidebar {...props} className="relative z-10">
+			{/* <SidebarTrigger /> */}
 			<SidebarHeader>
 				<span className="text-2xl font-bold ml-1">TradeZen</span>
 			</SidebarHeader>

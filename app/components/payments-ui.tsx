@@ -1,17 +1,7 @@
-"use client";
-
-import type React from "react";
-
 import { useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-	CheckCircle,
-	CoinsIcon,
-	CreditCard,
-	ShoppingCart,
-	Sparkles,
-} from "lucide-react";
+import { CheckCircle, CoinsIcon, Sparkles } from "lucide-react";
 
 export default function PaymentUI() {
 	const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
@@ -84,12 +74,18 @@ export default function PaymentUI() {
 								</CardContent>
 
 								<CardFooter className="p-0">
-									<Button
-										className={"w-full font-semibold h-12 "}
-										onClick={() => handleSelectPlan(plan.id)}
+									<form
+										action="api/create-checkout-session"
+										method="POST"
+										className="w-full"
 									>
-										${plan.price}
-									</Button>
+										<Button
+											className={"w-full font-semibold h-12 "}
+											onClick={() => handleSelectPlan(plan.id)}
+										>
+											${plan.price}
+										</Button>{" "}
+									</form>
 								</CardFooter>
 							</Card>
 						</div>
