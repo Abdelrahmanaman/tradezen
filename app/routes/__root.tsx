@@ -14,6 +14,8 @@ import { AppSidebar } from "@/components/app-sidebar";
 import Header from "@/components/header";
 import type { QueryClient } from "@tanstack/react-query";
 import type { User } from "better-auth";
+import { getUserQuery } from "@/services/auth";
+
 export const Route = createRootRouteWithContext<{
 	queryClient: QueryClient;
 	user: User | null;
@@ -40,6 +42,11 @@ export const Route = createRootRouteWithContext<{
 	}),
 
 	component: RootComponent,
+	beforeLoad: async ({ context }) => {
+		const user = await context.queryClient.fetchQuery(getUserQuery());
+		console.log("hello fetch", user);
+		return { user };
+	},
 });
 
 function RootComponent() {
