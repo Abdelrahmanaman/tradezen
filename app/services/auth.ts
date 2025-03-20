@@ -4,19 +4,7 @@ import { auth } from "@/lib/auth/auth";
 import { getWebRequest } from "@tanstack/react-start/server";
 import { createServerFn } from "@tanstack/react-start";
 
-// Invalidate auth queries
-const useInvalidateAuth = (destination?: string) => {
-	const router = useRouter();
-	const queryClient = useQueryClient();
 
-	return async () => {
-		await queryClient.invalidateQueries(getUserQuery());
-		await router.invalidate();
-		if (destination) {
-			router.navigate({ to: destination });
-		}
-	};
-};
 
 export const getUser = createServerFn({ method: "GET" }).handler(async () => {
 	const req = getWebRequest();

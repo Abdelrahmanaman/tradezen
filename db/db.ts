@@ -1,4 +1,6 @@
 import "dotenv/config";
-import { drizzle } from "drizzle-orm/node-postgres";
+import { drizzle } from "drizzle-orm/libsql";
 
-export const db = drizzle(process.env.DB_FILE_NAME || "");
+export const db = drizzle(
+	process.env.DB_FILE_NAME || "file:./db/tradezen.sqlite",
+);

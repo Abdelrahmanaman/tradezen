@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 @plugin "tailwindcss-motion";
 @custom-variant dark (&:is(.dark *));
 
@@ -116,7 +117,13 @@
 
 @layer base {
     * {
-        @apply border-border outline-ring/50;
+        @apply border-border outline-ring/50;    --mask-left: linear-gradient(#000, #000);
+        --mask-right: linear-gradient(#000, #000);
+        --mask-bottom: linear-gradient(#000, #000);
+        --mask-top: linear-gradient(#000, #000);
+        --mask-linear: linear-gradient(#000, #000);
+        --mask-radial: linear-gradient(#000, #000);
+        --mask-conic: linear-gradient(#000, #000);
     }
     body {
         @apply bg-background text-foreground;
@@ -130,7 +137,124 @@
     }
 }
 
-
 button [role="button"] {
     @apply cursor-pointer;
 }
+
+@utility mask-l {
+    mask-image: var(--mask-linear), var(--mask-radial), var(--mask-conic);
+    mask-composite: intersect;
+    --mask-linear: var(--mask-left), var(--mask-right), var(--mask-bottom), var(--mask-top);
+    --mask-left: linear-gradient(to right, transparent, black);
+  }
+
+  @utility mask-l-* {
+    mask-image: var(--mask-linear), var(--mask-radial), var(--mask-conic);
+    mask-composite: intersect;
+    --mask-linear: var(--mask-left), var(--mask-right), var(--mask-bottom), var(--mask-top);
+    --mask-left: linear-gradient(to right, transparent, black --value(percentage));
+    --mask-left: linear-gradient(
+      to right,
+      transparent,
+      black calc(var(--spacing) * --value(integer))
+    );
+    --mask-left: linear-gradient(
+      to right,
+      transparent --modifier(percentage),
+      black --value(percentage)
+    );
+    --mask-left: linear-gradient(
+      to right,
+      transparent calc(var(--spacing) * --modifier(integer)),
+      black calc(var(--spacing) * --value(integer))
+    );
+  }
+
+  @utility mask-r {
+    mask-image: var(--mask-linear), var(--mask-radial), var(--mask-conic);
+    mask-composite: intersect;
+    --mask-linear: var(--mask-left), var(--mask-right), var(--mask-bottom), var(--mask-top);
+    --mask-right: linear-gradient(to left, transparent, black);
+  }
+
+  @utility mask-r-* {
+    mask-image: var(--mask-linear), var(--mask-radial), var(--mask-conic);
+    mask-composite: intersect;
+    --mask-linear: var(--mask-left), var(--mask-right), var(--mask-bottom), var(--mask-top);
+    --mask-right: linear-gradient(to left, transparent, black --value(percentage));
+    --mask-right: linear-gradient(
+      to left,
+      transparent,
+      black calc(var(--spacing) * --value(integer))
+    );
+    --mask-right: linear-gradient(
+      to left,
+      transparent --modifier(percentage),
+      black --value(percentage)
+    );
+    --mask-right: linear-gradient(
+      to left,
+      transparent calc(var(--spacing) * --modifier(integer)),
+      black calc(var(--spacing) * --value(integer))
+    );
+  }
+
+  @utility mask-t {
+    mask-image: var(--mask-linear), var(--mask-radial), var(--mask-conic);
+    mask-composite: intersect;
+    --mask-linear: var(--mask-left), var(--mask-right), var(--mask-bottom), var(--mask-top);
+    --mask-top: linear-gradient(to bottom, transparent, black);
+  }
+
+  @utility mask-t-* {
+    mask-image: var(--mask-linear), var(--mask-radial), var(--mask-conic);
+    mask-composite: intersect;
+    --mask-linear: var(--mask-left), var(--mask-right), var(--mask-bottom), var(--mask-top);
+    --mask-top: linear-gradient(to bottom, transparent, black --value(percentage));
+    --mask-top: linear-gradient(
+      to bottom,
+      transparent,
+      black calc(var(--spacing) * --value(integer))
+    );
+    --mask-top: linear-gradient(
+      to bottom,
+      transparent --modifier(percentage),
+      black --value(percentage)
+    );
+    --mask-top: linear-gradient(
+      to bottom,
+      transparent calc(var(--spacing) * --modifier(integer)),
+      black calc(var(--spacing) * --value(integer))
+    );
+  }
+
+  @utility mask-b {
+    mask-image: var(--mask-linear), var(--mask-radial), var(--mask-conic);
+    mask-composite: intersect;
+    --mask-linear: var(--mask-left), var(--mask-right), var(--mask-bottom), var(--mask-top);
+    --mask-bottom: linear-gradient(to top, transparent, black);
+  }
+
+  @utility mask-b-* {
+    mask-image: var(--mask-linear), var(--mask-radial), var(--mask-conic);
+    mask-composite: intersect;
+    --mask-linear: var(--mask-left), var(--mask-right), var(--mask-bottom), var(--mask-top);
+    --mask-bottom: linear-gradient(to top, transparent, black --value(percentage));
+    --mask-bottom: linear-gradient(
+      to top,
+      transparent,
+      black calc(var(--spacing) * --value(integer))
+    );
+    --mask-bottom: linear-gradient(
+      to top,
+      transparent --modifier(percentage),
+      black --value(percentage)
+    );
+    --mask-bottom: linear-gradient(
+      to top,
+      transparent calc(var(--spacing) * --modifier(integer)),
+      black calc(var(--spacing) * --value(integer))
+    );
+  }
+  
+

@@ -9,24 +9,20 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
-	SidebarRail,
-	SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Link, type LinkOptions } from "@tanstack/react-router";
 import {
-	BadgeCent,
 	Binoculars,
 	HandCoins,
 	ShoppingCart,
 	SquarePlus,
-	User,
 	type LucideIcon,
 } from "lucide-react";
 import { NavUser } from "./nav-user";
 
 type SidebarDataType = {
 	title: string;
-	items?: {
+	items: {
 		title: string;
 		href: LinkOptions["to"];
 		icon: LucideIcon;
@@ -53,6 +49,8 @@ const data: SidebarDataType[] = [
 		items: [
 			{ title: "My Trades", href: "/", icon: HandCoins },
 			{ title: "Settings", href: "/", icon: HandCoins },
+			{ title: "login", href: "/login", icon: HandCoins },
+			{ title: "register", href: "/register", icon: HandCoins },
 		],
 	},
 ];
@@ -64,8 +62,7 @@ const user = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	return (
-		<Sidebar {...props} className="relative z-10">
-			{/* <SidebarTrigger /> */}
+		<Sidebar {...props}>
 			<SidebarHeader>
 				<span className="text-2xl font-bold ml-1">TradeZen</span>
 			</SidebarHeader>
@@ -76,12 +73,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 						<SidebarGroupLabel>{item.title}</SidebarGroupLabel>
 						<SidebarGroupContent>
 							<SidebarMenu>
-								{item?.items?.map((subItem) => (
+								{item.items.map((subItem) => (
 									<SidebarMenuItem key={subItem.title}>
 										<SidebarMenuButton asChild>
-											<div className="flex items-center">
+											<div className="flex items-center 0">
 												<subItem.icon className="size-5" />{" "}
-												<Link to={subItem.href}>{subItem.title}</Link>
+												{subItem.href && (
+													<Link className=" w-full" to={subItem.href}>
+														{subItem.title}
+													</Link>
+												)}
 											</div>
 										</SidebarMenuButton>
 									</SidebarMenuItem>
@@ -94,7 +95,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			<SidebarFooter>
 				<NavUser user={user} />
 			</SidebarFooter>
-			<SidebarRail />
 		</Sidebar>
 	);
 }

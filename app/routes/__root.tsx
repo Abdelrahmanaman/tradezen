@@ -15,7 +15,6 @@ import Header from "@/components/header";
 import type { QueryClient } from "@tanstack/react-query";
 import type { User } from "better-auth";
 import { getUserQuery } from "@/services/auth";
-
 export const Route = createRootRouteWithContext<{
 	queryClient: QueryClient;
 	user: User | null;
@@ -66,8 +65,10 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 			<body>
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 					<SidebarProvider>
-						<AppSidebar />
-						<main className="min-h-dvh  w-full">
+						<aside>
+							<AppSidebar />
+						</aside>
+						<main className="min-h-dvh w-full">
 							<Header />
 							{children}
 						</main>

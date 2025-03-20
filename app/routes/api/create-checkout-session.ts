@@ -6,7 +6,7 @@ import { tryCatch } from "@/lib/try-catch";
 export const APIRoute = createAPIFileRoute("/api/create-checkout-session")({
 	POST: async ({ request, params }) => {
 		const stripe = new Stripe(
-			"sk_test_51R3oTKHlJZxCutlZnAXA1U54bvqkByAnljKVukC7fxdBEsw6Dr9FsBVKrCbkhVLMHqD6HG20R7YUEWhEJneXzztn00GgRdmuTzz",
+			"sk_test_51R3oTKHlJZxCutlZnAXA1U54bvqkByAnljKVukC7fxdBEsw6Dr9FsBVKrCbkhVLMHqD6HG20R7YUEWhEJneXzztn00GgRdmuTY",
 		);
 		async function createSession(): Promise<Stripe.Checkout.Session> {
 			return stripe.checkout.sessions.create({
