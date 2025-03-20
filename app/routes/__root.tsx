@@ -2,7 +2,6 @@
 import type { ReactNode } from "react";
 import {
 	Outlet,
-	createRootRoute,
 	HeadContent,
 	Scripts,
 	createRootRouteWithContext,
@@ -15,6 +14,7 @@ import Header from "@/components/header";
 import type { QueryClient } from "@tanstack/react-query";
 import type { User } from "better-auth";
 import { getUserQuery } from "@/services/auth";
+import { Toaster } from "@/components/ui/sonner";
 export const Route = createRootRouteWithContext<{
 	queryClient: QueryClient;
 	user: User | null;
@@ -71,6 +71,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 						<main className="min-h-dvh w-full">
 							<Header />
 							{children}
+							<Toaster richColors />
 						</main>
 					</SidebarProvider>
 					<Scripts />

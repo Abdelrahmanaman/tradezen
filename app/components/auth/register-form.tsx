@@ -16,13 +16,10 @@ import {
 	type RegisterPayload,
 } from "@/lib/validation/auth";
 import { useSignUp } from "@/hooks/use-auth";
-import { useDebouncedCallback } from "use-debounce";
 
 export default function LoginForm() {
-	const { mutate, isPending, error } = useSignUp();
-	const debouncedValidate = useDebouncedCallback((values) => {
-		return registerPayloadSchema(values);
-	}, 100);
+	const { mutateAsync, isPending, error, data } = useSignUp();
+
 	const form = useAppForm({
 		defaultValues: {
 			userName: "",
@@ -31,10 +28,12 @@ export default function LoginForm() {
 		} as RegisterPayload,
 		onSubmit: ({ value }) => {
 			console.log(value);
-			mutate({ value });
+			mutateAsync({ value });
+			console.log("data", data);
+			console.log("error", error);
 		},
 		validators: {
-			onChange: (values) => debouncedValidate(values),
+			onChange: registerPayloadSchema,
 		},
 	});
 	return (
@@ -102,10 +101,11 @@ export default function LoginForm() {
 						</label>
 					</div>
 
-					<Button type="submit" className="w-full font-medium">
-						Sign in with Email
-					</Button>
+					<form.AppForm>
+						<form.SubmitButton className="w-full">Sign up</form.SubmitButton>
+					</form.AppForm>
 				</form>
+				{error && <p className="text-sm text-red-500">{error.message}</p>}
 			</CardContent>
 			<CardFooter className="flex justify-center border-t pt-6">
 				<p className="text-sm text-muted-foreground">

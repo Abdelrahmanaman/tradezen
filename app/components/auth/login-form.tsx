@@ -13,9 +13,10 @@ import { Link } from "@tanstack/react-router";
 import { useAppForm } from "../form";
 import { loginPayloadSchema, type LoginPayload } from "@/lib/validation/auth";
 import { useSignIn } from "@/hooks/use-auth";
+import { Loader2 } from "lucide-react";
 
 export default function LoginForm() {
-	const { mutate, isPending, error } = useSignIn();
+	const { mutateAsync, isPending, isError, error } = useSignIn();
 
 	const form = useAppForm({
 		defaultValues: {
@@ -24,12 +25,15 @@ export default function LoginForm() {
 		} as LoginPayload,
 		onSubmit: ({ value }) => {
 			console.log(value);
-			mutate({ value });
+			mutateAsync({ value });
 		},
 		validators: {
 			onChange: loginPayloadSchema,
 		},
 	});
+	if (error) {
+		console.log("error");
+	}
 	return (
 		<Card className="border shadow-lg ">
 			<CardHeader className="space-y-1 pb-2">
@@ -93,10 +97,17 @@ export default function LoginForm() {
 						</label>
 					</div>
 
-					<Button type="submit" className="w-full font-medium">
-						Sign in with Email
-					</Button>
+					<form.AppForm>
+						<form.SubmitButton className="w-full">
+							{isPending ? (
+								<Loader2 className="size-5 animate-spin" />
+							) : (
+								"Sign in"
+							)}
+						</form.SubmitButton>
+					</form.AppForm>
 				</form>
+				{isError && <p className="text-sm text-red-500">{error?.message}</p>}
 			</CardContent>
 			<CardFooter className="flex justify-center border-t pt-6">
 				<p className="text-sm text-muted-foreground">

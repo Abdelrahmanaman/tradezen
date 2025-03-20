@@ -13,7 +13,7 @@ export default function SubmitButton({
 	]);
 	return (
 		<Button
-			className={className}
+			className={`${className} ${isSubmitting || !canSubmit ? "opacity-50" : ""}`}
 			type="submit"
 			disabled={isSubmitting || !canSubmit}
 		>
