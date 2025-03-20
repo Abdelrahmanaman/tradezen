@@ -19,8 +19,7 @@ import {
 	type LucideIcon,
 } from "lucide-react";
 import { NavUser } from "./nav-user";
-import { toast } from "sonner";
-import { Button } from "./ui/button";
+import type { User } from "better-auth";
 
 type SidebarDataType = {
 	title: string;
@@ -62,7 +61,11 @@ const user = {
 	avatar: "/avatars/shadcn.jpg",
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({
+	user,
+	...props
+}: React.ComponentProps<typeof Sidebar> & { user: User | null }) {
+	console.log("user", user);
 	return (
 		<Sidebar {...props}>
 			<SidebarHeader>
@@ -87,20 +90,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 												)}
 											</div>
 										</SidebarMenuButton>
-										<Button
-											variant="outline"
-											onClick={() =>
-												toast("Event has been created", {
-													description: "Sunday, December 03, 2023 at 9:00 AM",
-													action: {
-														label: "Undo",
-														onClick: () => console.log("Undo"),
-													},
-												})
-											}
-										>
-											Show Toast
-										</Button>
 									</SidebarMenuItem>
 								))}
 							</SidebarMenu>

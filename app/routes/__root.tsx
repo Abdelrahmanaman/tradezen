@@ -15,6 +15,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import type { User } from "better-auth";
 import { getUserQuery } from "@/services/auth";
 import { Toaster } from "@/components/ui/sonner";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 export const Route = createRootRouteWithContext<{
 	queryClient: QueryClient;
 	user: User | null;
@@ -43,7 +44,7 @@ export const Route = createRootRouteWithContext<{
 	component: RootComponent,
 	beforeLoad: async ({ context }) => {
 		const user = await context.queryClient.fetchQuery(getUserQuery());
-		console.log("hello fetch", user);
+
 		return { user };
 	},
 });
@@ -57,6 +58,7 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
+	const { user } = Route.useRouteContext();
 	return (
 		<html suppressHydrationWarning lang="en">
 			<head>
@@ -66,7 +68,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 					<SidebarProvider>
 						<aside>
-							<AppSidebar />
+							<AppSidebar user={user} />
 						</aside>
 						<main className="min-h-dvh w-full">
 							<Header />
@@ -74,6 +76,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 							<Toaster richColors />
 						</main>
 					</SidebarProvider>
+					<ReactQueryDevtools />
 					<Scripts />
 				</ThemeProvider>
 			</body>

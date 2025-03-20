@@ -16,6 +16,7 @@ import {
 	type RegisterPayload,
 } from "@/lib/validation/auth";
 import { useSignUp } from "@/hooks/use-auth";
+import { Loader2 } from "lucide-react";
 
 export default function LoginForm() {
 	const { mutateAsync, isPending, error, data } = useSignUp();
@@ -102,7 +103,13 @@ export default function LoginForm() {
 					</div>
 
 					<form.AppForm>
-						<form.SubmitButton className="w-full">Sign up</form.SubmitButton>
+						<form.SubmitButton className="w-full">
+							{isPending ? (
+								<Loader2 className="size-5 animate-spin" />
+							) : (
+								"Sign up"
+							)}
+						</form.SubmitButton>
 					</form.AppForm>
 				</form>
 				{error && <p className="text-sm text-red-500">{error.message}</p>}

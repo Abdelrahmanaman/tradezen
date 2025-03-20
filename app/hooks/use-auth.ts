@@ -48,9 +48,8 @@ export function useSignIn() {
 			return apiData; // Return clean data
 		},
 
-		onSuccess: (data) => {
-			toast.success("User created successfully");
-			// invalidateAuth();
+		onSuccess: () => {
+			invalidateAuth();
 		},
 		onError: (error: Error) => {
 			toast.error(error.message || "An unexpected error occurred");
