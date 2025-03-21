@@ -6,7 +6,8 @@
 	"scripts": {
 		"dev": "vinxi dev",
 		"build": "vinxi build",
-		"start": "vinxi start"
+		"start": "vinxi start",
+		"seed": "bun run ./db/seed.ts"
 	},
 	"devDependencies": {
 		"@types/bun": "latest",
