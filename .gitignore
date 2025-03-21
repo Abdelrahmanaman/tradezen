@@ -1,4 +1,5 @@
 # dependencies (bun install)
+db/tradezen.sqlite
 node_modules
 
 # output
