@@ -7,7 +7,14 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Disc, FlagIcon, Twitch, UserPlusIcon } from "lucide-react";
+import {
+	Disc,
+	FlagIcon,
+	Star,
+	StarIcon,
+	Twitch,
+	UserPlusIcon,
+} from "lucide-react";
 import { useState } from "react";
 
 export default function Profile() {
@@ -47,7 +54,7 @@ export default function Profile() {
 					<div>
 						<CardTitle className="text-2xl">UserName123</CardTitle>
 						<CardDescription>
-							Legendary Trader | Member since 2021
+							<span>Legendary Trader | Member since 2021</span>
 						</CardDescription>
 						<div className="flex gap-2 text-sm">
 							<div>
@@ -66,6 +73,17 @@ export default function Profile() {
 								</span>
 							</div>
 						</div>
+						<div className="flex items-center gap-1">
+							<div className="flex items-center">
+								{[...Array(5)].map((_, i) => (
+									<StarIcon
+										key={_}
+										className="size-4 fill-yellow-500 text-yellow-500"
+									/>
+								))}
+							</div>
+							<span className="text-sm">249 reviews</span>
+						</div>
 						<div className="flex items-center gap-2 mt-2">
 							<Disc className="w-4 h-4" />
 							<span>Discord: UserName123#1234</span>
@@ -78,7 +96,7 @@ export default function Profile() {
 				</div>
 			</CardHeader>
 			<CardContent>
-				<p className=" border border-pink-200 max-w-[50ch] font-thin p-4 rounded-3xl ">
+				<p className="  max-w-[50ch] font-thin  rounded-3xl ">
 					Avid gamer and collector. Specializing in rare Diablo 2 items and WoW
 					mounts. Always looking for fair trades and new gaming buddies!
 				</p>

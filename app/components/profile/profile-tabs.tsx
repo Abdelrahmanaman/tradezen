@@ -26,7 +26,7 @@ export default function PublicProfileTabs() {
 	];
 	return (
 		<Tabs defaultValue="listings" className="space-y-10  ">
-			<TabsList className="grid w-fit grid-cols-2 max-w-2xl bg-transparent">
+			<TabsList className="grid w-fit grid-cols-4 max-w-2xl bg-transparent">
 				<TabsTrigger className="sm:p-4 font-semibold pb-2 " value="listings">
 					Active Listings
 				</TabsTrigger>
