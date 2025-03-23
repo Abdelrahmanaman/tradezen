@@ -1,5 +1,4 @@
-import { queryOptions, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "@tanstack/react-router";
+import { queryOptions } from "@tanstack/react-query";
 import { auth } from "@/lib/auth/auth";
 import { getWebRequest } from "@tanstack/react-start/server";
 import { createServerFn } from "@tanstack/react-start";

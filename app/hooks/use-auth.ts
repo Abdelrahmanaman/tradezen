@@ -95,7 +95,7 @@ export function useSignUp() {
 		},
 		onSuccess: (data) => {
 			toast.success("User created successfully");
-			// invalidateAuth();
+			invalidateAuth();
 		},
 		onError: (error: Error) => {
 			toast.error(error.message || "An unexpected error occurred");

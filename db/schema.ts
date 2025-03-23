@@ -12,14 +12,10 @@ export const user = sqliteTable("user", {
 	id: text("id").primaryKey(),
 	name: text("name"),
 	email: text("email").notNull().unique(),
-	emailVerified: integer("email_verified", { mode: "timestamp" }),
+	emailVerified: integer("email_verified", { mode: "boolean" }).notNull(),
 	image: text("image"),
-	createdAt: integer("created_at", { mode: "timestamp" })
-		.notNull()
-		.default(sql`CURRENT_TIMESTAMP`),
-	updatedAt: integer("updated_at", { mode: "timestamp" })
-		.notNull()
-		.default(sql`CURRENT_TIMESTAMP`),
+	createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
+	updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
 	userName: text("user_name").notNull().unique(),
 	totalCoins: integer("total_coins").notNull().default(0), // Platform coins
 	paypalEmail: text("paypal_email"), // For cashouts
@@ -28,27 +24,46 @@ export const user = sqliteTable("user", {
 
 export const session = sqliteTable("session", {
 	id: text("id").primaryKey(),
-	userId: text("user_id").notNull(),
 	expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
 	token: text("token").notNull().unique(),
-	createdAt: integer("created_at", { mode: "timestamp" })
+	createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+	updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+	ipAddress: text("ip_address"),
+	userAgent: text("user_agent"),
+	userId: text("user_id")
 		.notNull()
-		.default(sql`CURRENT_TIMESTAMP`),
+		.references(() => user.id, { onDelete: "cascade" }),
 });
 
 export const account = sqliteTable("account", {
 	id: text("id").primaryKey(),
-	userId: text("user_id").notNull(),
-	type: text("type").notNull(),
-	provider: text("provider").notNull(),
-	providerAccountId: text("provider_account_id").notNull(),
-	refreshToken: text("refresh_token"),
+	accountId: text("account_id").notNull(),
+	providerId: text("provider_id").notNull(),
+	userId: text("user_id")
+		.notNull()
+		.references(() => user.id, { onDelete: "cascade" }),
 	accessToken: text("access_token"),
-	expiresAt: integer("expires_at", { mode: "timestamp" }),
-	tokenType: text("token_type"),
-	scope: text("scope"),
+	refreshToken: text("refresh_token"),
 	idToken: text("id_token"),
-	sessionState: text("session_state"),
+	accessTokenExpiresAt: integer("access_token_expires_at", {
+		mode: "timestamp",
+	}),
+	refreshTokenExpiresAt: integer("refresh_token_expires_at", {
+		mode: "timestamp",
+	}),
+	scope: text("scope"),
+	password: text("password"),
+	createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+	updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+});
+// Added verification table back
+export const verification = sqliteTable("verification", {
+	id: text("id").primaryKey(),
+	identifier: text("identifier").notNull(),
+	value: text("value").notNull(),
+	expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
+	createdAt: integer("created_at", { mode: "timestamp" }),
+	updatedAt: integer("updated_at", { mode: "timestamp" }),
 });
 
 // Games Table
@@ -66,7 +81,9 @@ export const categories = sqliteTable(
 	"categories",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
-		gameId: integer("game_id").notNull(),
+		gameId: integer("game_id")
+			.notNull()
+			.references(() => games.id, { onDelete: "cascade" }),
 		name: text("name").notNull(),
 		description: text("description"),
 		sortOrder: integer("sort_order").default(0),
@@ -79,15 +96,16 @@ export const rarityTypes = sqliteTable(
 	"rarity_types",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
-		gameId: integer("game_id").notNull(),
-		name: text("name").notNull(), // e.g., "Normal", "Uncommon", "Rare", "Legendary", "Neon", etc.
-		displayName: text("display_name"), // For frontend display
-		colorHex: text("color_hex"), // For styling
+		gameId: integer("game_id")
+			.notNull()
+			.references(() => games.id, { onDelete: "cascade" }),
+		name: text("name").notNull(),
+		displayName: text("display_name"),
+		colorHex: text("color_hex"),
 		sortOrder: integer("sort_order").default(0),
 	},
 	(table) => [
 		index("idx_rarity_types_game_id").on(table.gameId),
-		// Ensure unique rarity names within a game
 		index("idx_rarity_types_unique").on(table.gameId, table.name),
 	],
 );
@@ -97,18 +115,22 @@ export const items = sqliteTable(
 	"items",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
-		gameId: integer("game_id").notNull(),
-		categoryId: integer("category_id").notNull(),
+		gameId: integer("game_id")
+			.notNull()
+			.references(() => games.id, { onDelete: "restrict" }),
+		categoryId: integer("category_id")
+			.notNull()
+			.references(() => categories.id, { onDelete: "restrict" }),
 		name: text("name").notNull(),
 		description: text("description"),
-		rarityId: integer("rarity_id"),
+		rarityId: integer("rarity_id").references(() => rarityTypes.id, {
+			onDelete: "set null",
+		}),
 		imageUrl: text("image_url").notNull(),
-		suggestedPrice: integer("suggested_price"), // Suggested price in platform coins
+		suggestedPrice: integer("suggested_price"),
 		isActive: integer("is_active", { mode: "boolean" }).default(true),
-		metadata: text("metadata", { mode: "json" }), // Additional game-specific properties
-		createdAt: integer("created_at", { mode: "timestamp" })
-			.notNull()
-			.default(sql`CURRENT_TIMESTAMP`),
+		metadata: text("metadata", { mode: "json" }),
+		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
 	},
 	(table) => [
 		index("idx_items_game_id").on(table.gameId),
@@ -123,14 +145,19 @@ export const inventory = sqliteTable(
 	"inventory",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
-		userId: text("user_id").notNull(),
-		itemId: integer("item_id").notNull(),
-		userSpecifiedRarityId: integer("user_specified_rarity_id"), // User can override the rarity
-		quantity: integer("quantity").notNull().default(1),
-		acquired: integer("acquired", { mode: "timestamp" })
+		userId: text("user_id")
 			.notNull()
-			.default(sql`CURRENT_TIMESTAMP`),
-		notes: text("notes"), // User's private notes about this item
+			.references(() => user.id, { onDelete: "cascade" }),
+		itemId: integer("item_id")
+			.notNull()
+			.references(() => items.id, { onDelete: "restrict" }),
+		userSpecifiedRarityId: integer("user_specified_rarity_id").references(
+			() => rarityTypes.id,
+			{ onDelete: "set null" },
+		),
+		quantity: integer("quantity").notNull().default(1),
+		acquired: text("acquired").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
+		notes: text("notes"),
 	},
 	(table) => [
 		index("idx_inventory_user_id").on(table.userId),
@@ -143,21 +170,26 @@ export const listings = sqliteTable(
 	"listings",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
-		sellerId: text("seller_id").notNull(),
-		itemId: integer("item_id").notNull(),
-		inventoryId: integer("inventory_id").notNull(), // The specific inventory item being sold
-		price: integer("price").notNull(), // Price in platform coins
+		sellerId: text("seller_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		itemId: integer("item_id")
+			.notNull()
+			.references(() => items.id, { onDelete: "restrict" }),
+		inventoryId: integer("inventory_id")
+			.notNull()
+			.references(() => inventory.id, { onDelete: "cascade" }),
+		price: integer("price").notNull(),
 		quantity: integer("quantity").default(1),
-		userSpecifiedRarityId: integer("user_specified_rarity_id"), // Allow seller to specify rarity when listing
-		status: text("status").notNull().default("active"), // active, sold, cancelled
-		featured: integer("featured", { mode: "boolean" }).default(false), // For premium listings
-		expiresAt: integer("expires_at", { mode: "timestamp" }),
-		createdAt: integer("created_at", { mode: "timestamp" })
-			.notNull()
-			.default(sql`CURRENT_TIMESTAMP`),
-		updatedAt: integer("updated_at", { mode: "timestamp" })
-			.notNull()
-			.default(sql`CURRENT_TIMESTAMP`),
+		userSpecifiedRarityId: integer("user_specified_rarity_id").references(
+			() => rarityTypes.id,
+			{ onDelete: "set null" },
+		),
+		status: text("status").notNull().default("active"),
+		featured: integer("featured", { mode: "boolean" }).default(false),
+		expiresAt: text("expires_at"), // Changed to text
+		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
+		updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
 	},
 	(table) => [
 		index("idx_listings_status").on(table.status),
@@ -172,16 +204,22 @@ export const transactions = sqliteTable(
 	"transactions",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
-		listingId: integer("listing_id"),
-		buyerId: text("buyer_id").notNull(),
-		sellerId: text("seller_id").notNull(),
-		itemId: integer("item_id").notNull(),
-		price: integer("price").notNull(), // Price in platform coins
-		quantity: integer("quantity").notNull().default(1),
-		transactionType: text("transaction_type").notNull(), // "listing_purchase", "direct_purchase", etc.
-		timestamp: integer("timestamp", { mode: "timestamp" })
+		listingId: integer("listing_id").references(() => listings.id, {
+			onDelete: "set null",
+		}),
+		buyerId: text("buyer_id")
 			.notNull()
-			.default(sql`CURRENT_TIMESTAMP`),
+			.references(() => user.id, { onDelete: "restrict" }),
+		sellerId: text("seller_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "restrict" }),
+		itemId: integer("item_id")
+			.notNull()
+			.references(() => items.id, { onDelete: "restrict" }),
+		price: integer("price").notNull(),
+		quantity: integer("quantity").notNull().default(1),
+		transactionType: text("transaction_type").notNull(),
+		timestamp: text("timestamp").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
 	},
 	(table) => [
 		index("idx_transactions_buyer_id").on(table.buyerId),
@@ -194,19 +232,19 @@ export const trades = sqliteTable(
 	"trades",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
-		initiatorId: text("initiator_id").notNull(),
-		receiverId: text("receiver_id").notNull(),
-		initiatorCoinsOffered: integer("initiator_coins_offered").default(0), // Optional coins from initiator
-		receiverCoinsRequested: integer("receiver_coins_requested").default(0), // Optional coins from receiver
-		status: text("status").notNull().default("pending"), // pending, accepted, rejected, completed, cancelled
-		message: text("message"), // Optional message about the trade
-		createdAt: integer("created_at", { mode: "timestamp" })
+		initiatorId: text("initiator_id")
 			.notNull()
-			.default(sql`CURRENT_TIMESTAMP`),
-		updatedAt: integer("updated_at", { mode: "timestamp" })
+			.references(() => user.id, { onDelete: "cascade" }),
+		receiverId: text("receiver_id")
 			.notNull()
-			.default(sql`CURRENT_TIMESTAMP`),
-		completedAt: integer("completed_at", { mode: "timestamp" }),
+			.references(() => user.id, { onDelete: "cascade" }),
+		initiatorCoinsOffered: integer("initiator_coins_offered").default(0),
+		receiverCoinsRequested: integer("receiver_coins_requested").default(0),
+		status: text("status").notNull().default("pending"),
+		message: text("message"),
+		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
+		updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
+		completedAt: text("completed_at"), // Changed to text
 	},
 	(table) => [
 		index("idx_trades_initiator_id").on(table.initiatorId),
@@ -220,10 +258,18 @@ export const tradeItems = sqliteTable(
 	"trade_items",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
-		tradeId: integer("trade_id").notNull(),
-		inventoryId: integer("inventory_id").notNull(), // Reference to the inventory item being traded
-		itemId: integer("item_id").notNull(),
-		userId: text("user_id").notNull(), // The user offering this item
+		tradeId: integer("trade_id")
+			.notNull()
+			.references(() => trades.id, { onDelete: "cascade" }),
+		inventoryId: integer("inventory_id")
+			.notNull()
+			.references(() => inventory.id, { onDelete: "restrict" }),
+		itemId: integer("item_id")
+			.notNull()
+			.references(() => items.id, { onDelete: "restrict" }),
+		userId: text("user_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
 		quantity: integer("quantity").default(1),
 	},
 	(table) => [
@@ -237,15 +283,15 @@ export const coinPurchases = sqliteTable(
 	"coin_purchases",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
-		userId: text("user_id").notNull(),
-		coinsAmount: integer("coins_amount").notNull(),
-		cashAmount: real("cash_amount").notNull(), // e.g., $3.99
-		paymentMethod: text("payment_method").notNull(), // e.g., "paypal", "stripe", "crypto"
-		paymentReference: text("payment_reference"),
-		status: text("status").notNull().default("completed"), // pending, completed, failed, refunded
-		timestamp: integer("timestamp", { mode: "timestamp" })
+		userId: text("user_id")
 			.notNull()
-			.default(sql`CURRENT_TIMESTAMP`),
+			.references(() => user.id, { onDelete: "cascade" }),
+		coinsAmount: integer("coins_amount").notNull(),
+		cashAmount: real("cash_amount").notNull(),
+		paymentMethod: text("payment_method").notNull(),
+		paymentReference: text("payment_reference"),
+		status: text("status").notNull().default("completed"),
+		timestamp: text("timestamp").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
 	},
 	(table) => [index("idx_coin_purchases_user_id").on(table.userId)],
 );
@@ -255,17 +301,17 @@ export const coinCashouts = sqliteTable(
 	"coin_cashouts",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
-		userId: text("user_id").notNull(),
-		coinsAmount: integer("coins_amount").notNull(),
-		cashAmount: real("cash_amount").notNull(), // e.g., $1.49 per 1000 coins
-		paymentMethod: text("payment_method").notNull(), // e.g., "paypal", "bank_transfer"
-		paymentDetails: text("payment_details"), // e.g., PayPal email or last 4 digits of bank account
-		status: text("status").notNull().default("pending"), // pending, processing, completed, rejected
-		timestamp: integer("timestamp", { mode: "timestamp" })
+		userId: text("user_id")
 			.notNull()
-			.default(sql`CURRENT_TIMESTAMP`),
-		processedAt: integer("processed_at", { mode: "timestamp" }),
-		notes: text("notes"), // Admin notes about this cashout
+			.references(() => user.id, { onDelete: "cascade" }),
+		coinsAmount: integer("coins_amount").notNull(),
+		cashAmount: real("cash_amount").notNull(),
+		paymentMethod: text("payment_method").notNull(),
+		paymentDetails: text("payment_details"),
+		status: text("status").notNull().default("pending"),
+		timestamp: text("timestamp").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
+		processedAt: text("processed_at"), // Changed to text
+		notes: text("notes"),
 	},
 	(table) => [
 		index("idx_coin_cashouts_user_id").on(table.userId),
@@ -278,13 +324,17 @@ export const searchHistory = sqliteTable(
 	"search_history",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
-		userId: text("user_id").notNull(),
-		searchQuery: text("search_query").notNull(),
-		gameId: integer("game_id"),
-		categoryId: integer("category_id"),
-		timestamp: integer("timestamp", { mode: "timestamp" })
+		userId: text("user_id")
 			.notNull()
-			.default(sql`CURRENT_TIMESTAMP`),
+			.references(() => user.id, { onDelete: "cascade" }),
+		searchQuery: text("search_query").notNull(),
+		gameId: integer("game_id").references(() => games.id, {
+			onDelete: "set null",
+		}),
+		categoryId: integer("category_id").references(() => categories.id, {
+			onDelete: "set null",
+		}),
+		timestamp: text("timestamp").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
 	},
 	(table) => [index("idx_search_history_user_id").on(table.userId)],
 );
@@ -294,10 +344,12 @@ export const priceHistory = sqliteTable(
 	"price_history",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
-		itemId: integer("item_id").notNull(),
+		itemId: integer("item_id")
+			.notNull()
+			.references(() => items.id, { onDelete: "cascade" }),
 		averagePrice: integer("average_price").notNull(),
 		volume: integer("volume").notNull(),
-		date: integer("date", { mode: "timestamp" }).notNull(),
+		date: text("date").notNull(), // Changed to text
 	},
 	(table) => [
 		index("idx_price_history_item_id").on(table.itemId),
@@ -328,6 +380,8 @@ export const sessionRelations = relations(session, ({ one }) => ({
 export const accountRelations = relations(account, ({ one }) => ({
 	user: one(user, { fields: [account.userId], references: [user.id] }),
 }));
+
+// export const verificationRelations = relations(verification, (({ }) => ({})));
 
 export const gamesRelations = relations(games, ({ many }) => ({
 	categories: many(categories),

@@ -30,8 +30,6 @@ import type { User } from "better-auth";
 export function NavUser({ user }: { user: User | null }) {
 	const { isMobile } = useSidebar();
 
-	console.log("user", user);
-
 	return (
 		<>
 			{user && (

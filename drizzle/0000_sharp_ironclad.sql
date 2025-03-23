@@ -1,16 +1,18 @@
 CREATE TABLE `account` (
 	`id` text PRIMARY KEY NOT NULL,
+	`account_id` text NOT NULL,
+	`provider_id` text NOT NULL,
 	`user_id` text NOT NULL,
-	`type` text NOT NULL,
-	`provider` text NOT NULL,
-	`provider_account_id` text NOT NULL,
-	`refresh_token` text,
 	`access_token` text,
-	`expires_at` integer,
-	`token_type` text,
-	`scope` text,
+	`refresh_token` text,
 	`id_token` text,
-	`session_state` text
+	`access_token_expires_at` integer,
+	`refresh_token_expires_at` integer,
+	`scope` text,
+	`password` text,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `categories` (
@@ -18,7 +20,8 @@ CREATE TABLE `categories` (
 	`game_id` integer NOT NULL,
 	`name` text NOT NULL,
 	`description` text,
-	`sort_order` integer DEFAULT 0
+	`sort_order` integer DEFAULT 0,
+	FOREIGN KEY (`game_id`) REFERENCES `games`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE INDEX `idx_categories_game_id` ON `categories` (`game_id`);--> statement-breakpoint
@@ -30,9 +33,10 @@ CREATE TABLE `coin_cashouts` (
 	`payment_method` text NOT NULL,
 	`payment_details` text,
 	`status` text DEFAULT 'pending' NOT NULL,
-	`timestamp` integer DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	`processed_at` integer,
-	`notes` text
+	`timestamp` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	`processed_at` text,
+	`notes` text,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE INDEX `idx_coin_cashouts_user_id` ON `coin_cashouts` (`user_id`);--> statement-breakpoint
@@ -45,7 +49,8 @@ CREATE TABLE `coin_purchases` (
 	`payment_method` text NOT NULL,
 	`payment_reference` text,
 	`status` text DEFAULT 'completed' NOT NULL,
-	`timestamp` integer DEFAULT CURRENT_TIMESTAMP NOT NULL
+	`timestamp` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE INDEX `idx_coin_purchases_user_id` ON `coin_purchases` (`user_id`);--> statement-breakpoint
@@ -65,8 +70,11 @@ CREATE TABLE `inventory` (
 	`item_id` integer NOT NULL,
 	`user_specified_rarity_id` integer,
 	`quantity` integer DEFAULT 1 NOT NULL,
-	`acquired` integer DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	`notes` text
+	`acquired` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	`notes` text,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`item_id`) REFERENCES `items`(`id`) ON UPDATE no action ON DELETE restrict,
+	FOREIGN KEY (`user_specified_rarity_id`) REFERENCES `rarity_types`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
 CREATE INDEX `idx_inventory_user_id` ON `inventory` (`user_id`);--> statement-breakpoint
@@ -82,7 +90,10 @@ CREATE TABLE `items` (
 	`suggested_price` integer,
 	`is_active` integer DEFAULT true,
 	`metadata` text,
-	`created_at` integer DEFAULT CURRENT_TIMESTAMP NOT NULL
+	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	FOREIGN KEY (`game_id`) REFERENCES `games`(`id`) ON UPDATE no action ON DELETE restrict,
+	FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON UPDATE no action ON DELETE restrict,
+	FOREIGN KEY (`rarity_id`) REFERENCES `rarity_types`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
 CREATE INDEX `idx_items_game_id` ON `items` (`game_id`);--> statement-breakpoint
@@ -99,9 +110,13 @@ CREATE TABLE `listings` (
 	`user_specified_rarity_id` integer,
 	`status` text DEFAULT 'active' NOT NULL,
 	`featured` integer DEFAULT false,
-	`expires_at` integer,
-	`created_at` integer DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	`updated_at` integer DEFAULT CURRENT_TIMESTAMP NOT NULL
+	`expires_at` text,
+	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	FOREIGN KEY (`seller_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`item_id`) REFERENCES `items`(`id`) ON UPDATE no action ON DELETE restrict,
+	FOREIGN KEY (`inventory_id`) REFERENCES `inventory`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`user_specified_rarity_id`) REFERENCES `rarity_types`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
 CREATE INDEX `idx_listings_status` ON `listings` (`status`);--> statement-breakpoint
@@ -113,7 +128,8 @@ CREATE TABLE `price_history` (
 	`item_id` integer NOT NULL,
 	`average_price` integer NOT NULL,
 	`volume` integer NOT NULL,
-	`date` integer NOT NULL
+	`date` text NOT NULL,
+	FOREIGN KEY (`item_id`) REFERENCES `items`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE INDEX `idx_price_history_item_id` ON `price_history` (`item_id`);--> statement-breakpoint
@@ -124,7 +140,8 @@ CREATE TABLE `rarity_types` (
 	`name` text NOT NULL,
 	`display_name` text,
 	`color_hex` text,
-	`sort_order` integer DEFAULT 0
+	`sort_order` integer DEFAULT 0,
+	FOREIGN KEY (`game_id`) REFERENCES `games`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE INDEX `idx_rarity_types_game_id` ON `rarity_types` (`game_id`);--> statement-breakpoint
@@ -135,16 +152,23 @@ CREATE TABLE `search_history` (
 	`search_query` text NOT NULL,
 	`game_id` integer,
 	`category_id` integer,
-	`timestamp` integer DEFAULT CURRENT_TIMESTAMP NOT NULL
+	`timestamp` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`game_id`) REFERENCES `games`(`id`) ON UPDATE no action ON DELETE set null,
+	FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
 CREATE INDEX `idx_search_history_user_id` ON `search_history` (`user_id`);--> statement-breakpoint
 CREATE TABLE `session` (
 	`id` text PRIMARY KEY NOT NULL,
-	`user_id` text NOT NULL,
 	`expires_at` integer NOT NULL,
 	`token` text NOT NULL,
-	`created_at` integer DEFAULT CURRENT_TIMESTAMP NOT NULL
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL,
+	`ip_address` text,
+	`user_agent` text,
+	`user_id` text NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `session_token_unique` ON `session` (`token`);--> statement-breakpoint
@@ -154,7 +178,11 @@ CREATE TABLE `trade_items` (
 	`inventory_id` integer NOT NULL,
 	`item_id` integer NOT NULL,
 	`user_id` text NOT NULL,
-	`quantity` integer DEFAULT 1
+	`quantity` integer DEFAULT 1,
+	FOREIGN KEY (`trade_id`) REFERENCES `trades`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`inventory_id`) REFERENCES `inventory`(`id`) ON UPDATE no action ON DELETE restrict,
+	FOREIGN KEY (`item_id`) REFERENCES `items`(`id`) ON UPDATE no action ON DELETE restrict,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE INDEX `idx_trade_items_trade_id` ON `trade_items` (`trade_id`);--> statement-breakpoint
@@ -167,9 +195,11 @@ CREATE TABLE `trades` (
 	`receiver_coins_requested` integer DEFAULT 0,
 	`status` text DEFAULT 'pending' NOT NULL,
 	`message` text,
-	`created_at` integer DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	`updated_at` integer DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	`completed_at` integer
+	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	`completed_at` text,
+	FOREIGN KEY (`initiator_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`receiver_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE INDEX `idx_trades_initiator_id` ON `trades` (`initiator_id`);--> statement-breakpoint
@@ -184,7 +214,11 @@ CREATE TABLE `transactions` (
 	`price` integer NOT NULL,
 	`quantity` integer DEFAULT 1 NOT NULL,
 	`transaction_type` text NOT NULL,
-	`timestamp` integer DEFAULT CURRENT_TIMESTAMP NOT NULL
+	`timestamp` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	FOREIGN KEY (`listing_id`) REFERENCES `listings`(`id`) ON UPDATE no action ON DELETE set null,
+	FOREIGN KEY (`buyer_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE restrict,
+	FOREIGN KEY (`seller_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE restrict,
+	FOREIGN KEY (`item_id`) REFERENCES `items`(`id`) ON UPDATE no action ON DELETE restrict
 );
 --> statement-breakpoint
 CREATE INDEX `idx_transactions_buyer_id` ON `transactions` (`buyer_id`);--> statement-breakpoint
@@ -193,10 +227,10 @@ CREATE TABLE `user` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text,
 	`email` text NOT NULL,
-	`email_verified` integer,
+	`email_verified` integer NOT NULL,
 	`image` text,
-	`created_at` integer DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	`updated_at` integer DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	`user_name` text NOT NULL,
 	`total_coins` integer DEFAULT 0 NOT NULL,
 	`paypal_email` text,
@@ -204,4 +238,12 @@ CREATE TABLE `user` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `user_email_unique` ON `user` (`email`);--> statement-breakpoint
-CREATE UNIQUE INDEX `user_user_name_unique` ON `user` (`user_name`);
+CREATE UNIQUE INDEX `user_user_name_unique` ON `user` (`user_name`);--> statement-breakpoint
+CREATE TABLE `verification` (
+	`id` text PRIMARY KEY NOT NULL,
+	`identifier` text NOT NULL,
+	`value` text NOT NULL,
+	`expires_at` integer NOT NULL,
+	`created_at` integer,
+	`updated_at` integer
+);

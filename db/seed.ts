@@ -1,6 +1,8 @@
 import { db } from "./db";
 import { games, categories, rarityTypes, items } from "./schema";
 
+const IMAGE_URL =
+	"https://azajw5rq3c.ufs.sh/f/YevQZiVtNMeOYEayMHVtNMeOHxsVPkDBrnW6R7gTU3bAIL4w";
 export async function seedAdoptMe() {
 	console.log("Seeding Adopt Me data...");
 
@@ -530,7 +532,7 @@ export async function seedAdoptMe() {
 			name: item.name,
 			description: item.description,
 			rarityId: item.rarityId,
-			imageUrl: item.imageUrl,
+			imageUrl: "https://azajw5rq3c.ufs.sh/f/YevQZiVtNMeOYEayMHVtNMeOHxsVPkDBrnW6R7gTU3bAIL4w",
 			suggestedPrice: item.suggestedPrice,
 			metadata: JSON.stringify({
 				isNeon: item.name.includes("Neon") && !item.name.includes("Mega"),
@@ -545,4 +547,3 @@ export async function seedAdoptMe() {
 }
 
 seedAdoptMe();
-    

@@ -65,7 +65,6 @@ export function AppSidebar({
 	user,
 	...props
 }: React.ComponentProps<typeof Sidebar> & { user: User | null }) {
-	console.log("user", user);
 	return (
 		<Sidebar {...props}>
 			<SidebarHeader>
