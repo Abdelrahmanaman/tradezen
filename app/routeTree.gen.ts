@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as PurchaseIndexImport } from './routes/purchase/index'
+import { Route as profileProfileImport } from './routes/(profile)/profile'
 import { Route as imageImageImport } from './routes/(image)/image'
 import { Route as authRegisterImport } from './routes/(auth)/register'
 import { Route as authLoginImport } from './routes/(auth)/login'
@@ -28,6 +29,12 @@ const IndexRoute = IndexImport.update({
 const PurchaseIndexRoute = PurchaseIndexImport.update({
   id: '/purchase/',
   path: '/purchase/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const profileProfileRoute = profileProfileImport.update({
+  id: '/(profile)/profile',
+  path: '/profile',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -81,6 +88,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof imageImageImport
       parentRoute: typeof rootRoute
     }
+    '/(profile)/profile': {
+      id: '/(profile)/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof profileProfileImport
+      parentRoute: typeof rootRoute
+    }
     '/purchase/': {
       id: '/purchase/'
       path: '/purchase'
@@ -98,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof authLoginRoute
   '/register': typeof authRegisterRoute
   '/image': typeof imageImageRoute
+  '/profile': typeof profileProfileRoute
   '/purchase': typeof PurchaseIndexRoute
 }
 
@@ -106,6 +121,7 @@ export interface FileRoutesByTo {
   '/login': typeof authLoginRoute
   '/register': typeof authRegisterRoute
   '/image': typeof imageImageRoute
+  '/profile': typeof profileProfileRoute
   '/purchase': typeof PurchaseIndexRoute
 }
 
@@ -115,20 +131,22 @@ export interface FileRoutesById {
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/register': typeof authRegisterRoute
   '/(image)/image': typeof imageImageRoute
+  '/(profile)/profile': typeof profileProfileRoute
   '/purchase/': typeof PurchaseIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/register' | '/image' | '/purchase'
+  fullPaths: '/' | '/login' | '/register' | '/image' | '/profile' | '/purchase'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/register' | '/image' | '/purchase'
+  to: '/' | '/login' | '/register' | '/image' | '/profile' | '/purchase'
   id:
     | '__root__'
     | '/'
     | '/(auth)/login'
     | '/(auth)/register'
     | '/(image)/image'
+    | '/(profile)/profile'
     | '/purchase/'
   fileRoutesById: FileRoutesById
 }
@@ -138,6 +156,7 @@ export interface RootRouteChildren {
   authLoginRoute: typeof authLoginRoute
   authRegisterRoute: typeof authRegisterRoute
   imageImageRoute: typeof imageImageRoute
+  profileProfileRoute: typeof profileProfileRoute
   PurchaseIndexRoute: typeof PurchaseIndexRoute
 }
 
@@ -146,6 +165,7 @@ const rootRouteChildren: RootRouteChildren = {
   authLoginRoute: authLoginRoute,
   authRegisterRoute: authRegisterRoute,
   imageImageRoute: imageImageRoute,
+  profileProfileRoute: profileProfileRoute,
   PurchaseIndexRoute: PurchaseIndexRoute,
 }
 
@@ -163,6 +183,7 @@ export const routeTree = rootRoute
         "/(auth)/login",
         "/(auth)/register",
         "/(image)/image",
+        "/(profile)/profile",
         "/purchase/"
       ]
     },
@@ -177,6 +198,9 @@ export const routeTree = rootRoute
     },
     "/(image)/image": {
       "filePath": "(image)/image.tsx"
+    },
+    "/(profile)/profile": {
+      "filePath": "(profile)/profile.tsx"
     },
     "/purchase/": {
       "filePath": "purchase/index.tsx"
