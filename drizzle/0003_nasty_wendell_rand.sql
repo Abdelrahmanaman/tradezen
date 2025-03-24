@@ -1,0 +1,1 @@
+ALTER TABLE `user` ADD `trade_count` integer DEFAULT 0 NOT NULL;

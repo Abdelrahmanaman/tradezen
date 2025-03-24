@@ -19,7 +19,7 @@ function RouteComponent() {
 	return (
 		<section>
 			<h1>Hello {user.userName}</h1>
-			<Profile />
+			<Profile user={user} />
 			<PublicProfileTabs />
 		</section>
 	);
