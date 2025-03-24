@@ -22,6 +22,7 @@ export const user = sqliteTable("user", {
 	reputationScore: real("reputation_score").default(0),
 	followersCount: integer("followers_count").notNull().default(0),
 	followingCount: integer("following_count").notNull().default(0),
+	tradeCount: integer("trade_count").notNull().default(0),
 	createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
 	updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
 });
