@@ -537,6 +537,7 @@ export async function seedAdoptMe() {
 			metadata: JSON.stringify({
 				isNeon: item.name.includes("Neon") && !item.name.includes("Mega"),
 				isMegaNeon: item.name.includes("Mega Neon"),
+				
 			}),
 			isActive: true,
 		});
