@@ -14,12 +14,17 @@ export const user = sqliteTable("user", {
 	email: text("email").notNull().unique(),
 	emailVerified: integer("email_verified", { mode: "boolean" }).notNull(),
 	image: text("image"),
-	createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
-	updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
 	userName: text("user_name").notNull().unique(),
 	totalCoins: integer("total_coins").notNull().default(0), // Platform coins
 	paypalEmail: text("paypal_email"), // For cashouts
 	preferredPaymentMethod: text("preferred_payment_method"),
+	bio: text("bio"),
+	reputationScore: real("reputation_score").default(0),
+	followersCount: integer("followers_count").notNull().default(0),
+	followingCount: integer("following_count").notNull().default(0),
+	tradeCount: integer("trade_count").notNull().default(0),
+	createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
+	updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
 });
 
 export const session = sqliteTable("session", {
@@ -357,6 +362,60 @@ export const priceHistory = sqliteTable(
 	],
 );
 
+// User Reviews
+export const userReviews = sqliteTable(
+	"user_reviews",
+	{
+		id: integer("id").primaryKey({ autoIncrement: true }),
+		reviewerId: text("reviewer_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		targetUserId: text("target_user_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		tradeId: integer("trade_id").references(() => trades.id, {
+			onDelete: "set null",
+		}),
+		rating: integer("rating").notNull(), // e.g., 1-5 stars
+		comment: text("comment"),
+		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+		isVisible: integer("is_visible", { mode: "boolean" })
+			.notNull()
+			.default(true),
+	},
+	(table) => [
+		index("idx_user_reviews_reviewer_id").on(table.reviewerId),
+		index("idx_user_reviews_target_user_id").on(table.targetUserId),
+		// Ensure a user can only review another user once per trade
+		index("idx_user_reviews_unique_per_trade").on(
+			table.reviewerId,
+			table.targetUserId,
+			table.tradeId,
+		),
+	],
+);
+
+// User Followers Relationship Table
+export const userFollows = sqliteTable(
+	"user_follows",
+	{
+		id: integer("id").primaryKey({ autoIncrement: true }),
+		followerId: text("follower_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		followingId: text("following_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+	},
+	(table) => [
+		// Ensure unique follower/following relationship
+		index("idx_user_follows_unique").on(table.followerId, table.followingId),
+		index("idx_user_follows_follower_id").on(table.followerId),
+		index("idx_user_follows_following_id").on(table.followingId),
+	],
+);
+
 // Relations
 export const userRelations = relations(user, ({ many }) => ({
 	sessions: many(session),
@@ -371,6 +430,10 @@ export const userRelations = relations(user, ({ many }) => ({
 	coinPurchases: many(coinPurchases),
 	coinCashouts: many(coinCashouts),
 	searchHistory: many(searchHistory),
+	receivedReviews: many(userReviews, { relationName: "receivedReviews" }),
+	givenReviews: many(userReviews, { relationName: "givenReviews" }),
+	followers: many(userFollows, { relationName: "followers" }),
+	following: many(userFollows, { relationName: "following" }),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -379,6 +442,38 @@ export const sessionRelations = relations(session, ({ one }) => ({
 
 export const accountRelations = relations(account, ({ one }) => ({
 	user: one(user, { fields: [account.userId], references: [user.id] }),
+}));
+
+// Add relations for the new tables
+export const userReviewsRelations = relations(userReviews, ({ one }) => ({
+	reviewer: one(user, {
+		fields: [userReviews.reviewerId],
+		references: [user.id],
+		relationName: "givenReviews",
+	}),
+	targetUser: one(user, {
+		fields: [userReviews.targetUserId],
+		references: [user.id],
+		relationName: "receivedReviews",
+	}),
+	trade: one(trades, {
+		fields: [userReviews.tradeId],
+		references: [trades.id],
+	}),
+}));
+
+// User follows relations
+export const userFollowsRelations = relations(userFollows, ({ one }) => ({
+	follower: one(user, {
+		fields: [userFollows.followerId],
+		references: [user.id],
+		relationName: "following",
+	}),
+	following: one(user, {
+		fields: [userFollows.followingId],
+		references: [user.id],
+		relationName: "followers",
+	}),
 }));
 
 // export const verificationRelations = relations(verification, (({ }) => ({})));

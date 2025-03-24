@@ -19,7 +19,7 @@ import {
 	type LucideIcon,
 } from "lucide-react";
 import { NavUser } from "./nav-user";
-import type { User } from "better-auth";
+import type { UserType } from "@/lib/auth/auth";
 
 type SidebarDataType = {
 	title: string;
@@ -64,7 +64,7 @@ const user = {
 export function AppSidebar({
 	user,
 	...props
-}: React.ComponentProps<typeof Sidebar> & { user: User | null }) {
+}: React.ComponentProps<typeof Sidebar> & { user: UserType | null }) {
 	return (
 		<Sidebar {...props}>
 			<SidebarHeader>

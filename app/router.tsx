@@ -3,10 +3,10 @@ import { routeTree } from "./routeTree.gen";
 import { QueryClient } from "@tanstack/react-query";
 import { NotFound } from "./components/not-found";
 import { routerWithQueryClient } from "@tanstack/react-router-with-query";
-import type { User } from "better-auth";
 import { DefaultCatchBoundary } from "./components/catch-boundary";
+import type { UserType } from "./lib/auth/auth";
 
-export function createRouter(user: User) {
+export function createRouter(user: UserType) {
 	const queryClient = new QueryClient({
 		defaultOptions: {
 			queries: {

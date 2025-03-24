@@ -25,9 +25,9 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "@/components/ui/sidebar";
-import type { User } from "better-auth";
+import type { UserType } from "@/lib/auth/auth";
 
-export function NavUser({ user }: { user: User | null }) {
+export function NavUser({ user }: { user: UserType | null }) {
 	const { isMobile } = useSidebar();
 
 	return (
