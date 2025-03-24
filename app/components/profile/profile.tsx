@@ -83,15 +83,15 @@ export default function Profile({ user }: { user: UserType }) {
 									/>
 								))}
 							</div>
-							<span className="text-sm">249 reviews</span>
+							<span className="text-sm">{user.reputationScore} reviews</span>
 						</div>
 						<div className="flex items-center gap-2 mt-2">
 							<Disc className="w-4 h-4" />
-							<span>Discord: UserName123#1234</span>
+							<span>Discord: {user.userName}</span>
 						</div>
 						<div className="flex items-center gap-2 mt-1">
 							<Twitch className="w-4 h-4" />
-							<span>Steam: UserName123</span>
+							<span>Steam: {user.userName}</span>
 						</div>
 					</div>
 				</div>
