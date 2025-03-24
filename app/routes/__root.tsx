@@ -44,7 +44,8 @@ export const Route = createRootRouteWithContext<{
 	component: RootComponent,
 	beforeLoad: async ({ context }) => {
 		const user = await context.queryClient.fetchQuery(getUserQuery());
-
+		console.log("hello from home");
+		console.log(user);
 		return { user };
 	},
 });
@@ -58,6 +59,7 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
+	console.log("hello from document");
 	const { user } = Route.useRouteContext();
 	return (
 		<html suppressHydrationWarning lang="en">

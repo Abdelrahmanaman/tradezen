@@ -62,7 +62,7 @@ const renderStars = (count: number, size = 4) => {
 		.fill(0)
 		.map((_, i) => (
 			<StarIcon
-				key={count + i}
+				key={`${count}-${_}`}
 				className={`w-${size} h-${size} ${i < count ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
 			/>
 		));
@@ -80,9 +80,6 @@ export default function PublicProfileTabs() {
 				</TabsTrigger>
 				<TabsTrigger className="sm:p-4 font-semibold pb-2 " value="reviews">
 					Reviews
-				</TabsTrigger>
-				<TabsTrigger className="sm:p-4 font-semibold pb-2 " value="past-trades">
-					Past Trades
 				</TabsTrigger>
 			</TabsList>
 			<TabsContent
@@ -108,7 +105,10 @@ export default function PublicProfileTabs() {
 										<span className="font-semibold">{review.user}</span>
 										<div className="flex">
 											{[...Array(review.rating)].map((_, i) => (
-												<StarIcon key={`${review.id}-${i}`} className="w-4 h-4 text-yellow-400" />
+												<StarIcon
+													key={`${review.id}-${i}`}
+													className="w-4 h-4 text-yellow-400"
+												/>
 											))}
 										</div>
 									</div>
@@ -134,7 +134,10 @@ export default function PublicProfileTabs() {
 										<span className="font-semibold">{review.user}</span>
 										<div className="flex">
 											{[...Array(review.rating)].map((_, i) => (
-												<StarIcon key={`${review.id}-${i}`} className="w-4 h-4 text-yellow-400" />
+												<StarIcon
+													key={`${review.id}-${i}`}
+													className="w-4 h-4 text-yellow-400"
+												/>
 											))}
 										</div>
 									</div>

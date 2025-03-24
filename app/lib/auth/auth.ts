@@ -21,6 +21,31 @@ export const auth = betterAuth({
 				nullable: true,
 				required: false,
 			},
+			// bio: {
+			// 	type: "string",
+			// 	nullable: true,
+			// 	required: false,
+			// },
+			// totalCoins: {
+			// 	type: "number",
+			// 	nullable: false,
+			// 	required: false,
+			// },
+			// reputationScore: {
+			// 	type: "number",
+			// 	nullable: false,
+			// 	required: false,
+			// },
+			// followersCount: {
+			// 	type: "number",
+			// 	nullable: false,
+			// 	required: false,
+			// },
+			// followingCount: {
+			// 	type: "number",
+			// 	nullable: false,
+			// 	required: false,
+			// },
 		},
 	},
 	emailAndPassword: {
