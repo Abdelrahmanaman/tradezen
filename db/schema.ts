@@ -15,16 +15,16 @@ export const user = sqliteTable("user", {
 	emailVerified: integer("email_verified", { mode: "boolean" }).notNull(),
 	image: text("image"),
 	userName: text("user_name").notNull().unique(),
-	totalCoins: integer("total_coins").notNull().default(0), // Platform coins
-	paypalEmail: text("paypal_email"), // For cashouts
+	totalCoins: integer("total_coins").notNull().default(0),
+	paypalEmail: text("paypal_email"),
 	preferredPaymentMethod: text("preferred_payment_method"),
 	bio: text("bio"),
 	reputationScore: real("reputation_score").default(0),
 	followersCount: integer("followers_count").notNull().default(0),
 	followingCount: integer("following_count").notNull().default(0),
 	tradeCount: integer("trade_count").notNull().default(0),
-	createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
-	updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
+	createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+	updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
 export const session = sqliteTable("session", {
@@ -61,7 +61,7 @@ export const account = sqliteTable("account", {
 	createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
 	updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
-// Added verification table back
+
 export const verification = sqliteTable("verification", {
 	id: text("id").primaryKey(),
 	identifier: text("identifier").notNull(),
@@ -96,7 +96,7 @@ export const categories = sqliteTable(
 	(table) => [index("idx_categories_game_id").on(table.gameId)],
 );
 
-// Rarity Types Table
+// Rarity Types Table (Base Rarity Only)
 export const rarityTypes = sqliteTable(
 	"rarity_types",
 	{
@@ -104,7 +104,7 @@ export const rarityTypes = sqliteTable(
 		gameId: integer("game_id")
 			.notNull()
 			.references(() => games.id, { onDelete: "cascade" }),
-		name: text("name").notNull(),
+		name: text("name").notNull(), // e.g., "Common", "Legendary"
 		displayName: text("display_name"),
 		colorHex: text("color_hex"),
 		sortOrder: integer("sort_order").default(0),
@@ -115,7 +115,22 @@ export const rarityTypes = sqliteTable(
 	],
 );
 
-// Items Table
+// Enhancement Types Table (New for Neon/Mega Neon)
+export const enhancementTypes = sqliteTable(
+	"enhancement_types",
+	{
+		id: integer("id").primaryKey({ autoIncrement: true }),
+		gameId: integer("game_id")
+			.notNull()
+			.references(() => games.id, { onDelete: "cascade" }),
+		name: text("name").notNull(), // e.g., "Normal", "Neon", "Mega Neon"
+		displayName: text("display_name"),
+		sortOrder: integer("sort_order").default(0),
+	},
+	(table) => [index("idx_enhancement_types_game_id").on(table.gameId)],
+);
+
+// Items Table (Updated with enhancementId)
 export const items = sqliteTable(
 	"items",
 	{
@@ -131,17 +146,24 @@ export const items = sqliteTable(
 		rarityId: integer("rarity_id").references(() => rarityTypes.id, {
 			onDelete: "set null",
 		}),
+		enhancementId: integer("enhancement_id").references(
+			() => enhancementTypes.id,
+			{
+				onDelete: "set null",
+			},
+		),
 		imageUrl: text("image_url").notNull(),
 		suggestedPrice: integer("suggested_price"),
 		isActive: integer("is_active", { mode: "boolean" }).default(true),
-		metadata: text("metadata", { mode: "json" }),
-		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
+		metadata: text("metadata", { mode: "json" }), // e.g., { "isLimited": true, "eventName": "Winter 2024" }
+		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 	},
 	(table) => [
 		index("idx_items_game_id").on(table.gameId),
 		index("idx_items_category_id").on(table.categoryId),
 		index("idx_items_name").on(table.name),
 		index("idx_items_rarity_id").on(table.rarityId),
+		index("idx_items_enhancement_id").on(table.enhancementId),
 	],
 );
 
@@ -161,7 +183,7 @@ export const inventory = sqliteTable(
 			{ onDelete: "set null" },
 		),
 		quantity: integer("quantity").notNull().default(1),
-		acquired: text("acquired").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
+		acquired: text("acquired").notNull().default(sql`CURRENT_TIMESTAMP`),
 		notes: text("notes"),
 	},
 	(table) => [
@@ -192,9 +214,9 @@ export const listings = sqliteTable(
 		),
 		status: text("status").notNull().default("active"),
 		featured: integer("featured", { mode: "boolean" }).default(false),
-		expiresAt: text("expires_at"), // Changed to text
-		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
-		updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
+		expiresAt: text("expires_at"),
+		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+		updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 	},
 	(table) => [
 		index("idx_listings_status").on(table.status),
@@ -204,7 +226,7 @@ export const listings = sqliteTable(
 	],
 );
 
-// Transactions Table (for completed sales)
+// Transactions Table
 export const transactions = sqliteTable(
 	"transactions",
 	{
@@ -224,7 +246,7 @@ export const transactions = sqliteTable(
 		price: integer("price").notNull(),
 		quantity: integer("quantity").notNull().default(1),
 		transactionType: text("transaction_type").notNull(),
-		timestamp: text("timestamp").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
+		timestamp: text("timestamp").notNull().default(sql`CURRENT_TIMESTAMP`),
 	},
 	(table) => [
 		index("idx_transactions_buyer_id").on(table.buyerId),
@@ -232,7 +254,7 @@ export const transactions = sqliteTable(
 	],
 );
 
-// Trades Table
+// Trades Table (Picking up from here)
 export const trades = sqliteTable(
 	"trades",
 	{
@@ -247,9 +269,9 @@ export const trades = sqliteTable(
 		receiverCoinsRequested: integer("receiver_coins_requested").default(0),
 		status: text("status").notNull().default("pending"),
 		message: text("message"),
-		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
-		updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
-		completedAt: text("completed_at"), // Changed to text
+		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+		updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+		completedAt: text("completed_at"),
 	},
 	(table) => [
 		index("idx_trades_initiator_id").on(table.initiatorId),
@@ -283,7 +305,7 @@ export const tradeItems = sqliteTable(
 	],
 );
 
-// Coin Purchases Table (buying platform coins)
+// Coin Purchases Table
 export const coinPurchases = sqliteTable(
 	"coin_purchases",
 	{
@@ -296,12 +318,12 @@ export const coinPurchases = sqliteTable(
 		paymentMethod: text("payment_method").notNull(),
 		paymentReference: text("payment_reference"),
 		status: text("status").notNull().default("completed"),
-		timestamp: text("timestamp").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
+		timestamp: text("timestamp").notNull().default(sql`CURRENT_TIMESTAMP`),
 	},
 	(table) => [index("idx_coin_purchases_user_id").on(table.userId)],
 );
 
-// Coin Cashouts Table (cashing out platform coins)
+// Coin Cashouts Table (continued)
 export const coinCashouts = sqliteTable(
 	"coin_cashouts",
 	{
@@ -314,8 +336,8 @@ export const coinCashouts = sqliteTable(
 		paymentMethod: text("payment_method").notNull(),
 		paymentDetails: text("payment_details"),
 		status: text("status").notNull().default("pending"),
-		timestamp: text("timestamp").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
-		processedAt: text("processed_at"), // Changed to text
+		timestamp: text("timestamp").notNull().default(sql`CURRENT_TIMESTAMP`),
+		processedAt: text("processed_at"),
 		notes: text("notes"),
 	},
 	(table) => [
@@ -339,12 +361,12 @@ export const searchHistory = sqliteTable(
 		categoryId: integer("category_id").references(() => categories.id, {
 			onDelete: "set null",
 		}),
-		timestamp: text("timestamp").notNull().default(sql`CURRENT_TIMESTAMP`), // Changed to text
+		timestamp: text("timestamp").notNull().default(sql`CURRENT_TIMESTAMP`),
 	},
 	(table) => [index("idx_search_history_user_id").on(table.userId)],
 );
 
-// Price History (for analytics and charts)
+// Price History
 export const priceHistory = sqliteTable(
 	"price_history",
 	{
@@ -354,7 +376,7 @@ export const priceHistory = sqliteTable(
 			.references(() => items.id, { onDelete: "cascade" }),
 		averagePrice: integer("average_price").notNull(),
 		volume: integer("volume").notNull(),
-		date: text("date").notNull(), // Changed to text
+		date: text("date").notNull(),
 	},
 	(table) => [
 		index("idx_price_history_item_id").on(table.itemId),
@@ -386,7 +408,6 @@ export const userReviews = sqliteTable(
 	(table) => [
 		index("idx_user_reviews_reviewer_id").on(table.reviewerId),
 		index("idx_user_reviews_target_user_id").on(table.targetUserId),
-		// Ensure a user can only review another user once per trade
 		index("idx_user_reviews_unique_per_trade").on(
 			table.reviewerId,
 			table.targetUserId,
@@ -409,7 +430,6 @@ export const userFollows = sqliteTable(
 		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 	},
 	(table) => [
-		// Ensure unique follower/following relationship
 		index("idx_user_follows_unique").on(table.followerId, table.followingId),
 		index("idx_user_follows_follower_id").on(table.followerId),
 		index("idx_user_follows_following_id").on(table.followingId),
@@ -444,7 +464,6 @@ export const accountRelations = relations(account, ({ one }) => ({
 	user: one(user, { fields: [account.userId], references: [user.id] }),
 }));
 
-// Add relations for the new tables
 export const userReviewsRelations = relations(userReviews, ({ one }) => ({
 	reviewer: one(user, {
 		fields: [userReviews.reviewerId],
@@ -462,7 +481,6 @@ export const userReviewsRelations = relations(userReviews, ({ one }) => ({
 	}),
 }));
 
-// User follows relations
 export const userFollowsRelations = relations(userFollows, ({ one }) => ({
 	follower: one(user, {
 		fields: [userFollows.followerId],
@@ -476,12 +494,11 @@ export const userFollowsRelations = relations(userFollows, ({ one }) => ({
 	}),
 }));
 
-// export const verificationRelations = relations(verification, (({ }) => ({})));
-
 export const gamesRelations = relations(games, ({ many }) => ({
 	categories: many(categories),
 	items: many(items),
 	rarityTypes: many(rarityTypes),
+	enhancementTypes: many(enhancementTypes),
 }));
 
 export const categoriesRelations = relations(categories, ({ one, many }) => ({
@@ -496,6 +513,17 @@ export const rarityTypesRelations = relations(rarityTypes, ({ one, many }) => ({
 	listings: many(listings, { relationName: "userSpecifiedRarity" }),
 }));
 
+export const enhancementTypesRelations = relations(
+	enhancementTypes,
+	({ one, many }) => ({
+		game: one(games, {
+			fields: [enhancementTypes.gameId],
+			references: [games.id],
+		}),
+		items: many(items),
+	}),
+);
+
 export const itemsRelations = relations(items, ({ one, many }) => ({
 	game: one(games, { fields: [items.gameId], references: [games.id] }),
 	category: one(categories, {
@@ -505,6 +533,10 @@ export const itemsRelations = relations(items, ({ one, many }) => ({
 	rarity: one(rarityTypes, {
 		fields: [items.rarityId],
 		references: [rarityTypes.id],
+	}),
+	enhancement: one(enhancementTypes, {
+		fields: [items.enhancementId],
+		references: [enhancementTypes.id],
 	}),
 	inventoryEntries: many(inventory),
 	listings: many(listings),
@@ -558,7 +590,10 @@ export const transactionsRelations = relations(transactions, ({ one }) => ({
 		fields: [transactions.listingId],
 		references: [listings.id],
 	}),
-	item: one(items, { fields: [transactions.itemId], references: [items.id] }),
+	item: one(items, {
+		fields: [transactions.itemId],
+		references: [items.id],
+	}),
 }));
 
 export const tradesRelations = relations(trades, ({ one, many }) => ({
@@ -576,26 +611,47 @@ export const tradesRelations = relations(trades, ({ one, many }) => ({
 }));
 
 export const tradeItemsRelations = relations(tradeItems, ({ one }) => ({
-	trade: one(trades, { fields: [tradeItems.tradeId], references: [trades.id] }),
+	trade: one(trades, {
+		fields: [tradeItems.tradeId],
+		references: [trades.id],
+	}),
 	inventoryItem: one(inventory, {
 		fields: [tradeItems.inventoryId],
 		references: [inventory.id],
 	}),
-	item: one(items, { fields: [tradeItems.itemId], references: [items.id] }),
-	user: one(user, { fields: [tradeItems.userId], references: [user.id] }),
+	item: one(items, {
+		fields: [tradeItems.itemId],
+		references: [items.id],
+	}),
+	user: one(user, {
+		fields: [tradeItems.userId],
+		references: [user.id],
+	}),
 }));
 
 export const coinPurchasesRelations = relations(coinPurchases, ({ one }) => ({
-	user: one(user, { fields: [coinPurchases.userId], references: [user.id] }),
+	user: one(user, {
+		fields: [coinPurchases.userId],
+		references: [user.id],
+	}),
 }));
 
 export const coinCashoutsRelations = relations(coinCashouts, ({ one }) => ({
-	user: one(user, { fields: [coinCashouts.userId], references: [user.id] }),
+	user: one(user, {
+		fields: [coinCashouts.userId],
+		references: [user.id],
+	}),
 }));
 
 export const searchHistoryRelations = relations(searchHistory, ({ one }) => ({
-	user: one(user, { fields: [searchHistory.userId], references: [user.id] }),
-	game: one(games, { fields: [searchHistory.gameId], references: [games.id] }),
+	user: one(user, {
+		fields: [searchHistory.userId],
+		references: [user.id],
+	}),
+	game: one(games, {
+		fields: [searchHistory.gameId],
+		references: [games.id],
+	}),
 	category: one(categories, {
 		fields: [searchHistory.categoryId],
 		references: [categories.id],
@@ -603,5 +659,8 @@ export const searchHistoryRelations = relations(searchHistory, ({ one }) => ({
 }));
 
 export const priceHistoryRelations = relations(priceHistory, ({ one }) => ({
-	item: one(items, { fields: [priceHistory.itemId], references: [items.id] }),
+	item: one(items, {
+		fields: [priceHistory.itemId],
+		references: [items.id],
+	}),
 }));
