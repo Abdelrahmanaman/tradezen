@@ -79,27 +79,25 @@ CREATE TABLE `inventory` (
 --> statement-breakpoint
 CREATE INDEX `idx_inventory_user_id` ON `inventory` (`user_id`);--> statement-breakpoint
 CREATE INDEX `idx_inventory_item_id` ON `inventory` (`item_id`);--> statement-breakpoint
+CREATE INDEX `idx_inventory_user_specified_rarity_id` ON `inventory` (`user_specified_rarity_id`);--> statement-breakpoint
 CREATE TABLE `items` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`game_id` integer NOT NULL,
 	`category_id` integer NOT NULL,
 	`name` text NOT NULL,
 	`description` text,
-	`rarity_id` integer,
 	`image_url` text NOT NULL,
 	`suggested_price` integer,
 	`is_active` integer DEFAULT true,
 	`metadata` text,
 	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	FOREIGN KEY (`game_id`) REFERENCES `games`(`id`) ON UPDATE no action ON DELETE restrict,
-	FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON UPDATE no action ON DELETE restrict,
-	FOREIGN KEY (`rarity_id`) REFERENCES `rarity_types`(`id`) ON UPDATE no action ON DELETE set null
+	FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON UPDATE no action ON DELETE restrict
 );
 --> statement-breakpoint
 CREATE INDEX `idx_items_game_id` ON `items` (`game_id`);--> statement-breakpoint
 CREATE INDEX `idx_items_category_id` ON `items` (`category_id`);--> statement-breakpoint
 CREATE INDEX `idx_items_name` ON `items` (`name`);--> statement-breakpoint
-CREATE INDEX `idx_items_rarity_id` ON `items` (`rarity_id`);--> statement-breakpoint
 CREATE TABLE `listings` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`seller_id` text NOT NULL,
@@ -107,21 +105,23 @@ CREATE TABLE `listings` (
 	`inventory_id` integer NOT NULL,
 	`price` integer NOT NULL,
 	`quantity` integer DEFAULT 1,
-	`user_specified_rarity_id` integer,
+	`listing_rarity_id` integer,
 	`status` text DEFAULT 'active' NOT NULL,
 	`featured` integer DEFAULT false,
 	`expires_at` text,
 	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	`metadata` text,
 	FOREIGN KEY (`seller_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`item_id`) REFERENCES `items`(`id`) ON UPDATE no action ON DELETE restrict,
 	FOREIGN KEY (`inventory_id`) REFERENCES `inventory`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`user_specified_rarity_id`) REFERENCES `rarity_types`(`id`) ON UPDATE no action ON DELETE set null
+	FOREIGN KEY (`listing_rarity_id`) REFERENCES `rarity_types`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
 CREATE INDEX `idx_listings_status` ON `listings` (`status`);--> statement-breakpoint
 CREATE INDEX `idx_listings_seller_id` ON `listings` (`seller_id`);--> statement-breakpoint
 CREATE INDEX `idx_listings_item_id` ON `listings` (`item_id`);--> statement-breakpoint
+CREATE INDEX `idx_listings_listing_rarity_id` ON `listings` (`listing_rarity_id`);--> statement-breakpoint
 CREATE INDEX `idx_listings_featured` ON `listings` (`featured`);--> statement-breakpoint
 CREATE TABLE `price_history` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -229,16 +229,50 @@ CREATE TABLE `user` (
 	`email` text NOT NULL,
 	`email_verified` integer NOT NULL,
 	`image` text,
-	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	`user_name` text NOT NULL,
 	`total_coins` integer DEFAULT 0 NOT NULL,
 	`paypal_email` text,
-	`preferred_payment_method` text
+	`preferred_payment_method` text,
+	`bio` text,
+	`reputation_score` real DEFAULT 0,
+	`followers_count` integer DEFAULT 0 NOT NULL,
+	`following_count` integer DEFAULT 0 NOT NULL,
+	`trade_count` integer DEFAULT 0 NOT NULL,
+	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `user_email_unique` ON `user` (`email`);--> statement-breakpoint
 CREATE UNIQUE INDEX `user_user_name_unique` ON `user` (`user_name`);--> statement-breakpoint
+CREATE TABLE `user_follows` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`follower_id` text NOT NULL,
+	`following_id` text NOT NULL,
+	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	FOREIGN KEY (`follower_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`following_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
+CREATE INDEX `idx_user_follows_unique` ON `user_follows` (`follower_id`,`following_id`);--> statement-breakpoint
+CREATE INDEX `idx_user_follows_follower_id` ON `user_follows` (`follower_id`);--> statement-breakpoint
+CREATE INDEX `idx_user_follows_following_id` ON `user_follows` (`following_id`);--> statement-breakpoint
+CREATE TABLE `user_reviews` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`reviewer_id` text NOT NULL,
+	`target_user_id` text NOT NULL,
+	`trade_id` integer,
+	`rating` integer NOT NULL,
+	`comment` text,
+	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	`is_visible` integer DEFAULT true NOT NULL,
+	FOREIGN KEY (`reviewer_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`target_user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`trade_id`) REFERENCES `trades`(`id`) ON UPDATE no action ON DELETE set null
+);
+--> statement-breakpoint
+CREATE INDEX `idx_user_reviews_reviewer_id` ON `user_reviews` (`reviewer_id`);--> statement-breakpoint
+CREATE INDEX `idx_user_reviews_target_user_id` ON `user_reviews` (`target_user_id`);--> statement-breakpoint
+CREATE INDEX `idx_user_reviews_unique_per_trade` ON `user_reviews` (`reviewer_id`,`target_user_id`,`trade_id`);--> statement-breakpoint
 CREATE TABLE `verification` (
 	`id` text PRIMARY KEY NOT NULL,
 	`identifier` text NOT NULL,
