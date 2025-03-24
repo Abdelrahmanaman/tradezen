@@ -532,11 +532,14 @@ export async function seedAdoptMe() {
 			name: item.name,
 			description: item.description,
 			rarityId: item.rarityId,
-			imageUrl: "https://azajw5rq3c.ufs.sh/f/YevQZiVtNMeOYEayMHVtNMeOHxsVPkDBrnW6R7gTU3bAIL4w",
+			imageUrl:
+				"https://azajw5rq3c.ufs.sh/f/YevQZiVtNMeOYEayMHVtNMeOHxsVPkDBrnW6R7gTU3bAIL4w",
 			suggestedPrice: item.suggestedPrice,
 			metadata: JSON.stringify({
 				isNeon: item.name.includes("Neon") && !item.name.includes("Mega"),
 				isMegaNeon: item.name.includes("Mega Neon"),
+				isFlyable: item.name.includes("Flyable"),
+				isRideable: item.name.includes("Rideable"),
 			}),
 			isActive: true,
 		});
