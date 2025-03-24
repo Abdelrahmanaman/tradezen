@@ -21,31 +21,41 @@ export const auth = betterAuth({
 				nullable: true,
 				required: false,
 			},
-			// bio: {
-			// 	type: "string",
-			// 	nullable: true,
-			// 	required: false,
-			// },
-			// totalCoins: {
-			// 	type: "number",
-			// 	nullable: false,
-			// 	required: false,
-			// },
-			// reputationScore: {
-			// 	type: "number",
-			// 	nullable: false,
-			// 	required: false,
-			// },
-			// followersCount: {
-			// 	type: "number",
-			// 	nullable: false,
-			// 	required: false,
-			// },
-			// followingCount: {
-			// 	type: "number",
-			// 	nullable: false,
-			// 	required: false,
-			// },
+			bio: {
+				type: "string",
+				nullable: true,
+				required: false,
+			},
+			totalCoins: {
+				type: "number",
+				nullable: false,
+				required: false,
+				input: false,
+			},
+			reputationScore: {
+				type: "number",
+				nullable: false,
+				required: false,
+				input: false,
+			},
+			followersCount: {
+				type: "number",
+				nullable: false,
+				required: false,
+				input: false,
+			},
+			followingCount: {
+				type: "number",
+				nullable: false,
+				required: false,
+				input: false,
+			},
+			tradeCount: {
+				type: "number",
+				nullable: false,
+				required: false,
+				input: false,
+			},
 		},
 	},
 	emailAndPassword: {
@@ -59,3 +69,5 @@ export const auth = betterAuth({
 		},
 	},
 });
+
+export type UserType = typeof auth.$Infer.Session.user;

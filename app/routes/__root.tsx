@@ -12,13 +12,13 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import Header from "@/components/header";
 import type { QueryClient } from "@tanstack/react-query";
-import type { User } from "better-auth";
+import type { UserType } from "@/lib/auth/auth";
 import { getUserQuery } from "@/services/auth";
 import { Toaster } from "@/components/ui/sonner";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 export const Route = createRootRouteWithContext<{
 	queryClient: QueryClient;
-	user: User | null;
+	user: UserType | null;
 }>()({
 	head: () => ({
 		meta: [
@@ -44,7 +44,6 @@ export const Route = createRootRouteWithContext<{
 	component: RootComponent,
 	beforeLoad: async ({ context }) => {
 		const user = await context.queryClient.fetchQuery(getUserQuery());
-		console.log("hello from home");
 		console.log(user);
 		return { user };
 	},

@@ -7,6 +7,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import type { UserType } from "@/lib/auth/auth";
 import {
 	Disc,
 	FlagIcon,
@@ -17,7 +18,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-export default function Profile() {
+export default function Profile({ user }: { user: UserType }) {
 	const [isFollowing, setIsFollowing] = useState(false);
 
 	const toggleFollow = () => setIsFollowing(!isFollowing);
@@ -59,17 +60,17 @@ export default function Profile() {
 						<div className="flex gap-2 text-sm">
 							<div>
 								<span className="flex items-center gap-1">
-									<strong>3.2K</strong>Followers
+									<strong>{user.followersCount}</strong>Followers
 								</span>
 							</div>
 							<div>
 								<span className="flex items-center gap-1">
-									<strong>1.2K</strong>Following
+									<strong>{user.followingCount}</strong>Following
 								</span>
 							</div>
 							<div>
 								<span className="flex items-center gap-1">
-									<strong>124</strong>Trades
+									<strong>{user.tradeCount}</strong>Trades
 								</span>
 							</div>
 						</div>

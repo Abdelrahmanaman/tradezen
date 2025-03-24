@@ -14,7 +14,7 @@ export const getUser = createServerFn({ method: "GET" }).handler(async () => {
 	if (!session?.user) {
 		return null;
 	}
-	return session?.user;
+	return session.user;
 });
 
 export const getUserQuery = () => {
@@ -23,7 +23,7 @@ export const getUserQuery = () => {
 		queryFn: async () => {
 			return await getUser();
 		},
-		staleTime: 5 * 60 * 1000, // 5 minutes before data is stale
+		staleTime: 2 * 60 * 1000, // 5 minutes before data is stale
 		gcTime: 30 * 60 * 1000, // 30 minutes before garbage collectionn
 	});
 };
