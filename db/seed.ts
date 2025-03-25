@@ -23,19 +23,47 @@ export async function seedAdoptMe() {
 	console.log(`Created game with ID: ${gameId}`);
 
 	// 2. Add Categories
-	 const categoriesData = [
-        { id: 1, name: "Food", description: "Items that can be consumed by pets" },
-        { id: 2, name: "Eggs", description: "Items that hatch into pets" },
-        { id: 3, name: "Gifts", description: "Mystery boxes that contain random items" },
-        { id: 4, name: "Pets", description: "Adoptable pets that can be hatched or traded" },
-        { id: 5, name: "Pet Accessories", description: "A broad category for pet-related accessories and gear" },
-        { id: 6, name: "Services", description: "In-game services (if applicable)" },
-        { id: 7, name: "Strollers", description: "Items used to carry pets" },
-        { id: 8, name: "Toys", description: "Items that can be played with by pets or players" },
-        { id: 9, name: "Vehicles", description: "Transportation items for players" },
-        { id: 10, name: "Houses", description: "Customizable player homes" },
-        { id: 11, name: "Stickers", description: "Collectible stickers (if applicable)" },
-    ];
+	const categoriesData = [
+		{ id: 1, name: "Food", description: "Items that can be consumed by pets" },
+		{ id: 2, name: "Eggs", description: "Items that hatch into pets" },
+		{
+			id: 3,
+			name: "Gifts",
+			description: "Mystery boxes that contain random items",
+		},
+		{
+			id: 4,
+			name: "Pets",
+			description: "Adoptable pets that can be hatched or traded",
+		},
+		{
+			id: 5,
+			name: "Pet Accessories",
+			description: "A broad category for pet-related accessories and gear",
+		},
+		{
+			id: 6,
+			name: "Services",
+			description: "In-game services (if applicable)",
+		},
+		{ id: 7, name: "Strollers", description: "Items used to carry pets" },
+		{
+			id: 8,
+			name: "Toys",
+			description: "Items that can be played with by pets or players",
+		},
+		{
+			id: 9,
+			name: "Vehicles",
+			description: "Transportation items for players",
+		},
+		{ id: 10, name: "Houses", description: "Customizable player homes" },
+		{
+			id: 11,
+			name: "Stickers",
+			description: "Collectible stickers (if applicable)",
+		},
+	];
 
 	for (const category of categoriesData) {
 		await db.insert(categories).values({
@@ -49,14 +77,19 @@ export async function seedAdoptMe() {
 
 	// 3. Add Rarities
 	const raritiesData = [
-        { id: 1, name: "Common", displayName: "Common", colorHex: "#CCCCCC" },
-        { id: 2, name: "Uncommon", displayName: "Uncommon", colorHex: "#00FF00" },
-        { id: 3, name: "Rare", displayName: "Rare", colorHex: "#0000FF" },
-        { id: 4, name: "Ultra-Rare", displayName: "Ultra-Rare", colorHex: "#800080" },
-        { id: 5, name: "Legendary", displayName: "Legendary", colorHex: "#FFA500" },
-        { id: 6, name: "Limited", displayName: "Limited", colorHex: "#FF0000" },
-        { id: 7, name: "Event", displayName: "Event", colorHex: "#FFFF00" },
-    ];
+		{ id: 1, name: "Common", displayName: "Common", colorHex: "#CCCCCC" },
+		{ id: 2, name: "Uncommon", displayName: "Uncommon", colorHex: "#00FF00" },
+		{ id: 3, name: "Rare", displayName: "Rare", colorHex: "#0000FF" },
+		{
+			id: 4,
+			name: "Ultra-Rare",
+			displayName: "Ultra-Rare",
+			colorHex: "#800080",
+		},
+		{ id: 5, name: "Legendary", displayName: "Legendary", colorHex: "#FFA500" },
+		{ id: 6, name: "Limited", displayName: "Limited", colorHex: "#FF0000" },
+		{ id: 7, name: "Event", displayName: "Event", colorHex: "#FFFF00" },
+	];
 
 	for (const rarity of raritiesData) {
 		await db.insert(rarityTypes).values({
@@ -483,51 +516,52 @@ export async function seedAdoptMe() {
 }
 
 async function createRandomListingsForUser(gameId: number, userId: string) {
-    console.log(`Creating 5 random listings for user ID: ${userId}`);
+	console.log(`Creating 5 random listings for user ID: ${userId}`);
 
-    // Fetch 5 random items for the given game
-    const randomItems = await db.query.items.findMany({
-        where: (items, { eq }) => eq(items.gameId, gameId),
-        limit: 5,
-        offset: Math.floor(Math.random() * 30), // Adjust offset for more randomness if needed
-    });
+	// Fetch 5 random items for the given game
+	const randomItems = await db.query.items.findMany({
+		where: (items, { eq }) => eq(items.gameId, gameId),
+		limit: 5,
+		offset: Math.floor(Math.random() * 30), // Adjust offset for more randomness if needed
+	});
 
-    if (randomItems.length === 0) {
-        console.warn("No items found for Adopt Me to create listings.");
-        return;
-    }
+	if (randomItems.length === 0) {
+		console.warn("No items found for Adopt Me to create listings.");
+		return;
+	}
 
-    // Fetch all rarity types for the given game
-    const rarities = await db.query.rarityTypes.findMany({
-        where: (rarityTypes, { eq }) => eq(rarityTypes.gameId, gameId),
-    });
+	// Fetch all rarity types for the given game
+	const rarities = await db.query.rarityTypes.findMany({
+		where: (rarityTypes, { eq }) => eq(rarityTypes.gameId, gameId),
+	});
 
-    for (const item of randomItems) {
-        const randomPrice = Math.floor(Math.random() * 5000) + 500; // Random price
-        const randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
-        const metadata: Record<string, boolean> = {};
-        if (Math.random() > 0.5) metadata["isFlyable"] = true;
-        if (Math.random() > 0.5) metadata["isRideable"] = true;
-        if (Math.random() > 0.5) metadata["isNeon"] = true;
-        if (Math.random() > 0.7) metadata["isMegaNeon"] = true;
+	for (const item of randomItems) {
+		type MetaData = {
+			string: boolean;
+		};
+		const randomPrice = Math.floor(Math.random() * 5000) + 500; // Random price
+		const randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
+		const metadata: Record<string, boolean> = {};
+		if (Math.random() > 0.5) metadata.isFlyable = true;
+		if (Math.random() > 0.5) metadata.isRideable = true;
+		if (Math.random() > 0.5) metadata.isNeon = true;
+		if (Math.random() > 0.7) metadata.isMegaNeon = true;
 
-        await db.insert(listings).values({
-            sellerId: userId,
-            itemId: item.id,
-            price: randomPrice,
-            quantity: 1,
-            listingRarityId: randomRarity?.id,
-            status: "active",
-            metadata: metadata as any, // Type assertion for Drizzle
-   
-        });
-        console.log(`Created random listing for item: ${item.name}`);
-    }
+		await db.insert(listings).values({
+			sellerId: userId,
+			itemId: item.id,
+			price: randomPrice,
+			quantity: 1,
+			listingRarityId: randomRarity?.id,
+			status: "active",
+			metadata: metadata as MetaData, // Type assertion for Drizzle
+		});
+		console.log(`Created random listing for item: ${item.name}`);
+	}
 
-    console.log("Successfully created 5 random listings.");
+	console.log("Successfully created 5 random listings.");
 }
 
 // seedAdoptMe();
 
-
-createRandomListingsForUser(1, "lOcKFwtilVElpowha4zNTht9oDaZmMTr")
+createRandomListingsForUser(1, "lOcKFwtilVElpowha4zNTht9oDaZmMTr");
