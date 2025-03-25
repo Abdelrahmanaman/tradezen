@@ -554,7 +554,7 @@ async function createRandomListingsForUser(gameId: number, userId: string) {
 			quantity: 1,
 			listingRarityId: randomRarity?.id,
 			status: "active",
-			metadata: metadata as MetaData,
+			metadata: metadata as MetaData, // Type assertion for Drizzle
 		});
 		console.log(`Created random listing for item: ${item.name}`);
 	}
