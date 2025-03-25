@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "0539fccd-5ba8-4231-b28a-d24a616ccd24",
+  "id": "f08f5b9c-4868-4a85-a156-1e44b4ebd847",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -450,129 +450,6 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "inventory": {
-      "name": "inventory",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "item_id": {
-          "name": "item_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "user_specified_rarity_id": {
-          "name": "user_specified_rarity_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "quantity": {
-          "name": "quantity",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 1
-        },
-        "acquired": {
-          "name": "acquired",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "CURRENT_TIMESTAMP"
-        },
-        "notes": {
-          "name": "notes",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "idx_inventory_user_id": {
-          "name": "idx_inventory_user_id",
-          "columns": [
-            "user_id"
-          ],
-          "isUnique": false
-        },
-        "idx_inventory_item_id": {
-          "name": "idx_inventory_item_id",
-          "columns": [
-            "item_id"
-          ],
-          "isUnique": false
-        },
-        "idx_inventory_user_specified_rarity_id": {
-          "name": "idx_inventory_user_specified_rarity_id",
-          "columns": [
-            "user_specified_rarity_id"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "inventory_user_id_user_id_fk": {
-          "name": "inventory_user_id_user_id_fk",
-          "tableFrom": "inventory",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "inventory_item_id_items_id_fk": {
-          "name": "inventory_item_id_items_id_fk",
-          "tableFrom": "inventory",
-          "tableTo": "items",
-          "columnsFrom": [
-            "item_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "restrict",
-          "onUpdate": "no action"
-        },
-        "inventory_user_specified_rarity_id_rarity_types_id_fk": {
-          "name": "inventory_user_specified_rarity_id_rarity_types_id_fk",
-          "tableFrom": "inventory",
-          "tableTo": "rarity_types",
-          "columnsFrom": [
-            "user_specified_rarity_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
     "items": {
       "name": "items",
       "columns": {
@@ -728,13 +605,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "inventory_id": {
-          "name": "inventory_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "price": {
           "name": "price",
           "type": "integer",
@@ -866,19 +736,6 @@
             "id"
           ],
           "onDelete": "restrict",
-          "onUpdate": "no action"
-        },
-        "listings_inventory_id_inventory_id_fk": {
-          "name": "listings_inventory_id_inventory_id_fk",
-          "tableFrom": "listings",
-          "tableTo": "inventory",
-          "columnsFrom": [
-            "inventory_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "listings_listing_rarity_id_rarity_types_id_fk": {
@@ -1262,13 +1119,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "inventory_id": {
-          "name": "inventory_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "item_id": {
           "name": "item_id",
           "type": "integer",
@@ -1290,6 +1140,20 @@
           "notNull": false,
           "autoincrement": false,
           "default": 1
+        },
+        "user_specified_rarity_id": {
+          "name": "user_specified_rarity_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -1306,6 +1170,13 @@
             "user_id"
           ],
           "isUnique": false
+        },
+        "idx_trade_items_rarity_id": {
+          "name": "idx_trade_items_rarity_id",
+          "columns": [
+            "user_specified_rarity_id"
+          ],
+          "isUnique": false
         }
       },
       "foreignKeys": {
@@ -1320,19 +1191,6 @@
             "id"
           ],
           "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "trade_items_inventory_id_inventory_id_fk": {
-          "name": "trade_items_inventory_id_inventory_id_fk",
-          "tableFrom": "trade_items",
-          "tableTo": "inventory",
-          "columnsFrom": [
-            "inventory_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "restrict",
           "onUpdate": "no action"
         },
         "trade_items_item_id_items_id_fk": {
@@ -1359,6 +1217,19 @@
             "id"
           ],
           "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "trade_items_user_specified_rarity_id_rarity_types_id_fk": {
+          "name": "trade_items_user_specified_rarity_id_rarity_types_id_fk",
+          "tableFrom": "trade_items",
+          "tableTo": "rarity_types",
+          "columnsFrom": [
+            "user_specified_rarity_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },

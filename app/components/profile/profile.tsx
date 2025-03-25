@@ -11,7 +11,6 @@ import type { UserType } from "@/lib/auth/auth";
 import {
 	Disc,
 	FlagIcon,
-	Star,
 	StarIcon,
 	Twitch,
 	UserPlusIcon,
@@ -78,7 +77,7 @@ export default function Profile({ user }: { user: UserType }) {
 							<div className="flex items-center">
 								{[...Array(5)].map((_, i) => (
 									<StarIcon
-										key={_}
+										key={`${i + 1}`}
 										className="size-4 fill-yellow-500 text-yellow-500"
 									/>
 								))}
