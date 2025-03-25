@@ -128,7 +128,6 @@ export const items = sqliteTable(
             .references(() => categories.id, { onDelete: "restrict" }),
         name: text("name").notNull(),
         description: text("description"),
-        // baseRarityId: integer("base_rarity_id").references(() => rarityTypes.id, { onDelete: "set null" }), // Optional base rarity
         imageUrl: text("image_url").notNull(),
         suggestedPrice: integer("suggested_price"),
         isActive: integer("is_active", { mode: "boolean" }).default(true),
@@ -139,35 +138,6 @@ export const items = sqliteTable(
         index("idx_items_game_id").on(table.gameId),
         index("idx_items_category_id").on(table.categoryId),
         index("idx_items_name").on(table.name),
-        // index("idx_items_base_rarity_id").on(table.baseRarityId),
-    ],
-);
-
-// User Inventory Table
-export const inventory = sqliteTable(
-    "inventory",
-    {
-        id: integer("id").primaryKey({ autoIncrement: true }),
-        userId: text("user_id")
-            .notNull()
-            .references(() => user.id, { onDelete: "cascade" }),
-        itemId: integer("item_id")
-            .notNull()
-            .references(() => items.id, { onDelete: "restrict" }),
-        userSpecifiedRarityId: integer("user_specified_rarity_id").references(
-            () => rarityTypes.id,
-            { onDelete: "set null" },
-        ),
-        quantity: integer("quantity").notNull().default(1),
-        acquired: text("acquired").notNull().default(sql`CURRENT_TIMESTAMP`),
-        notes: text("notes"),
-    },
-    (table) => [
-        index("idx_inventory_user_id").on(table.userId),
-        index("idx_inventory_item_id").on(table.itemId),
-        index("idx_inventory_user_specified_rarity_id").on(
-            table.userSpecifiedRarityId,
-        ),
     ],
 );
 
@@ -182,9 +152,6 @@ export const listings = sqliteTable(
         itemId: integer("item_id")
             .notNull()
             .references(() => items.id, { onDelete: "restrict" }),
-        inventoryId: integer("inventory_id")
-            .notNull()
-            .references(() => inventory.id, { onDelete: "cascade" }),
         price: integer("price").notNull(),
         quantity: integer("quantity").default(1),
         listingRarityId: integer("listing_rarity_id").references(
@@ -269,9 +236,6 @@ export const tradeItems = sqliteTable(
         tradeId: integer("trade_id")
             .notNull()
             .references(() => trades.id, { onDelete: "cascade" }),
-        inventoryId: integer("inventory_id")
-            .notNull()
-            .references(() => inventory.id, { onDelete: "restrict" }),
         itemId: integer("item_id")
             .notNull()
             .references(() => items.id, { onDelete: "restrict" }),
@@ -279,10 +243,16 @@ export const tradeItems = sqliteTable(
             .notNull()
             .references(() => user.id, { onDelete: "cascade" }),
         quantity: integer("quantity").default(1),
+        userSpecifiedRarityId: integer("user_specified_rarity_id").references(
+            () => rarityTypes.id,
+            { onDelete: "set null" },
+        ),
+        metadata: text("metadata", { mode: "json" }), // Game-specific attributes for the traded item
     },
     (table) => [
         index("idx_trade_items_trade_id").on(table.tradeId),
         index("idx_trade_items_user_id").on(table.userId),
+        index("idx_trade_items_rarity_id").on(table.userSpecifiedRarityId),
     ],
 );
 
@@ -421,7 +391,6 @@ export const userFollows = sqliteTable(
 export const userRelations = relations(user, ({ many }) => ({
     sessions: many(session),
     accounts: many(account),
-    inventory: many(inventory),
     listings: many(listings, { relationName: "seller" }),
     buyerTransactions: many(transactions, { relationName: "buyer" }),
     sellerTransactions: many(transactions, { relationName: "seller" }),
@@ -489,7 +458,6 @@ export const categoriesRelations = relations(categories, ({ one, many }) => ({
 export const rarityTypesRelations = relations(rarityTypes, ({ one, many }) => ({
     game: one(games, { fields: [rarityTypes.gameId], references: [games.id] }),
     listings: many(listings, { relationName: "listingRarity" }),
-    inventoryItemsWithUserRarity: many(inventory, { relationName: "userSpecifiedRarity" }),
 }));
 
 export const itemsRelations = relations(items, ({ one, many }) => ({
@@ -499,34 +467,17 @@ export const itemsRelations = relations(items, ({ one, many }) => ({
         references: [categories.id],
     }),
     listings: many(listings),
-    inventoryEntries: many(inventory),
     transactions: many(transactions),
     priceHistory: many(priceHistory),
 }));
 
-export const inventoryRelations = relations(inventory, ({ one, many }) => ({
-    user: one(user, { fields: [inventory.userId], references: [user.id] }),
-    item: one(items, { fields: [inventory.itemId], references: [items.id] }),
-    userSpecifiedRarity: one(rarityTypes, {
-        fields: [inventory.userSpecifiedRarityId],
-        references: [rarityTypes.id],
-        relationName: "userSpecifiedRarity",
-    }),
-    listings: many(listings),
-    tradeItems: many(tradeItems),
-}));
-
-export const listingsRelations = relations(listings, ({ one }) => ({
+export const listingsRelations = relations(listings, ({ one, many }) => ({
     seller: one(user, {
         fields: [listings.sellerId],
         references: [user.id],
         relationName: "seller",
     }),
     item: one(items, { fields: [listings.itemId], references: [items.id] }),
-    inventoryItem: one(inventory, {
-        fields: [listings.inventoryId],
-        references: [inventory.id],
-    }),
     listingRarity: one(rarityTypes, {
         fields: [listings.listingRarityId],
         references: [rarityTypes.id],
@@ -575,10 +526,6 @@ export const tradeItemsRelations = relations(tradeItems, ({ one }) => ({
         fields: [tradeItems.tradeId],
         references: [trades.id],
     }),
-    inventoryItem: one(inventory, {
-        fields: [tradeItems.inventoryId],
-        references: [inventory.id],
-    }),
     item: one(items, {
         fields: [tradeItems.itemId],
         references: [items.id],
@@ -586,6 +533,10 @@ export const tradeItemsRelations = relations(tradeItems, ({ one }) => ({
     user: one(user, {
         fields: [tradeItems.userId],
         references: [user.id],
+    }),
+    userSpecifiedRarity: one(rarityTypes, {
+        fields: [tradeItems.userSpecifiedRarityId],
+        references: [rarityTypes.id],
     }),
 }));
 

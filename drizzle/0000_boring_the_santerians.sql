@@ -64,22 +64,6 @@ CREATE TABLE `games` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `games_name_unique` ON `games` (`name`);--> statement-breakpoint
-CREATE TABLE `inventory` (
-	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`user_id` text NOT NULL,
-	`item_id` integer NOT NULL,
-	`user_specified_rarity_id` integer,
-	`quantity` integer DEFAULT 1 NOT NULL,
-	`acquired` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	`notes` text,
-	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`item_id`) REFERENCES `items`(`id`) ON UPDATE no action ON DELETE restrict,
-	FOREIGN KEY (`user_specified_rarity_id`) REFERENCES `rarity_types`(`id`) ON UPDATE no action ON DELETE set null
-);
---> statement-breakpoint
-CREATE INDEX `idx_inventory_user_id` ON `inventory` (`user_id`);--> statement-breakpoint
-CREATE INDEX `idx_inventory_item_id` ON `inventory` (`item_id`);--> statement-breakpoint
-CREATE INDEX `idx_inventory_user_specified_rarity_id` ON `inventory` (`user_specified_rarity_id`);--> statement-breakpoint
 CREATE TABLE `items` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`game_id` integer NOT NULL,
@@ -102,7 +86,6 @@ CREATE TABLE `listings` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`seller_id` text NOT NULL,
 	`item_id` integer NOT NULL,
-	`inventory_id` integer NOT NULL,
 	`price` integer NOT NULL,
 	`quantity` integer DEFAULT 1,
 	`listing_rarity_id` integer,
@@ -114,7 +97,6 @@ CREATE TABLE `listings` (
 	`metadata` text,
 	FOREIGN KEY (`seller_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`item_id`) REFERENCES `items`(`id`) ON UPDATE no action ON DELETE restrict,
-	FOREIGN KEY (`inventory_id`) REFERENCES `inventory`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`listing_rarity_id`) REFERENCES `rarity_types`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
@@ -175,18 +157,20 @@ CREATE UNIQUE INDEX `session_token_unique` ON `session` (`token`);--> statement-
 CREATE TABLE `trade_items` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`trade_id` integer NOT NULL,
-	`inventory_id` integer NOT NULL,
 	`item_id` integer NOT NULL,
 	`user_id` text NOT NULL,
 	`quantity` integer DEFAULT 1,
+	`user_specified_rarity_id` integer,
+	`metadata` text,
 	FOREIGN KEY (`trade_id`) REFERENCES `trades`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`inventory_id`) REFERENCES `inventory`(`id`) ON UPDATE no action ON DELETE restrict,
 	FOREIGN KEY (`item_id`) REFERENCES `items`(`id`) ON UPDATE no action ON DELETE restrict,
-	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`user_specified_rarity_id`) REFERENCES `rarity_types`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
 CREATE INDEX `idx_trade_items_trade_id` ON `trade_items` (`trade_id`);--> statement-breakpoint
 CREATE INDEX `idx_trade_items_user_id` ON `trade_items` (`user_id`);--> statement-breakpoint
+CREATE INDEX `idx_trade_items_rarity_id` ON `trade_items` (`user_specified_rarity_id`);--> statement-breakpoint
 CREATE TABLE `trades` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`initiator_id` text NOT NULL,
