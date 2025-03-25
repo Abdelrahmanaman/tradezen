@@ -54,7 +54,7 @@ export default function SearchForm() {
 	};
 
 	return (
-		<div className="container mx-auto py-6">
+		<div className=" mx-auto py-6 size-fit top-0 transition-all sticky ">
 			<h1 className="text-3xl font-bold mb-6 text-center">
 				Adopt Me Item Search
 			</h1>
