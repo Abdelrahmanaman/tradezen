@@ -503,6 +503,9 @@ async function createRandomListingsForUser(gameId: number, userId: string) {
     });
 
     for (const item of randomItems) {
+		type MetaData = {
+			string: boolean
+		}
         const randomPrice = Math.floor(Math.random() * 5000) + 500; // Random price
         const randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
         const metadata: Record<string, boolean> = {};
@@ -518,7 +521,7 @@ async function createRandomListingsForUser(gameId: number, userId: string) {
             quantity: 1,
             listingRarityId: randomRarity?.id,
             status: "active",
-            metadata: metadata as any, // Type assertion for Drizzle
+			metadata: metadata as MetaData,
    
         });
         console.log(`Created random listing for item: ${item.name}`);
