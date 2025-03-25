@@ -4,9 +4,9 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import ListingCard from "@/components/adopt-me/listings";
 import { createServerFn } from "@tanstack/react-start";
 import { db } from "../../db/db";
-import GameItems from "@/components/adopt-me/game-items";
+import GameItem from "@/components/adopt-me/game-item";
 
-interface GameItem {
+interface GameItemType {
 	id: number;
 	name: string;
 	createdAt: string;
@@ -23,11 +23,11 @@ const getGameItems = createServerFn({ method: "GET" }).handler(async () => {
 	const gameItems = await db.query.items.findMany({
 		where: (items, { eq }) => eq(items.gameId, 1),
 	});
-	return gameItems as GameItem[];
+	return gameItems as GameItemType[];
 });
 export const Route = createFileRoute("/")({
 	component: Home,
-	loader: async ({ context }) => {
+	loader: async () => {
 		const items = await getGameItems();
 		return { items };
 	},
@@ -35,14 +35,13 @@ export const Route = createFileRoute("/")({
 
 function Home() {
 	const { items } = Route.useLoaderData();
-	console.log(items);
 	return (
-		<section className="flex ">
+		<section className="flex md:flex-nowrap flex-wrap">
 			<SearchForm />
 			{/* <ListingCard /> */}
-			<div className="grid grid-cols-4 gap-y-4 grow">
+			<div className="grid grid-cols-1 bg-black md:grid-cols-4 gap-4 grow">
 				{items.map((item) => (
-					<GameItems item={item} key={item.name} />
+					<GameItem game={item} key={item.name} />
 				))}
 			</div>
 		</section>
