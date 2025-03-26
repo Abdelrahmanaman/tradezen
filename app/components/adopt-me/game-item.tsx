@@ -1,8 +1,15 @@
 import type { items } from "../../../db/schema";
 import { useState } from "react";
 import { Heart } from "lucide-react";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Link } from "@tanstack/react-router";
 
 type GameItemType = typeof items.$inferSelect;
 
@@ -10,7 +17,7 @@ export default function GameItem({ game }: { game: GameItemType }) {
 	const [isWishlisted, setIsWishlisted] = useState(false);
 
 	return (
-		<Card className="w-full max-w-sm overflow-hidden group border-red-500 p-2 relative ">
+		<Card className="w-full max-w-sm overflow-hidden group  p-2 relative isolate  border-zinc-700 ">
 			<div className="absolute top-2 right-2 z-10">
 				<Button
 					variant="ghost"
@@ -24,19 +31,28 @@ export default function GameItem({ game }: { game: GameItemType }) {
 					/>
 				</Button>
 			</div>
-			<div className="relative  h-40 overflow-hidden ">
-				<img
-					src={game.imageUrl}
-					alt={`${game.name}`}
-					className="object-contain w-full h-full transition-transform group-hover:scale-105"
-				/>
-			</div>
+
+			<CardHeader className="p-0  ">
+				<CardTitle className="text-left p-0  ">
+					<Link
+						to={"/adoptme/product/$productId"}
+						params={{
+							productId: game.name,
+						}}
+					>
+						<span className="  absolute inset-0 z-20" />
+
+						{game.name}
+					</Link>
+				</CardTitle>
+			</CardHeader>
 			<CardContent className="p-0">
-				<div className="space-y-1">
-					<h3 className="font-medium text-lg">{game.name}</h3>
-					<p className="text-sm text-muted-foreground line-clamp-2">
-						{game.description}
-					</p>
+				<div className=" relative h-40 overflow-hidden ">
+					<img
+						src={game.imageUrl}
+						alt={`${game.name}`}
+						className="object-contain w-full h-full transition-transform group-hover:scale-105"
+					/>
 				</div>
 			</CardContent>
 		</Card>
