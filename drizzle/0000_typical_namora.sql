@@ -73,12 +73,14 @@ CREATE TABLE `items` (
 	`image_url` text NOT NULL,
 	`suggested_price` integer,
 	`is_active` integer DEFAULT true,
+	`slug` text NOT NULL,
 	`metadata` text,
 	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	FOREIGN KEY (`game_id`) REFERENCES `games`(`id`) ON UPDATE no action ON DELETE restrict,
 	FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON UPDATE no action ON DELETE restrict
 );
 --> statement-breakpoint
+CREATE UNIQUE INDEX `items_slug_unique` ON `items` (`slug`);--> statement-breakpoint
 CREATE INDEX `idx_items_game_id` ON `items` (`game_id`);--> statement-breakpoint
 CREATE INDEX `idx_items_category_id` ON `items` (`category_id`);--> statement-breakpoint
 CREATE INDEX `idx_items_name` ON `items` (`name`);--> statement-breakpoint

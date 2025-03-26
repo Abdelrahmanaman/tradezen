@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "f08f5b9c-4868-4a85-a156-1e44b4ebd847",
+  "id": "52a39ada-dc98-49a4-a601-5d8e232e2184",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -510,6 +510,13 @@
           "autoincrement": false,
           "default": true
         },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "metadata": {
           "name": "metadata",
           "type": "text",
@@ -527,6 +534,13 @@
         }
       },
       "indexes": {
+        "items_slug_unique": {
+          "name": "items_slug_unique",
+          "columns": [
+            "slug"
+          ],
+          "isUnique": true
+        },
         "idx_items_game_id": {
           "name": "idx_items_game_id",
           "columns": [

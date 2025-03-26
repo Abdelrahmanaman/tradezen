@@ -37,7 +37,7 @@ export default function GameItem({ game }: { game: GameItemType }) {
 					<Link
 						to={"/adoptme/product/$productId"}
 						params={{
-							productId: game.name,
+							productId: game.slug,
 						}}
 					>
 						<span className="  absolute inset-0 z-20" />

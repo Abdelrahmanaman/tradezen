@@ -44,6 +44,7 @@ interface GameItemType {
 	gameId: number;
 	categoryId: number;
 	imageUrl: string;
+	slug: string;
 	suggestedPrice: number | null;
 	metadata: Record<string, string> | null;
 }

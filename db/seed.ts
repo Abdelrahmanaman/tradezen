@@ -107,6 +107,7 @@ export async function seedAdoptMe() {
 		// Pets
 		{
 			categoryId: 4,
+			slug: "shadow-dragon",
 			name: "Shadow Dragon",
 			description: "A pet from the Halloween Event 2019",
 			imageUrl: "http://localhost/images/adopt-me/shadow-dragon.webp",
@@ -114,6 +115,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "frost-dragon",
 			name: "Frost Dragon",
 			description: "A pet from the Winter Holiday 2019 event",
 			imageUrl: "http://localhost/images/adopt-me/frost-dragon.webp",
@@ -121,6 +123,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "giraffe",
 			name: "Giraffe",
 			description: "A pet from the Safari Egg",
 			imageUrl: "http://localhost/images/adopt-me/giraffe.webp",
@@ -128,6 +131,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "bat-dragon",
 			name: "Bat Dragon",
 			description: "A pet from the Halloween Event 2019",
 			imageUrl: "http://localhost/images/adopt-me/bat-dragon.webp",
@@ -135,6 +139,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "owl",
 			name: "Owl",
 			description: "A pet from the Farm Egg",
 			imageUrl: "http://localhost/images/adopt-me/owl.webp",
@@ -142,6 +147,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "parrot",
 			name: "Parrot",
 			description: "A pet from the Jungle Egg",
 			imageUrl: "http://localhost/images/adopt-me/parrot.webp",
@@ -149,6 +155,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "evil-unicorn",
 			name: "Evil Unicorn",
 			description: "A pet from the Halloween Event 2019",
 			imageUrl: "http://localhost/images/adopt-me/evil-unicorn.webp",
@@ -156,6 +163,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "crow",
 			name: "Crow",
 			description: "A pet from the Farm Egg",
 			imageUrl: "http://localhost/images/adopt-me/crow.webp",
@@ -163,6 +171,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "king-monkey",
 			name: "King Monkey",
 			description: "A pet from the Monkey Fairground event",
 			imageUrl: "http://localhost/images/adopt-me/king-monkey.webp",
@@ -170,6 +179,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "albino-monkey",
 			name: "Albino Monkey",
 			description: "A pet from the Monkey Fairground event",
 			imageUrl: "http://localhost/images/adopt-me/albino-monkey.webp",
@@ -177,6 +187,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "diamond-unicorn",
 			name: "Diamond Unicorn",
 			description: "A pet from the Diamond Egg",
 			imageUrl: "http://localhost/images/adopt-me/diamond-unicorn.webp",
@@ -184,6 +195,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "queen-bee",
 			name: "Queen Bee",
 			description: "A pet from honey",
 			imageUrl: "http://localhost/images/adopt-me/queen-bee.webp",
@@ -191,6 +203,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "dalmatian",
 			name: "Dalmatian",
 			description: "A pet from the Christmas Event 2019",
 			imageUrl: "http://localhost/images/adopt-me/dalmatian.webp",
@@ -198,6 +211,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "hedgehog",
 			name: "Hedgehog",
 			description: "A pet from the Christmas Event 2019",
 			imageUrl: "http://localhost/images/adopt-me/hedgehog.webp",
@@ -205,6 +219,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "flamingo",
 			name: "Flamingo",
 			description: "A pet from the Safari Egg",
 			imageUrl: "http://localhost/images/adopt-me/flamingo.webp",
@@ -212,6 +227,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "lion",
 			name: "Lion",
 			description: "A pet from the Safari Egg",
 			imageUrl: "http://localhost/images/adopt-me/lion.webp",
@@ -219,6 +235,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "blue-dog",
 			name: "Blue Dog",
 			description: "The first pet in Adopt Me, from the Blue Egg",
 			imageUrl: "http://localhost/images/adopt-me/blue-dog.webp",
@@ -226,6 +243,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "pink-cat",
 			name: "Pink Cat",
 			description: "A pet from the Pink Egg",
 			imageUrl: "http://localhost/images/adopt-me/pink-cat.webp",
@@ -233,6 +251,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "brown-bear",
 			name: "Brown Bear",
 			description: "A pet from the Christmas Event 2019",
 			imageUrl: "http://localhost/images/adopt-me/brown-bear.webp",
@@ -240,6 +259,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "polar-bear",
 			name: "Polar Bear",
 			description: "A pet from the Christmas Event 2019",
 			imageUrl: "http://localhost/images/adopt-me/polar-bear.webp",
@@ -247,6 +267,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "cow",
 			name: "Cow",
 			description: "A pet from the Farm Egg",
 			imageUrl: "http://localhost/images/adopt-me/cow.webp",
@@ -254,6 +275,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "hyena",
 			name: "Hyena",
 			description: "A pet from the Safari Egg",
 			imageUrl: "http://localhost/images/adopt-me/hyena.webp",
@@ -261,6 +283,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "beaver",
 			name: "Beaver",
 			description: "An uncommon pet",
 			imageUrl: "http://localhost/images/adopt-me/beaver.webp",
@@ -268,6 +291,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "bunny",
 			name: "Bunny",
 			description: "A common pet",
 			imageUrl: "http://localhost/images/adopt-me/bunny.webp",
@@ -275,6 +299,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "chicken",
 			name: "Chicken",
 			description: "A common pet",
 			imageUrl: "http://localhost/images/adopt-me/chicken.webp",
@@ -282,6 +307,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "dog",
 			name: "Dog",
 			description: "A common pet",
 			imageUrl: "http://localhost/images/adopt-me/dog.webp",
@@ -289,6 +315,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "cat",
 			name: "Cat",
 			description: "A common pet",
 			imageUrl: "http://localhost/images/adopt-me/cat.webp",
@@ -296,6 +323,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "robin",
 			name: "Robin",
 			description: "An uncommon pet",
 			imageUrl: "http://localhost/images/adopt-me/robin.webp",
@@ -303,6 +331,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "puma",
 			name: "Puma",
 			description: "An uncommon pet",
 			imageUrl: "http://localhost/images/adopt-me/puma.webp",
@@ -310,6 +339,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "snow-cat",
 			name: "Snow Cat",
 			description: "An uncommon pet",
 			imageUrl: "http://localhost/images/adopt-me/snow-cat.webp",
@@ -317,6 +347,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "stegosaurus",
 			name: "Stegosaurus",
 			description: "A pet from the Fossil Egg",
 			imageUrl: "http://localhost/images/adopt-me/stegosaurus.webp",
@@ -324,6 +355,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "triceratops",
 			name: "Triceratops",
 			description: "A pet from the Fossil Egg",
 			imageUrl: "http://localhost/images/adopt-me/triceratops.webp",
@@ -331,6 +363,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "woolly-mammoth",
 			name: "Woolly Mammoth",
 			description: "A pet from the Fossil Egg",
 			imageUrl: "http://localhost/images/adopt-me/woolly-mammoth.webp",
@@ -338,6 +371,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "dodo",
 			name: "Dodo",
 			description: "A pet from the Fossil Egg",
 			imageUrl: "http://localhost/images/adopt-me/dodo.webp",
@@ -345,6 +379,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "t-rex",
 			name: "T-Rex",
 			description: "A pet from the Fossil Egg",
 			imageUrl: "http://localhost/images/adopt-me/t-rex.webp",
@@ -352,6 +387,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "albino-bat",
 			name: "Albino Bat",
 			description: "A pet from the Halloween Event 2020",
 			imageUrl: "http://localhost/images/adopt-me/albino-bat.webp",
@@ -359,6 +395,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 4,
+			slug: "ghost-bunny",
 			name: "Ghost Bunny",
 			description: "A pet from the Halloween Event 2020",
 			imageUrl: "http://localhost/images/adopt-me/ghost-bunny.webp",
@@ -367,6 +404,7 @@ export async function seedAdoptMe() {
 		// Vehicles
 		{
 			categoryId: 9,
+			slug: "bathtub",
 			name: "Bathtub",
 			description: "A vehicle from an old gift rotation",
 			imageUrl: "http://localhost/images/adopt-me/bathtub.webp",
@@ -374,6 +412,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 9,
+			slug: "cloud-car",
 			name: "Cloud Car",
 			description: "A vehicle from a limited time offer",
 			imageUrl: "http://localhost/images/adopt-me/cloud-car.webp",
@@ -381,6 +420,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 9,
+			slug: "rocket-sled",
 			name: "Rocket Sled",
 			description: "One of the fastest vehicles in the game",
 			imageUrl: "http://localhost/images/adopt-me/rocket-sled.webp",
@@ -388,6 +428,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 9,
+			slug: "bicycle",
 			name: "Bicycle",
 			description: "A common vehicle",
 			imageUrl: "http://localhost/images/adopt-me/bicycle.webp",
@@ -395,6 +436,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 9,
+			slug: "scooter",
 			name: "Scooter",
 			description: "An uncommon vehicle",
 			imageUrl: "http://localhost/images/adopt-me/scooter.webp",
@@ -403,6 +445,7 @@ export async function seedAdoptMe() {
 		// Eggs
 		{
 			categoryId: 2,
+			slug: "cracked-egg",
 			name: "Cracked Egg",
 			description: "A common egg",
 			imageUrl: "http://localhost/images/adopt-me/cracked-egg.webp",
@@ -410,6 +453,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 2,
+			slug: "pet-egg",
 			name: "Pet Egg",
 			description: "An uncommon egg",
 			imageUrl: "http://localhost/images/adopt-me/pet-egg.webp",
@@ -417,6 +461,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 2,
+			slug: "royal-egg",
 			name: "Royal Egg",
 			description: "A rare egg",
 			imageUrl: "http://localhost/images/adopt-me/royal-egg.webp",
@@ -424,6 +469,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 3,
+			slug: "safari-egg",
 			name: "Safari Egg",
 			description: "An egg containing Safari pets, no longer available",
 			imageUrl: "http://localhost/images/adopt-me/safari-egg.webp",
@@ -431,6 +477,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 3,
+			slug: "farm-egg",
 			name: "Farm Egg",
 			description: "An egg containing Farm pets, no longer available",
 			imageUrl: "http://localhost/images/adopt-me/farm-egg.webp",
@@ -439,6 +486,7 @@ export async function seedAdoptMe() {
 		// Toys
 		{
 			categoryId: 8,
+			slug: "tombstone",
 			name: "Tombstone",
 			description:
 				"Makes players and pets invisible, from Halloween Event 2019",
@@ -447,6 +495,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 8,
+			slug: "candy-cannon",
 			name: "Candy Cannon",
 			description:
 				"Shoots candies that can be collected, from Halloween Event 2019",
@@ -455,6 +504,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 8,
+			slug: "broomstick",
 			name: "Broomstick",
 			description: "Allows players to fly, from Halloween Event 2019",
 			imageUrl: "http://localhost/images/adopt-me/broomstick.webp",
@@ -462,6 +512,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 8,
+			slug: "rubber-chicken",
 			name: "Rubber Chicken",
 			description: "A common toy",
 			imageUrl: "http://localhost/images/adopt-me/rubber-chicken.webp",
@@ -469,6 +520,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 8,
+			slug: "frisbee",
 			name: "Frisbee",
 			description: "An uncommon toy",
 			imageUrl: "http://localhost/images/adopt-me/frisbee.webp",
@@ -477,6 +529,7 @@ export async function seedAdoptMe() {
 		// Food
 		{
 			categoryId: 1,
+			slug: "apple",
 			name: "Apple",
 			description: "A common food item",
 			imageUrl: "http://localhost/images/adopt-me/apple.webp",
@@ -484,6 +537,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 1,
+			slug: "carrot",
 			name: "Carrot",
 			description: "An uncommon food item",
 			imageUrl: "http://localhost/images/adopt-me/carrot.webp",
@@ -491,6 +545,7 @@ export async function seedAdoptMe() {
 		},
 		{
 			categoryId: 1,
+			slug: "hotdog",
 			name: "Hotdog",
 			description: "A rare food item",
 			imageUrl: "http://localhost/images/adopt-me/hotdog.webp",
@@ -504,6 +559,7 @@ export async function seedAdoptMe() {
 			categoryId: item.categoryId,
 			name: item.name,
 			description: item.description,
+			slug: item.slug,
 			imageUrl:
 				"https://azajw5rq3c.ufs.sh/f/YevQZiVtNMeOYEayMHVtNMeOHxsVPkDBrnW6R7gTU3bAIL4w",
 			suggestedPrice: item.suggestedPrice,
@@ -564,4 +620,4 @@ async function createRandomListingsForUser(gameId: number, userId: string) {
 
 // seedAdoptMe();
 
-createRandomListingsForUser(1, "lOcKFwtilVElpowha4zNTht9oDaZmMTr");
+createRandomListingsForUser(1, "3ohMpxYuczYEuTk3XZE21ztTBd6nlPex");
