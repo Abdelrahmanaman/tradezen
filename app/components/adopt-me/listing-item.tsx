@@ -4,13 +4,7 @@ import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { Star } from "lucide-react"; // Import the Star icon
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "../ui/select";
+
 import { ListingFilter } from "./listing-filter";
 
 export function ListingItem() {
@@ -94,7 +88,7 @@ export function ListingItem() {
 			<div className="mb-6">
 				<h1 className="text-xl font-semibold mb-2">Available Listings</h1>
 				<div className="flex items-center justify-between mb-4">
-					<ListingFilter />
+					{/* <ListingFilter /> */}
 				</div>
 
 				{/* Listings */}

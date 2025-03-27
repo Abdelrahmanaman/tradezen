@@ -155,6 +155,7 @@ export const listings = sqliteTable(
 			.references(() => items.id, { onDelete: "restrict" }),
 		price: integer("price").notNull(),
 		quantity: integer("quantity").default(1),
+		age: text("age"),
 		listingRarityId: integer("listing_rarity_id").references(
 			() => rarityTypes.id,
 			{ onDelete: "set null" },

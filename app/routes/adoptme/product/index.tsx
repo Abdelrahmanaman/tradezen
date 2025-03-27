@@ -35,7 +35,7 @@ function RouteComponent() {
 	);
 }
 
-interface GameItemType {
+export type GameItemType = {
 	id: number;
 	name: string;
 	createdAt: string;
@@ -47,4 +47,4 @@ interface GameItemType {
 	slug: string;
 	suggestedPrice: number | null;
 	metadata: Record<string, string> | null;
-}
+};

@@ -9,6 +9,7 @@ import {
 	Share2,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import AddListing from "./add-listing";
 
 export default function ProductItem() {
 	return (
@@ -38,6 +39,7 @@ export default function ProductItem() {
 					<Flag className="w-3 h-3 mr-1" />
 					Report
 				</Button>
+				<AddListing />
 			</div>
 
 			{/* Product ID */}
