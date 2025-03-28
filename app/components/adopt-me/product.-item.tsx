@@ -1,13 +1,5 @@
-import React from "react";
 import { Button } from "../ui/button";
-import {
-	ArrowLeft,
-	ArrowRight,
-	ExternalLink,
-	Flag,
-	Heart,
-	Share2,
-} from "lucide-react";
+import { ExternalLink, Flag, Heart, Share2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import AddListing from "./add-listing";
 

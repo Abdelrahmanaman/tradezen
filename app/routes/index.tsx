@@ -1,5 +1,5 @@
 // app/routes/index.tsx
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { db } from "../../db/db";
 

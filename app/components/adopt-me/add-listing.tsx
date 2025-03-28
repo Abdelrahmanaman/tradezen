@@ -19,6 +19,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { CustomCheckbox } from "../ui/customCheckbox";
 
 export default function AddListing() {
 	const id = useId();
@@ -53,16 +54,12 @@ export default function AddListing() {
 							/>
 						</div>
 						<div className="flex items-center gap-4">
-							<Checkbox id={`${id}-flyable`} />
-							<Label htmlFor={`${id}-flyable`}>Flyable</Label>
-							<Checkbox id={`${id}-rideable`} />
-							<Label htmlFor={`${id}-rideable`}>Rideable</Label>
+							<CustomCheckbox label="F" htmlfor="isFlyable" />
+							<CustomCheckbox label="R" htmlfor="isRideable" />
 						</div>
 						<div className="flex items-center gap-4">
-							<Checkbox id={`${id}-neon`} />
-							<Label htmlFor={`${id}-neon`}>Neon</Label>
-							<Checkbox id={`${id}-mega-neon`} />
-							<Label htmlFor={`${id}-mega-neon`}>Mega Neon</Label>
+							<CustomCheckbox label="N" htmlfor="isNeon" />
+							<CustomCheckbox label="M" htmlfor="isMegaNeon" />
 						</div>
 						<div className="*:not-first:mt-2">
 							<Label htmlFor={`${id}-age`}>Age</Label>
