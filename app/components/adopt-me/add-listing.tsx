@@ -54,12 +54,28 @@ export default function AddListing() {
 							/>
 						</div>
 						<div className="flex items-center gap-4">
-							<CustomCheckbox label="F" htmlfor="isFlyable" />
-							<CustomCheckbox label="R" htmlfor="isRideable" />
+							<CustomCheckbox
+								className="has-checked:bg-blue-500"
+								label="F"
+								htmlfor="isFlyable"
+							/>
+							<CustomCheckbox
+								className="has-checked:bg-pink-500"
+								label="R"
+								htmlfor="isRideable"
+							/>
 						</div>
 						<div className="flex items-center gap-4">
-							<CustomCheckbox label="N" htmlfor="isNeon" />
-							<CustomCheckbox label="M" htmlfor="isMegaNeon" />
+							<CustomCheckbox
+								className="has-checked:bg-green-500"
+								label="N"
+								htmlfor="isNeon"
+							/>
+							<CustomCheckbox
+								className="has-checked:bg-indigo-800"
+								label="M"
+								htmlfor="isMegaNeon"
+							/>
 						</div>
 						<div className="*:not-first:mt-2">
 							<Label htmlFor={`${id}-age`}>Age</Label>

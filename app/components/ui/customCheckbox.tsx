@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { Input } from "./input";
 import { Label } from "./label";
 
@@ -10,7 +11,10 @@ export const CustomCheckbox = ({
 		<div className="flex">
 			<Label
 				htmlFor={htmlfor}
-				className={`${className} peer has-checked:bg-indigo-600 border text-3xl font-bold py-1 px-2.5 rounded-xl  border-transparent`}
+				className={cn(
+					"peer has-checked:bg-indigo-600 border text-3xl font-bold size-10 flex items-center justify-center rounded-xl  border-transparent",
+					className,
+				)}
 			>
 				<Input id={htmlfor} className="sr-only" type="checkbox" />
 				{label}
