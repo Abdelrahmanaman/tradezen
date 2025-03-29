@@ -84,12 +84,27 @@ CREATE UNIQUE INDEX `items_slug_unique` ON `items` (`slug`);--> statement-breakp
 CREATE INDEX `idx_items_game_id` ON `items` (`game_id`);--> statement-breakpoint
 CREATE INDEX `idx_items_category_id` ON `items` (`category_id`);--> statement-breakpoint
 CREATE INDEX `idx_items_name` ON `items` (`name`);--> statement-breakpoint
+CREATE TABLE `listing_items` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`listing_id` integer NOT NULL,
+	`item_id` integer NOT NULL,
+	`quantity` integer DEFAULT 1,
+	`listing_rarity_id` integer,
+	`metadata` text,
+	FOREIGN KEY (`listing_id`) REFERENCES `listings`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`item_id`) REFERENCES `items`(`id`) ON UPDATE no action ON DELETE restrict,
+	FOREIGN KEY (`listing_rarity_id`) REFERENCES `rarity_types`(`id`) ON UPDATE no action ON DELETE set null
+);
+--> statement-breakpoint
+CREATE INDEX `idx_listing_items_listing_id` ON `listing_items` (`listing_id`);--> statement-breakpoint
+CREATE INDEX `idx_listing_items_item_id` ON `listing_items` (`item_id`);--> statement-breakpoint
+CREATE INDEX `idx_listing_items_rarity_id` ON `listing_items` (`listing_rarity_id`);--> statement-breakpoint
 CREATE TABLE `listings` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`seller_id` text NOT NULL,
-	`item_id` integer NOT NULL,
 	`price` integer NOT NULL,
 	`quantity` integer DEFAULT 1,
+	`age` text,
 	`listing_rarity_id` integer,
 	`status` text DEFAULT 'active' NOT NULL,
 	`featured` integer DEFAULT false,
@@ -98,13 +113,11 @@ CREATE TABLE `listings` (
 	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	`metadata` text,
 	FOREIGN KEY (`seller_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`item_id`) REFERENCES `items`(`id`) ON UPDATE no action ON DELETE restrict,
 	FOREIGN KEY (`listing_rarity_id`) REFERENCES `rarity_types`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
 CREATE INDEX `idx_listings_status` ON `listings` (`status`);--> statement-breakpoint
 CREATE INDEX `idx_listings_seller_id` ON `listings` (`seller_id`);--> statement-breakpoint
-CREATE INDEX `idx_listings_item_id` ON `listings` (`item_id`);--> statement-breakpoint
 CREATE INDEX `idx_listings_listing_rarity_id` ON `listings` (`listing_rarity_id`);--> statement-breakpoint
 CREATE INDEX `idx_listings_featured` ON `listings` (`featured`);--> statement-breakpoint
 CREATE TABLE `price_history` (

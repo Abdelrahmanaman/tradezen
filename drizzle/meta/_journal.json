@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1742953868136,
-      "tag": "0000_typical_namora",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1743054664744,
-      "tag": "0001_last_riptide",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1743223434610,
-      "tag": "0002_light_meggan",
+      "when": 1743223542035,
+      "tag": "0000_perfect_pete_wisdom",
       "breakpoints": true
     }
   ]

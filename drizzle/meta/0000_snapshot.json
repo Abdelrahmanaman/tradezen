@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "52a39ada-dc98-49a4-a601-5d8e232e2184",
+  "id": "79f0e0cf-eb5a-4057-b3f2-a9b6f5ad9fed",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -595,6 +595,121 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "listing_items": {
+      "name": "listing_items",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "listing_id": {
+          "name": "listing_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "item_id": {
+          "name": "item_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 1
+        },
+        "listing_rarity_id": {
+          "name": "listing_rarity_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "idx_listing_items_listing_id": {
+          "name": "idx_listing_items_listing_id",
+          "columns": [
+            "listing_id"
+          ],
+          "isUnique": false
+        },
+        "idx_listing_items_item_id": {
+          "name": "idx_listing_items_item_id",
+          "columns": [
+            "item_id"
+          ],
+          "isUnique": false
+        },
+        "idx_listing_items_rarity_id": {
+          "name": "idx_listing_items_rarity_id",
+          "columns": [
+            "listing_rarity_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "listing_items_listing_id_listings_id_fk": {
+          "name": "listing_items_listing_id_listings_id_fk",
+          "tableFrom": "listing_items",
+          "tableTo": "listings",
+          "columnsFrom": [
+            "listing_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "listing_items_item_id_items_id_fk": {
+          "name": "listing_items_item_id_items_id_fk",
+          "tableFrom": "listing_items",
+          "tableTo": "items",
+          "columnsFrom": [
+            "item_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "listing_items_listing_rarity_id_rarity_types_id_fk": {
+          "name": "listing_items_listing_rarity_id_rarity_types_id_fk",
+          "tableFrom": "listing_items",
+          "tableTo": "rarity_types",
+          "columnsFrom": [
+            "listing_rarity_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "listings": {
       "name": "listings",
       "columns": {
@@ -608,13 +723,6 @@
         "seller_id": {
           "name": "seller_id",
           "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "item_id": {
-          "name": "item_id",
-          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -633,6 +741,13 @@
           "notNull": false,
           "autoincrement": false,
           "default": 1
+        },
+        "age": {
+          "name": "age",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         },
         "listing_rarity_id": {
           "name": "listing_rarity_id",
@@ -703,13 +818,6 @@
           ],
           "isUnique": false
         },
-        "idx_listings_item_id": {
-          "name": "idx_listings_item_id",
-          "columns": [
-            "item_id"
-          ],
-          "isUnique": false
-        },
         "idx_listings_listing_rarity_id": {
           "name": "idx_listings_listing_rarity_id",
           "columns": [
@@ -737,19 +845,6 @@
             "id"
           ],
           "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "listings_item_id_items_id_fk": {
-          "name": "listings_item_id_items_id_fk",
-          "tableFrom": "listings",
-          "tableTo": "items",
-          "columnsFrom": [
-            "item_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "restrict",
           "onUpdate": "no action"
         },
         "listings_listing_rarity_id_rarity_types_id_fk": {

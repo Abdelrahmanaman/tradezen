@@ -1,1 +1,0 @@
-ALTER TABLE `listings` ADD `age` text;
