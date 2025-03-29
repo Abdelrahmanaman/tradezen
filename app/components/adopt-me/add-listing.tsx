@@ -18,27 +18,27 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { CustomCheckbox } from "../ui/customCheckbox";
-import SelectSearch from "./select-search";
 import { useAppForm } from "../form";
-import {
-	addListSchema,
-	type AddListType,
-	type LookingForType,
-} from "@/lib/validation/add-list";
+import { addListSchema, type AddListType } from "@/lib/validation/add-list";
 import { Loader2 } from "lucide-react";
 
 export default function AddListing() {
-	const id = useId();
-
 	const form = useAppForm({
 		defaultValues: {
+			amount: 1,
+			isFlyable: false,
+			isRideable: false,
+			isNeon: false,
+			isMegaNeon: false,
+			age: "Full-Grown",
 			lookingFor: [],
-		} as LookingForType,
+		} as AddListType,
 		onSubmit: ({ value }) => {
-			console.log(value);
+			console.log("HERE YOU GO", value);
 		},
-		validators: {},
+		validators: {
+			onSubmit: addListSchema,
+		},
 	});
 
 	return (
@@ -67,63 +67,63 @@ export default function AddListing() {
 					}}
 				>
 					<div className="space-y-4">
-						{/* <div className="*:not-first:mt-2">
-							<Label htmlFor={`${id}-amount`}>Amount</Label>
-							<Input
-								id={`${id}-amount`}
-								placeholder="Enter the amount"
-								type="number"
-								inputMode="numeric"
-								pattern="[0-9]+*"
-								min="1"
-								defaultValue="1"
-								required
-							/>
-						</div>
-						<div className="flex items-center gap-4">
-							<CustomCheckbox
-								className="has-checked:bg-blue-500 hover:bg-blue-500"
-								label="F"
-								htmlFor="isFlyable"
-								toolTip="Flying"
-							/>
-							<CustomCheckbox
-								className="has-checked:bg-pink-500 hover:bg-pink-500"
-								label="R"
-								htmlFor="isRideable"
-								toolTip="Rideable"
-							/>
-						</div>
-						<div className="flex items-center gap-4">
-							<CustomCheckbox
-								className="has-checked:bg-green-500 hover:bg-green-500"
-								label="N"
-								htmlFor="isNeon"
-								toolTip="Neon"
-							/>
-							<CustomCheckbox
-								className="has-checked:bg-indigo-800 hover:bg-indigo-800"
-								label="M"
-								htmlFor="isMegaNeon"
-								toolTip="Mega Neon"
-							/>
+						<div className="*:not-first:mt-2">
+							<form.AppField name="amount">
+								{(field) => (
+									<field.TextField
+										label="Amount"
+										placeholder="Enter the amount"
+										type="number"
+										inputMode="numeric"
+									/>
+								)}
+							</form.AppField>
 						</div>
 						<div className="*:not-first:mt-2">
-							<Label htmlFor={`${id}-age`}>Age</Label>
-							<Select>
-								<SelectTrigger className="w-full">
-									<SelectValue placeholder="Select age" />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="newborn">Newborn</SelectItem>
-									<SelectItem value="junior">Junior</SelectItem>
-									<SelectItem value="pre-teen">Pre-Teen</SelectItem>
-									<SelectItem value="teen">Teen</SelectItem>
-									<SelectItem value="post-teen">Post-Teen</SelectItem>
-									<SelectItem value="full-grown">Full-Grown</SelectItem>
-								</SelectContent>
-							</Select>
-						</div> */}
+							<form.AppField name="age">
+								{(field) => <field.CustomSelect />}
+							</form.AppField>
+						</div>
+						<div className="flex items-center gap-4">
+							<form.AppField name="isFlyable">
+								{(field) => (
+									<field.CustomCheckbox
+										label="F"
+										className="has-checked:bg-blue-500 hover:bg-blue-500"
+										toolTip="Flying"
+									/>
+								)}
+							</form.AppField>
+							<form.AppField name="isRideable">
+								{(field) => (
+									<field.CustomCheckbox
+										label="R"
+										className="has-checked:bg-pink-500 hover:bg-pink-500"
+										toolTip="Rideable"
+									/>
+								)}
+							</form.AppField>
+						</div>
+						<div className="flex items-center gap-4">
+							<form.AppField name="isNeon">
+								{(field) => (
+									<field.CustomCheckbox
+										label="N"
+										className="has-checked:bg-green-500 hover:bg-green-500"
+										toolTip="Neon"
+									/>
+								)}
+							</form.AppField>
+							<form.AppField name="isMegaNeon">
+								{(field) => (
+									<field.CustomCheckbox
+										label="M"
+										className="has-checked:bg-indigo-800 hover:bg-indigo-800"
+										toolTip="Mega Neon"
+									/>
+								)}
+							</form.AppField>
+						</div>
 						<div className="*:not-first:mt-2">
 							<form.AppField name="lookingFor">
 								{(field) => <field.SelectSearch />}

@@ -1,6 +1,6 @@
 import { type } from "arktype";
 
-const age = {
+export const ageOptions = {
 	newborn: "Newborn",
 	junior: "Junior",
 	preTeen: "Pre-Teen",
@@ -8,8 +8,13 @@ const age = {
 	postTeen: "Post-Teen",
 	fullGrown: "Full-Grown",
 } as const;
+
+export type OjectValues<T> = T[keyof T];
+
+export type AgeType = OjectValues<typeof ageOptions>;
+
 export const addListSchema = type({
-	amount: type("number > 0").configure({
+	amount: type("number >= 1").configure({
 		message: "Invalid number",
 	}),
 	isFlyable: type("boolean").configure({
@@ -24,7 +29,7 @@ export const addListSchema = type({
 	isMegaNeon: type("boolean").configure({
 		message: "isMegaNeon must be a boolean",
 	}),
-	age: type.valueOf(age).configure({
+	age: type.valueOf(ageOptions).configure({
 		message: "Invalid age",
 	}),
 	lookingFor: type("string[]").configure({
@@ -33,13 +38,3 @@ export const addListSchema = type({
 });
 
 export type AddListType = typeof addListSchema.infer;
-
-export const lookingForSchema = type({
-	lookingFor: type("string[]").configure({
-		message: "Trade for is invalid",
-	}),
-}).configure({
-	message: "Trade for is invalid",
-});
-
-export type LookingForType = typeof lookingForSchema.infer;

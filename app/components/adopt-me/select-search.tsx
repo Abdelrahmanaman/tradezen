@@ -25,8 +25,6 @@ export default function SelectSearch() {
 	const field = useFieldContext<string[]>();
 	const selectedItems = field.state.value;
 
-	console.log(selectedItems);
-
 	const {
 		data = [],
 		isLoading,
@@ -38,10 +36,9 @@ export default function SelectSearch() {
 		enabled: !!defaultQuery || open,
 	});
 
-	console.log(field.state.meta);
 	return (
 		<div className="*:not(:first-child):mt-2">
-			<Label htmlFor={field.name}>Looking for</Label>
+			<Label>Looking for</Label>
 
 			{/* Render selected items as tags */}
 			<div className="flex flex-wrap gap-2 mb-2">
@@ -60,7 +57,6 @@ export default function SelectSearch() {
 					</div>
 				))}
 			</div>
-
 			<Command>
 				<div className="relative">
 					<CommandInput
