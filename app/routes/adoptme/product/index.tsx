@@ -27,7 +27,7 @@ function RouteComponent() {
 			<SearchForm />
 			<div className="grid grid-cols-1 bg-black md:grid-cols-4 gap-4 grow">
 				{items.map((item) => (
-					<GameItem game={item} key={item.name} />
+					<GameItem game={item} key={item.id} />
 				))}
 			</div>
 			<Outlet />

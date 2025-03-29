@@ -2,6 +2,7 @@ import { Button } from "../ui/button";
 import { ExternalLink, Flag, Heart, Share2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import AddListing from "./add-listing";
+import SelectSearch from "./select-search";
 
 export default function ProductItem() {
 	return (

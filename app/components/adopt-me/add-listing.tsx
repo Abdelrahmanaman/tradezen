@@ -1,7 +1,6 @@
 import { useId } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Dialog,
 	DialogContent,
@@ -20,15 +19,34 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { CustomCheckbox } from "../ui/customCheckbox";
+import SelectSearch from "./select-search";
+import { useAppForm } from "../form";
+import {
+	addListSchema,
+	type AddListType,
+	type LookingForType,
+} from "@/lib/validation/add-list";
+import { Loader2 } from "lucide-react";
 
 export default function AddListing() {
 	const id = useId();
+
+	const form = useAppForm({
+		defaultValues: {
+			lookingFor: [],
+		} as LookingForType,
+		onSubmit: ({ value }) => {
+			console.log(value);
+		},
+		validators: {},
+	});
+
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
 				<Button variant="outline">List Trade</Button>
 			</DialogTrigger>
-			<DialogContent className="lg:w-96">
+			<DialogContent className="lg:w-96  ">
 				<div className="flex flex-col items-center gap-2">
 					<DialogHeader>
 						<DialogTitle className="sm:text-center">
@@ -40,14 +58,23 @@ export default function AddListing() {
 					</DialogHeader>
 				</div>
 
-				<form className="space-y-5">
+				<form
+					className="space-y-5"
+					onSubmit={(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						form.handleSubmit();
+					}}
+				>
 					<div className="space-y-4">
-						<div className="*:not-first:mt-2">
+						{/* <div className="*:not-first:mt-2">
 							<Label htmlFor={`${id}-amount`}>Amount</Label>
 							<Input
 								id={`${id}-amount`}
 								placeholder="Enter the amount"
 								type="number"
+								inputMode="numeric"
+								pattern="[0-9]+*"
 								min="1"
 								defaultValue="1"
 								required
@@ -55,26 +82,30 @@ export default function AddListing() {
 						</div>
 						<div className="flex items-center gap-4">
 							<CustomCheckbox
-								className="has-checked:bg-blue-500"
+								className="has-checked:bg-blue-500 hover:bg-blue-500"
 								label="F"
-								htmlfor="isFlyable"
+								htmlFor="isFlyable"
+								toolTip="Flying"
 							/>
 							<CustomCheckbox
-								className="has-checked:bg-pink-500"
+								className="has-checked:bg-pink-500 hover:bg-pink-500"
 								label="R"
-								htmlfor="isRideable"
+								htmlFor="isRideable"
+								toolTip="Rideable"
 							/>
 						</div>
 						<div className="flex items-center gap-4">
 							<CustomCheckbox
-								className="has-checked:bg-green-500"
+								className="has-checked:bg-green-500 hover:bg-green-500"
 								label="N"
-								htmlfor="isNeon"
+								htmlFor="isNeon"
+								toolTip="Neon"
 							/>
 							<CustomCheckbox
-								className="has-checked:bg-indigo-800"
+								className="has-checked:bg-indigo-800 hover:bg-indigo-800"
 								label="M"
-								htmlfor="isMegaNeon"
+								htmlFor="isMegaNeon"
+								toolTip="Mega Neon"
 							/>
 						</div>
 						<div className="*:not-first:mt-2">
@@ -92,21 +123,16 @@ export default function AddListing() {
 									<SelectItem value="full-grown">Full-Grown</SelectItem>
 								</SelectContent>
 							</Select>
-						</div>
+						</div> */}
 						<div className="*:not-first:mt-2">
-							<Label htmlFor={`${id}-looking-for`}>
-								Items You're Looking For
-							</Label>
-							<Input
-								id={`${id}-looking-for`}
-								placeholder="Specify the items you want in return"
-								type="text"
-							/>
+							<form.AppField name="lookingFor">
+								{(field) => <field.SelectSearch />}
+							</form.AppField>
 						</div>
 					</div>
-					<Button type="button" className="w-full">
-						List Trade
-					</Button>
+					<form.AppForm>
+						<form.SubmitButton className="w-full">List Trade</form.SubmitButton>
+					</form.AppForm>
 				</form>
 			</DialogContent>
 		</Dialog>

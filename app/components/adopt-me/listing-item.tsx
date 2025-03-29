@@ -95,7 +95,7 @@ export function ListingItem() {
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 					{listingsDataWithLF.map((listing) => (
 						<div
-							key={listing.name}
+							key={listing.seller}
 							className="border rounded-lg p-3 hover:border-pink-500 transition-colors bg-zinc-900"
 						>
 							<div className="flex items-center justify-between mb-2">
@@ -169,7 +169,7 @@ export function ListingItem() {
 									<div className="flex flex-wrap gap-1">
 										{listing.lookingFor.map((lf) => (
 											<Badge
-												key={lf.name}
+												key={lf.name + lf.quantity}
 												variant="outline"
 												className="border-zinc-600 text-zinc-400 text-[10px] px-1 py-0"
 											>
