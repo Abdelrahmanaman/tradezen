@@ -13,10 +13,13 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as PurchaseIndexImport } from './routes/purchase/index'
+import { Route as AdoptmeIndexImport } from './routes/adoptme/index'
 import { Route as profileProfileImport } from './routes/(profile)/profile'
 import { Route as imageImageImport } from './routes/(image)/image'
 import { Route as authRegisterImport } from './routes/(auth)/register'
 import { Route as authLoginImport } from './routes/(auth)/login'
+import { Route as AdoptmeProductIndexImport } from './routes/adoptme/product/index'
+import { Route as AdoptmeProductProductIdImport } from './routes/adoptme/product/$productId'
 
 // Create/Update Routes
 
@@ -29,6 +32,12 @@ const IndexRoute = IndexImport.update({
 const PurchaseIndexRoute = PurchaseIndexImport.update({
   id: '/purchase/',
   path: '/purchase/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdoptmeIndexRoute = AdoptmeIndexImport.update({
+  id: '/adoptme/',
+  path: '/adoptme/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -53,6 +62,18 @@ const authRegisterRoute = authRegisterImport.update({
 const authLoginRoute = authLoginImport.update({
   id: '/(auth)/login',
   path: '/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdoptmeProductIndexRoute = AdoptmeProductIndexImport.update({
+  id: '/adoptme/product/',
+  path: '/adoptme/product/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdoptmeProductProductIdRoute = AdoptmeProductProductIdImport.update({
+  id: '/adoptme/product/$productId',
+  path: '/adoptme/product/$productId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -95,11 +116,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof profileProfileImport
       parentRoute: typeof rootRoute
     }
+    '/adoptme/': {
+      id: '/adoptme/'
+      path: '/adoptme'
+      fullPath: '/adoptme'
+      preLoaderRoute: typeof AdoptmeIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/purchase/': {
       id: '/purchase/'
       path: '/purchase'
       fullPath: '/purchase'
       preLoaderRoute: typeof PurchaseIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/adoptme/product/$productId': {
+      id: '/adoptme/product/$productId'
+      path: '/adoptme/product/$productId'
+      fullPath: '/adoptme/product/$productId'
+      preLoaderRoute: typeof AdoptmeProductProductIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/adoptme/product/': {
+      id: '/adoptme/product/'
+      path: '/adoptme/product'
+      fullPath: '/adoptme/product'
+      preLoaderRoute: typeof AdoptmeProductIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -113,7 +155,10 @@ export interface FileRoutesByFullPath {
   '/register': typeof authRegisterRoute
   '/image': typeof imageImageRoute
   '/profile': typeof profileProfileRoute
+  '/adoptme': typeof AdoptmeIndexRoute
   '/purchase': typeof PurchaseIndexRoute
+  '/adoptme/product/$productId': typeof AdoptmeProductProductIdRoute
+  '/adoptme/product': typeof AdoptmeProductIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -122,7 +167,10 @@ export interface FileRoutesByTo {
   '/register': typeof authRegisterRoute
   '/image': typeof imageImageRoute
   '/profile': typeof profileProfileRoute
+  '/adoptme': typeof AdoptmeIndexRoute
   '/purchase': typeof PurchaseIndexRoute
+  '/adoptme/product/$productId': typeof AdoptmeProductProductIdRoute
+  '/adoptme/product': typeof AdoptmeProductIndexRoute
 }
 
 export interface FileRoutesById {
@@ -132,14 +180,35 @@ export interface FileRoutesById {
   '/(auth)/register': typeof authRegisterRoute
   '/(image)/image': typeof imageImageRoute
   '/(profile)/profile': typeof profileProfileRoute
+  '/adoptme/': typeof AdoptmeIndexRoute
   '/purchase/': typeof PurchaseIndexRoute
+  '/adoptme/product/$productId': typeof AdoptmeProductProductIdRoute
+  '/adoptme/product/': typeof AdoptmeProductIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/register' | '/image' | '/profile' | '/purchase'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/image'
+    | '/profile'
+    | '/adoptme'
+    | '/purchase'
+    | '/adoptme/product/$productId'
+    | '/adoptme/product'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/register' | '/image' | '/profile' | '/purchase'
+  to:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/image'
+    | '/profile'
+    | '/adoptme'
+    | '/purchase'
+    | '/adoptme/product/$productId'
+    | '/adoptme/product'
   id:
     | '__root__'
     | '/'
@@ -147,7 +216,10 @@ export interface FileRouteTypes {
     | '/(auth)/register'
     | '/(image)/image'
     | '/(profile)/profile'
+    | '/adoptme/'
     | '/purchase/'
+    | '/adoptme/product/$productId'
+    | '/adoptme/product/'
   fileRoutesById: FileRoutesById
 }
 
@@ -157,7 +229,10 @@ export interface RootRouteChildren {
   authRegisterRoute: typeof authRegisterRoute
   imageImageRoute: typeof imageImageRoute
   profileProfileRoute: typeof profileProfileRoute
+  AdoptmeIndexRoute: typeof AdoptmeIndexRoute
   PurchaseIndexRoute: typeof PurchaseIndexRoute
+  AdoptmeProductProductIdRoute: typeof AdoptmeProductProductIdRoute
+  AdoptmeProductIndexRoute: typeof AdoptmeProductIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -166,7 +241,10 @@ const rootRouteChildren: RootRouteChildren = {
   authRegisterRoute: authRegisterRoute,
   imageImageRoute: imageImageRoute,
   profileProfileRoute: profileProfileRoute,
+  AdoptmeIndexRoute: AdoptmeIndexRoute,
   PurchaseIndexRoute: PurchaseIndexRoute,
+  AdoptmeProductProductIdRoute: AdoptmeProductProductIdRoute,
+  AdoptmeProductIndexRoute: AdoptmeProductIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -184,7 +262,10 @@ export const routeTree = rootRoute
         "/(auth)/register",
         "/(image)/image",
         "/(profile)/profile",
-        "/purchase/"
+        "/adoptme/",
+        "/purchase/",
+        "/adoptme/product/$productId",
+        "/adoptme/product/"
       ]
     },
     "/": {
@@ -202,8 +283,17 @@ export const routeTree = rootRoute
     "/(profile)/profile": {
       "filePath": "(profile)/profile.tsx"
     },
+    "/adoptme/": {
+      "filePath": "adoptme/index.tsx"
+    },
     "/purchase/": {
       "filePath": "purchase/index.tsx"
+    },
+    "/adoptme/product/$productId": {
+      "filePath": "adoptme/product/$productId.tsx"
+    },
+    "/adoptme/product/": {
+      "filePath": "adoptme/product/index.tsx"
     }
   }
 }

@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,51 +8,12 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "../ui/label";
 import { Checkbox } from "../ui/checkbox";
 
 export default function SearchForm() {
-	const [results, setResults] = useState<any>({ items: [], total: 0 });
-	const [isLoading, setIsLoading] = useState(false);
-	const [searchTerm, setSearchTerm] = useState("");
-	const [category, setCategory] = useState("");
-	const [rarity, setRarity] = useState("");
-	const [enhancement, setEnhancement] = useState("");
-	const [minPrice, setMinPrice] = useState<number | undefined>(0);
-	const [maxPrice, setMaxPrice] = useState<number | undefined>(10000);
-	const [status, setStatus] = useState("active");
-	const [isFlyable, setIsFlyable] = useState(false);
-	const [isRideable, setIsRideable] = useState(false);
-	const [limit, setLimit] = useState(20);
-	const [offset, setOffset] = useState(0);
-
-	const handleSearch = async () => {
-		setIsLoading(true);
-
-		// Simulate API call - replace with your actual API endpoint
-		// and data fetching logic
-		setTimeout(() => {
-			const dummyResults = {
-				items: [
-					{ id: 1, name: "Item 1", category: "Pets", price: 100 },
-					{ id: 2, name: "Item 2", category: "Vehicles", price: 200 },
-				],
-				total: 2,
-			};
-
-			setResults(dummyResults);
-			setIsLoading(false);
-		}, 500);
-	};
-
-	const handlePageChange = (newOffset: number) => {
-		setOffset(newOffset);
-		handleSearch(); // Re-fetch data with new offset
-	};
-
 	return (
-		<div className="container mx-auto py-6">
+		<div className=" mx-auto py-6 size-fit top-0 transition-all sticky ">
 			<h1 className="text-3xl font-bold mb-6 text-center">
 				Adopt Me Item Search
 			</h1>

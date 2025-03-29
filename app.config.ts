@@ -6,7 +6,6 @@ import tsConfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
 	server: {
 		preset: "bun",
-		$production: {},
 	},
 	vite: {
 		plugins: [
