@@ -150,11 +150,9 @@ export const listings = sqliteTable(
 		sellerId: text("seller_id")
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),
-		itemId: integer("item_id")
-			.notNull()
-			.references(() => items.id, { onDelete: "restrict" }),
+		// REMOVE THIS LINE: itemId: integer("item_id")
 		price: integer("price").notNull(),
-		quantity: integer("quantity").default(1),
+		quantity: integer("quantity").default(1), // Consider if this still applies as a general listing quantity
 		age: text("age"),
 		listingRarityId: integer("listing_rarity_id").references(
 			() => rarityTypes.id,
@@ -165,14 +163,39 @@ export const listings = sqliteTable(
 		expiresAt: text("expires_at"),
 		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 		updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-		metadata: text("metadata", { mode: "json" }), // Game-specific attributes (Neon, Fly, Affixes, etc.)
+		metadata: text("metadata", { mode: "json" }),
 	},
 	(table) => [
 		index("idx_listings_status").on(table.status),
 		index("idx_listings_seller_id").on(table.sellerId),
-		index("idx_listings_item_id").on(table.itemId),
+		// REMOVE THIS LINE: index("idx_listings_item_id").on(table.itemId),
 		index("idx_listings_listing_rarity_id").on(table.listingRarityId),
 		index("idx_listings_featured").on(table.featured),
+	],
+);
+
+//listing items
+export const listingItems = sqliteTable(
+	"listing_items",
+	{
+		id: integer("id").primaryKey({ autoIncrement: true }),
+		listingId: integer("listing_id")
+			.notNull()
+			.references(() => listings.id, { onDelete: "cascade" }),
+		itemId: integer("item_id")
+			.notNull()
+			.references(() => items.id, { onDelete: "restrict" }),
+		quantity: integer("quantity").default(1),
+		listingRarityId: integer("listing_rarity_id").references(
+			() => rarityTypes.id,
+			{ onDelete: "set null" },
+		),
+		metadata: text("metadata", { mode: "json" }), // Game-specific attributes for the listed item
+	},
+	(table) => [
+		index("idx_listing_items_listing_id").on(table.listingId),
+		index("idx_listing_items_item_id").on(table.itemId),
+		index("idx_listing_items_rarity_id").on(table.listingRarityId),
 	],
 );
 
@@ -468,9 +491,10 @@ export const itemsRelations = relations(items, ({ one, many }) => ({
 		fields: [items.categoryId],
 		references: [categories.id],
 	}),
-	listings: many(listings),
+	listings: many(listings), // This relation might need to be adjusted in your logic depending on how you intend to query
 	transactions: many(transactions),
 	priceHistory: many(priceHistory),
+	listingItems: many(listingItems), // Add this new relation
 }));
 
 export const listingsRelations = relations(listings, ({ one, many }) => ({
@@ -479,13 +503,30 @@ export const listingsRelations = relations(listings, ({ one, many }) => ({
 		references: [user.id],
 		relationName: "seller",
 	}),
-	item: one(items, { fields: [listings.itemId], references: [items.id] }),
+	// REMOVE THIS (if it exists):
+	// item: one(items, { fields: [listings.itemId], references: [items.id] }),
 	listingRarity: one(rarityTypes, {
 		fields: [listings.listingRarityId],
 		references: [rarityTypes.id],
 		relationName: "listingRarity",
 	}),
 	transactions: many(transactions),
+	listedItems: many(listingItems), // Add this new relation
+}));
+
+export const listingItemsRelations = relations(listingItems, ({ one }) => ({
+	listing: one(listings, {
+		fields: [listingItems.listingId],
+		references: [listings.id],
+	}),
+	item: one(items, {
+		fields: [listingItems.itemId],
+		references: [items.id],
+	}),
+	listingRarity: one(rarityTypes, {
+		fields: [listingItems.listingRarityId],
+		references: [rarityTypes.id],
+	}),
 }));
 
 export const transactionsRelations = relations(transactions, ({ one }) => ({

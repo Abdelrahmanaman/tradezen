@@ -1,5 +1,3 @@
-import { useId } from "react";
-
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -9,15 +7,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
+
 import { useAppForm } from "../form";
 import { addListSchema, type AddListType } from "@/lib/validation/add-list";
 import { Loader2 } from "lucide-react";

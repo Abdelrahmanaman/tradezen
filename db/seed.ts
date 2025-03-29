@@ -571,53 +571,53 @@ export async function seedAdoptMe() {
 	console.log("Adopt Me seed completed!");
 }
 
-async function createRandomListingsForUser(gameId: number, userId: string) {
-	console.log(`Creating 5 random listings for user ID: ${userId}`);
+// async function createRandomListingsForUser(gameId: number, userId: string) {
+// 	console.log(`Creating 5 random listings for user ID: ${userId}`);
 
-	// Fetch 5 random items for the given game
-	const randomItems = await db.query.items.findMany({
-		where: (items, { eq }) => eq(items.gameId, gameId),
-		limit: 5,
-		offset: Math.floor(Math.random() * 30), // Adjust offset for more randomness if needed
-	});
+// 	// Fetch 5 random items for the given game
+// 	const randomItems = await db.query.items.findMany({
+// 		where: (items, { eq }) => eq(items.gameId, gameId),
+// 		limit: 5,
+// 		offset: Math.floor(Math.random() * 30), // Adjust offset for more randomness if needed
+// 	});
 
-	if (randomItems.length === 0) {
-		console.warn("No items found for Adopt Me to create listings.");
-		return;
-	}
+// 	if (randomItems.length === 0) {
+// 		console.warn("No items found for Adopt Me to create listings.");
+// 		return;
+// 	}
 
-	// Fetch all rarity types for the given game
-	const rarities = await db.query.rarityTypes.findMany({
-		where: (rarityTypes, { eq }) => eq(rarityTypes.gameId, gameId),
-	});
+// 	// Fetch all rarity types for the given game
+// 	const rarities = await db.query.rarityTypes.findMany({
+// 		where: (rarityTypes, { eq }) => eq(rarityTypes.gameId, gameId),
+// 	});
 
-	for (const item of randomItems) {
-		type MetaData = {
-			string: boolean;
-		};
-		const randomPrice = Math.floor(Math.random() * 5000) + 500; // Random price
-		const randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
-		const metadata: Record<string, boolean> = {};
-		if (Math.random() > 0.5) metadata.isFlyable = true;
-		if (Math.random() > 0.5) metadata.isRideable = true;
-		if (Math.random() > 0.5) metadata.isNeon = true;
-		if (Math.random() > 0.7) metadata.isMegaNeon = true;
+// 	for (const item of randomItems) {
+// 		type MetaData = {
+// 			string: boolean;
+// 		};
+// 		const randomPrice = Math.floor(Math.random() * 5000) + 500; // Random price
+// 		const randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
+// 		const metadata: Record<string, boolean> = {};
+// 		if (Math.random() > 0.5) metadata.isFlyable = true;
+// 		if (Math.random() > 0.5) metadata.isRideable = true;
+// 		if (Math.random() > 0.5) metadata.isNeon = true;
+// 		if (Math.random() > 0.7) metadata.isMegaNeon = true;
 
-		await db.insert(listings).values({
-			sellerId: userId,
-			itemId: item.id,
-			price: randomPrice,
-			quantity: 1,
-			listingRarityId: randomRarity?.id,
-			status: "active",
-			metadata: metadata as MetaData, // Type assertion for Drizzle
-		});
-		console.log(`Created random listing for item: ${item.name}`);
-	}
+// 		await db.insert(listings).values({
+// 			sellerId: userId,
+// 			itemId: item.id,
+// 			price: randomPrice,
+// 			quantity: 1,
+// 			listingRarityId: randomRarity?.id,
+// 			status: "active",
+// 			metadata: metadata as MetaData, // Type assertion for Drizzle
+// 		});
+// 		console.log(`Created random listing for item: ${item.name}`);
+// 	}
 
-	console.log("Successfully created 5 random listings.");
-}
+// 	console.log("Successfully created 5 random listings.");
+// }
 
-// seedAdoptMe();
+seedAdoptMe();
 
-createRandomListingsForUser(1, "3ohMpxYuczYEuTk3XZE21ztTBd6nlPex");
+// createRandomListingsForUser(1, "3ohMpxYuczYEuTk3XZE21ztTBd6nlPex");
