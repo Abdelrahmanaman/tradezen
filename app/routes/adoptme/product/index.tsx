@@ -21,6 +21,7 @@ export const Route = createFileRoute("/adoptme/product/")({
 
 function RouteComponent() {
 	const { items } = Route.useLoaderData();
+	console.log(items);
 
 	return (
 		<section className="flex md:flex-nowrap flex-wrap">

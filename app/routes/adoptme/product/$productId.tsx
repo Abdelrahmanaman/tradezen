@@ -57,11 +57,12 @@ export const Route = createFileRoute("/adoptme/product/$productId")({
 });
 
 function RouteComponent() {
+	const { item } = Route.useLoaderData() as { item: GameItemType };
 	return (
 		<section className="container px-4 mb-6">
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 				<div className="md:col-span-1">
-					<ProductItem />
+					<ProductItem item={item} />
 				</div>
 				<div className="md:col-span-2">
 					<ListingItem />

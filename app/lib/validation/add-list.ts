@@ -14,6 +14,9 @@ export type OjectValues<T> = T[keyof T];
 export type AgeType = OjectValues<typeof ageOptions>;
 
 export const addListSchema = type({
+	itemId: type("number").configure({
+		message: "Invalid item ID",
+	}),
 	amount: type("number >= 1").configure({
 		message: "Invalid number",
 	}),

@@ -10,11 +10,13 @@ import {
 
 import { useAppForm } from "../form";
 import { addListSchema, type AddListType } from "@/lib/validation/add-list";
-import { Loader2 } from "lucide-react";
+import { useAddListing } from "@/hooks/use-add-listing";
 
-export default function AddListing() {
+export default function AddListingForm({ itemId }: { itemId: number }) {
+	const { mutateAsync, isPending } = useAddListing();
 	const form = useAppForm({
 		defaultValues: {
+			itemId: itemId,
 			amount: 1,
 			isFlyable: false,
 			isRideable: false,
@@ -25,6 +27,7 @@ export default function AddListing() {
 		} as AddListType,
 		onSubmit: ({ value }) => {
 			console.log("HERE YOU GO", value);
+			mutateAsync(value);
 		},
 		validators: {
 			onSubmit: addListSchema,

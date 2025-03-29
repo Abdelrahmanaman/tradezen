@@ -5,9 +5,11 @@ import {
 	real,
 	index,
 } from "drizzle-orm/sqlite-core";
+
 import { relations, sql } from "drizzle-orm";
 
 // Auth Tables
+
 export const user = sqliteTable("user", {
 	id: text("id").primaryKey(),
 	name: text("name"),
@@ -36,7 +38,9 @@ export const session = sqliteTable("session", {
 	ipAddress: text("ip_address"),
 	userAgent: text("user_agent"),
 	userId: text("user_id")
+
 		.notNull()
+
 		.references(() => user.id, { onDelete: "cascade" }),
 });
 
@@ -45,7 +49,9 @@ export const account = sqliteTable("account", {
 	accountId: text("account_id").notNull(),
 	providerId: text("provider_id").notNull(),
 	userId: text("user_id")
+
 		.notNull()
+
 		.references(() => user.id, { onDelete: "cascade" }),
 	accessToken: text("access_token"),
 	refreshToken: text("refresh_token"),
@@ -72,6 +78,7 @@ export const verification = sqliteTable("verification", {
 });
 
 // Games Table
+
 export const games = sqliteTable("games", {
 	id: integer("id").primaryKey({ autoIncrement: true }),
 	name: text("name").notNull().unique(),
@@ -82,12 +89,15 @@ export const games = sqliteTable("games", {
 });
 
 // Categories Table
+
 export const categories = sqliteTable(
 	"categories",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
 		gameId: integer("game_id")
+
 			.notNull()
+
 			.references(() => games.id, { onDelete: "cascade" }),
 		name: text("name").notNull(),
 		description: text("description"),
@@ -97,6 +107,7 @@ export const categories = sqliteTable(
 );
 
 // Rarity Types Table (For base rarities and listing-specific rarities)
+
 export const rarityTypes = sqliteTable(
 	"rarity_types",
 	{
@@ -104,7 +115,8 @@ export const rarityTypes = sqliteTable(
 		gameId: integer("game_id")
 			.notNull()
 			.references(() => games.id, { onDelete: "cascade" }),
-		name: text("name").notNull(), // e.g., "Common", "Legendary", "Neon", "Mega Neon", etc.
+		name: text("name").notNull(), // e.g.,"Common","Legendary","Neon","Mega Neon",etc.
+
 		displayName: text("display_name"),
 		colorHex: text("color_hex"),
 		sortOrder: integer("sort_order").default(0),
@@ -116,15 +128,20 @@ export const rarityTypes = sqliteTable(
 );
 
 // Items Table (Base Item Information)
+
 export const items = sqliteTable(
 	"items",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
 		gameId: integer("game_id")
+
 			.notNull()
+
 			.references(() => games.id, { onDelete: "restrict" }),
 		categoryId: integer("category_id")
+
 			.notNull()
+
 			.references(() => categories.id, { onDelete: "restrict" }),
 		name: text("name").notNull(),
 		description: text("description"),
@@ -133,6 +150,7 @@ export const items = sqliteTable(
 		isActive: integer("is_active", { mode: "boolean" }).default(true),
 		slug: text("slug").notNull().unique(),
 		metadata: text("metadata", { mode: "json" }), // Optional metadata for the base item if needed
+
 		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 	},
 	(table) => [
@@ -143,6 +161,7 @@ export const items = sqliteTable(
 );
 
 // Listings Table
+
 export const listings = sqliteTable(
 	"listings",
 	{
@@ -150,10 +169,13 @@ export const listings = sqliteTable(
 		sellerId: text("seller_id")
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),
-		// REMOVE THIS LINE: itemId: integer("item_id")
+		itemId: integer("item_id")
+			.notNull()
+			.references(() => items.id, { onDelete: "restrict" }),
 		price: integer("price").notNull(),
-		quantity: integer("quantity").default(1), // Consider if this still applies as a general listing quantity
+		quantity: integer("quantity").default(1),
 		age: text("age"),
+		lookingFor: text("looking_for").$type<string | null>(), // THIS LINE IS THE CORRECTED ONE
 		listingRarityId: integer("listing_rarity_id").references(
 			() => rarityTypes.id,
 			{ onDelete: "set null" },
@@ -163,43 +185,19 @@ export const listings = sqliteTable(
 		expiresAt: text("expires_at"),
 		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 		updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-		metadata: text("metadata", { mode: "json" }),
+		metadata: text("metadata", { mode: "json" }), // Game-specific attributes (Neon,Fly,Affixes,etc.)
 	},
 	(table) => [
 		index("idx_listings_status").on(table.status),
 		index("idx_listings_seller_id").on(table.sellerId),
-		// REMOVE THIS LINE: index("idx_listings_item_id").on(table.itemId),
+		index("idx_listings_item_id").on(table.itemId),
 		index("idx_listings_listing_rarity_id").on(table.listingRarityId),
 		index("idx_listings_featured").on(table.featured),
 	],
 );
 
-//listing items
-export const listingItems = sqliteTable(
-	"listing_items",
-	{
-		id: integer("id").primaryKey({ autoIncrement: true }),
-		listingId: integer("listing_id")
-			.notNull()
-			.references(() => listings.id, { onDelete: "cascade" }),
-		itemId: integer("item_id")
-			.notNull()
-			.references(() => items.id, { onDelete: "restrict" }),
-		quantity: integer("quantity").default(1),
-		listingRarityId: integer("listing_rarity_id").references(
-			() => rarityTypes.id,
-			{ onDelete: "set null" },
-		),
-		metadata: text("metadata", { mode: "json" }), // Game-specific attributes for the listed item
-	},
-	(table) => [
-		index("idx_listing_items_listing_id").on(table.listingId),
-		index("idx_listing_items_item_id").on(table.itemId),
-		index("idx_listing_items_rarity_id").on(table.listingRarityId),
-	],
-);
-
 // Transactions Table
+
 export const transactions = sqliteTable(
 	"transactions",
 	{
@@ -208,13 +206,19 @@ export const transactions = sqliteTable(
 			onDelete: "set null",
 		}),
 		buyerId: text("buyer_id")
+
 			.notNull()
+
 			.references(() => user.id, { onDelete: "restrict" }),
 		sellerId: text("seller_id")
+
 			.notNull()
+
 			.references(() => user.id, { onDelete: "restrict" }),
 		itemId: integer("item_id")
+
 			.notNull()
+
 			.references(() => items.id, { onDelete: "restrict" }),
 		price: integer("price").notNull(),
 		quantity: integer("quantity").notNull().default(1),
@@ -228,15 +232,20 @@ export const transactions = sqliteTable(
 );
 
 // Trades Table
+
 export const trades = sqliteTable(
 	"trades",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
 		initiatorId: text("initiator_id")
+
 			.notNull()
+
 			.references(() => user.id, { onDelete: "cascade" }),
 		receiverId: text("receiver_id")
+
 			.notNull()
+
 			.references(() => user.id, { onDelete: "cascade" }),
 		initiatorCoinsOffered: integer("initiator_coins_offered").default(0),
 		receiverCoinsRequested: integer("receiver_coins_requested").default(0),
@@ -254,18 +263,25 @@ export const trades = sqliteTable(
 );
 
 // Trade Items Table
+
 export const tradeItems = sqliteTable(
 	"trade_items",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
 		tradeId: integer("trade_id")
+
 			.notNull()
+
 			.references(() => trades.id, { onDelete: "cascade" }),
 		itemId: integer("item_id")
+
 			.notNull()
+
 			.references(() => items.id, { onDelete: "restrict" }),
 		userId: text("user_id")
+
 			.notNull()
+
 			.references(() => user.id, { onDelete: "cascade" }),
 		quantity: integer("quantity").default(1),
 		userSpecifiedRarityId: integer("user_specified_rarity_id").references(
@@ -282,12 +298,15 @@ export const tradeItems = sqliteTable(
 );
 
 // Coin Purchases Table
+
 export const coinPurchases = sqliteTable(
 	"coin_purchases",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
 		userId: text("user_id")
+
 			.notNull()
+
 			.references(() => user.id, { onDelete: "cascade" }),
 		coinsAmount: integer("coins_amount").notNull(),
 		cashAmount: real("cash_amount").notNull(),
@@ -300,12 +319,15 @@ export const coinPurchases = sqliteTable(
 );
 
 // Coin Cashouts Table (continued)
+
 export const coinCashouts = sqliteTable(
 	"coin_cashouts",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
 		userId: text("user_id")
+
 			.notNull()
+
 			.references(() => user.id, { onDelete: "cascade" }),
 		coinsAmount: integer("coins_amount").notNull(),
 		cashAmount: real("cash_amount").notNull(),
@@ -323,12 +345,15 @@ export const coinCashouts = sqliteTable(
 );
 
 // Search History
+
 export const searchHistory = sqliteTable(
 	"search_history",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
 		userId: text("user_id")
+
 			.notNull()
+
 			.references(() => user.id, { onDelete: "cascade" }),
 		searchQuery: text("search_query").notNull(),
 		gameId: integer("game_id").references(() => games.id, {
@@ -343,12 +368,15 @@ export const searchHistory = sqliteTable(
 );
 
 // Price History
+
 export const priceHistory = sqliteTable(
 	"price_history",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
 		itemId: integer("item_id")
+
 			.notNull()
+
 			.references(() => items.id, { onDelete: "cascade" }),
 		averagePrice: integer("average_price").notNull(),
 		volume: integer("volume").notNull(),
@@ -361,24 +389,32 @@ export const priceHistory = sqliteTable(
 );
 
 // User Reviews
+
 export const userReviews = sqliteTable(
 	"user_reviews",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
 		reviewerId: text("reviewer_id")
+
 			.notNull()
+
 			.references(() => user.id, { onDelete: "cascade" }),
 		targetUserId: text("target_user_id")
+
 			.notNull()
+
 			.references(() => user.id, { onDelete: "cascade" }),
 		tradeId: integer("trade_id").references(() => trades.id, {
 			onDelete: "set null",
 		}),
-		rating: integer("rating").notNull(), // e.g., 1-5 stars
+		rating: integer("rating").notNull(), // e.g.,1-5 stars
+
 		comment: text("comment"),
 		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 		isVisible: integer("is_visible", { mode: "boolean" })
+
 			.notNull()
+
 			.default(true),
 	},
 	(table) => [
@@ -393,15 +429,20 @@ export const userReviews = sqliteTable(
 );
 
 // User Followers Relationship Table
+
 export const userFollows = sqliteTable(
 	"user_follows",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
 		followerId: text("follower_id")
+
 			.notNull()
+
 			.references(() => user.id, { onDelete: "cascade" }),
 		followingId: text("following_id")
+
 			.notNull()
+
 			.references(() => user.id, { onDelete: "cascade" }),
 		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 	},
@@ -413,6 +454,7 @@ export const userFollows = sqliteTable(
 );
 
 // Relations
+
 export const userRelations = relations(user, ({ many }) => ({
 	sessions: many(session),
 	accounts: many(account),
@@ -491,10 +533,9 @@ export const itemsRelations = relations(items, ({ one, many }) => ({
 		fields: [items.categoryId],
 		references: [categories.id],
 	}),
-	listings: many(listings), // This relation might need to be adjusted in your logic depending on how you intend to query
+	listings: many(listings),
 	transactions: many(transactions),
 	priceHistory: many(priceHistory),
-	listingItems: many(listingItems), // Add this new relation
 }));
 
 export const listingsRelations = relations(listings, ({ one, many }) => ({
@@ -503,30 +544,13 @@ export const listingsRelations = relations(listings, ({ one, many }) => ({
 		references: [user.id],
 		relationName: "seller",
 	}),
-	// REMOVE THIS (if it exists):
-	// item: one(items, { fields: [listings.itemId], references: [items.id] }),
+	item: one(items, { fields: [listings.itemId], references: [items.id] }),
 	listingRarity: one(rarityTypes, {
 		fields: [listings.listingRarityId],
 		references: [rarityTypes.id],
 		relationName: "listingRarity",
 	}),
 	transactions: many(transactions),
-	listedItems: many(listingItems), // Add this new relation
-}));
-
-export const listingItemsRelations = relations(listingItems, ({ one }) => ({
-	listing: one(listings, {
-		fields: [listingItems.listingId],
-		references: [listings.id],
-	}),
-	item: one(items, {
-		fields: [listingItems.itemId],
-		references: [items.id],
-	}),
-	listingRarity: one(rarityTypes, {
-		fields: [listingItems.listingRarityId],
-		references: [rarityTypes.id],
-	}),
 }));
 
 export const transactionsRelations = relations(transactions, ({ one }) => ({

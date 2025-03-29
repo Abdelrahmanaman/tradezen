@@ -3,15 +3,16 @@ import { ExternalLink, Flag, Heart, Share2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import AddListing from "./add-listing";
 import SelectSearch from "./select-search";
+import type { GameItemType } from "@/routes/adoptme/product";
 
-export default function ProductItem() {
+export default function ProductItem({ item }: { item: GameItemType }) {
 	return (
 		<div className="border rounded-lg p-4 sticky top-4 h-fit">
 			{/* Main img */}
 			<div className="aspect-square bg-zinc-800 rounded-md mb-4 relative overflow-hidden">
 				<img
-					src="/placeholder.svg?height=400&width=400"
-					alt="Frost Dragon"
+					src={item.imageUrl}
+					alt={item.name}
 					width={400}
 					height={400}
 					className="w-full h-full object-contain"
@@ -32,12 +33,13 @@ export default function ProductItem() {
 					<Flag className="w-3 h-3 mr-1" />
 					Report
 				</Button>
-				<AddListing />
+				<AddListing itemId={item.id} />
 			</div>
 
 			{/* Product ID */}
-			<div className="text-xs text-gray-500 mb-4 text-center">
-				Product ID: 1276977709
+			<div className="text-xs text-gray-500 mb-4 text-left">
+				<span>Product ID: {item.id}</span>
+				<p>{item.description}</p>
 			</div>
 
 			{/* Quick Stats */}
