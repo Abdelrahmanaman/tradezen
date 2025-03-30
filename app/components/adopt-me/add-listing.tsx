@@ -39,16 +39,16 @@ export default function AddListingForm({ itemId }: { itemId: number }) {
 			<DialogTrigger asChild>
 				<Button variant="outline">List Trade</Button>
 			</DialogTrigger>
-			<DialogContent className="lg:w-96  ">
+			<DialogContent className="lg:w-96 max-h-[40rem] lg:h-full overflow-x-auto ">
 				<div className="flex flex-col items-center gap-2">
-					<DialogHeader>
+					{/* <DialogHeader>
 						<DialogTitle className="sm:text-center">
 							List Your Adopt Me Trade
 						</DialogTitle>
 						<DialogDescription className="sm:text-center">
 							Provide details about the Adopt Me pet or item you are offering.
 						</DialogDescription>
-					</DialogHeader>
+					</DialogHeader> */}
 				</div>
 
 				<form
