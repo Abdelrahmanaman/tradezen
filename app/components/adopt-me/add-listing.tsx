@@ -11,6 +11,7 @@ import {
 import { useAppForm } from "../form";
 import { addListSchema, type AddListType } from "@/lib/validation/add-list";
 import { useAddListing } from "@/hooks/use-add-listing";
+import { Loader2 } from "lucide-react";
 
 export default function AddListingForm({ itemId }: { itemId: number }) {
 	const { mutateAsync, isPending } = useAddListing();
@@ -39,16 +40,16 @@ export default function AddListingForm({ itemId }: { itemId: number }) {
 			<DialogTrigger asChild>
 				<Button variant="outline">List Trade</Button>
 			</DialogTrigger>
-			<DialogContent className="lg:w-96 max-h-[40rem] lg:h-full overflow-x-auto ">
+			<DialogContent className="lg:w-96 max-h-[40rem] lg:max-h-[45rem] lg:h-full overflow-x-auto ">
 				<div className="flex flex-col items-center gap-2">
-					{/* <DialogHeader>
+					<DialogHeader>
 						<DialogTitle className="sm:text-center">
 							List Your Adopt Me Trade
 						</DialogTitle>
 						<DialogDescription className="sm:text-center">
 							Provide details about the Adopt Me pet or item you are offering.
 						</DialogDescription>
-					</DialogHeader> */}
+					</DialogHeader>
 				</div>
 
 				<form
@@ -124,7 +125,9 @@ export default function AddListingForm({ itemId }: { itemId: number }) {
 						</div>
 					</div>
 					<form.AppForm>
-						<form.SubmitButton className="w-full">List Trade</form.SubmitButton>
+						<form.SubmitButton className="w-full mb-6">
+							{isPending ? <Loader2 className="animate-spin" /> : "List Trade"}
+						</form.SubmitButton>
 					</form.AppForm>
 				</form>
 			</DialogContent>

@@ -3,7 +3,11 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import GameItem from "@/components/adopt-me/game-item";
 import { db } from "../../../../db/db";
+import type { items } from "../../../../db/schema";
 
+export type GameItemType = typeof items.$inferSelect & {
+	metadata: Record<string, boolean> | null;
+};
 const getGameItems = createServerFn({ method: "GET" }).handler(async () => {
 	const gameItems = await db.query.items.findMany({
 		where: (items, { eq }) => eq(items.gameId, 1),
@@ -35,17 +39,3 @@ function RouteComponent() {
 		</section>
 	);
 }
-
-export type GameItemType = {
-	id: number;
-	name: string;
-	createdAt: string;
-	description: string | null;
-	isActive: boolean | null;
-	gameId: number;
-	categoryId: number;
-	imageUrl: string;
-	slug: string;
-	suggestedPrice: number | null;
-	metadata: Record<string, string> | null;
-};

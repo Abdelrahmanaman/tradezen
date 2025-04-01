@@ -1,11 +1,8 @@
-import { createClient } from "@libsql/client";
 import "dotenv/config";
-import { drizzle } from "drizzle-orm/libsql";
-import * as schema from "./schema"
+import { drizzle } from "drizzle-orm/node-postgres";
+import * as schema from "./schema";
+if (!process.env.DATABASE_URL) {
+	throw new Error("DATABASE_URL is not defined");
+}
 
-
-const client = createClient({
-	url: process.env.DB_FILE_NAME || "file:./db/tradezen.sqlite",
-  });
-  
-  export const db = drizzle(client, { schema }); // Ensure schema is passed
+export const db = drizzle(process.env.DATABASE_URL, { schema });
