@@ -1,5 +1,5 @@
 {
-  "id": "5601b97d-dd34-44de-ac21-60ee185ea62a",
+  "id": "b70712ce-bf87-464e-b6cb-5fb170d3aaba",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -578,6 +578,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "rarity_type_id": {
+          "name": "rarity_type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
         "updated_at": {
           "name": "updated_at",
           "type": "timestamp with time zone",
@@ -638,6 +644,21 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "idx_items_rarity_type_id": {
+          "name": "idx_items_rarity_type_id",
+          "columns": [
+            {
+              "expression": "rarity_type_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -665,6 +686,19 @@
             "id"
           ],
           "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "items_rarity_type_id_rarity_types_id_fk": {
+          "name": "items_rarity_type_id_rarity_types_id_fk",
+          "tableFrom": "items",
+          "tableTo": "rarity_types",
+          "columnsFrom": [
+            "rarity_type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
@@ -748,6 +782,12 @@
           "primaryKey": false,
           "notNull": false,
           "default": false
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
         },
         "expires_at": {
           "name": "expires_at",

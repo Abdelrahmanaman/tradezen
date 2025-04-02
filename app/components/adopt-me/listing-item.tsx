@@ -1,86 +1,51 @@
-import React from "react";
-import { Filter } from "lucide-react";
+import type { listings } from "../../../db/schema";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
-import { Separator } from "../ui/separator";
-import { Star } from "lucide-react"; // Import the Star icon
-
+import { Star } from "lucide-react";
 import { ListingFilter } from "./listing-filter";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useParams } from "@tanstack/react-router";
+import { getPaginatedListing } from "@/routes/adoptme/product/$productId";
+import InfiniteScrollContainer from "../infinte-scroll-container";
 
-export function ListingItem() {
-	const listingsDataWithLF = [
-		{
-			name: "Frost Dragon (Full Grown)",
-			potions: ["FR"],
-			rarity: "Neon",
-			seller: "DragonTrader123",
-			status: "Online",
-			listedAgo: "2 hours ago",
-			lookingFor: [
-				{ name: "Shadow Dragon", quantity: 1 },
-				{ name: "Good Adds", notes: "Preferably legendaries" },
-			],
-			rating: 4.8,
-			ratingCount: 155,
-			tradeCount: 320,
+export type listingType = typeof listings.$inferSelect & {
+	metadata: Record<string, boolean> | null;
+};
+
+export function ListingItem({
+	listings: initialListings,
+	nextId: initialNextId,
+}: { listings: listingType[]; nextId: number }) {
+	const { productId } = useParams({
+		from: "/adoptme/product/$productId",
+	});
+
+	const {
+		data,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+		isLoading,
+		isFetching,
+		isError,
+		error,
+	} = useInfiniteQuery({
+		queryKey: ["listings", productId],
+		queryFn: async ({ pageParam }) => {
+			const result = await getPaginatedListing({
+				data: { nextId: pageParam, slug: productId },
+			});
+			return result;
 		},
-		{
-			name: "Frost Dragon (Teen)",
-			potions: ["FR"],
-			seller: "FrostCollector",
-			status: "Last seen 1d ago",
-			listedAgo: "1 day ago",
-			lookingFor: [{ name: "Neon Unicorn", quantity: 1 }],
-			rating: 4.5,
-			ratingCount: 88,
-			tradeCount: 185,
+		getNextPageParam: (lastPage) => lastPage.nextCursor,
+		initialPageParam: initialNextId,
+		initialData: {
+			pages: [{ nextListings: initialListings, nextCursor: initialNextId }],
+			pageParams: [initialNextId],
 		},
-		{
-			name: "Frost Dragon (Full Grown)",
-			potions: ["FR"],
-			rarity: "Mega Neon",
-			seller: "MegaPetTrader",
-			status: "Online",
-			listedAgo: "5 hours ago",
-			lookingFor: [{ name: "Offers Welcome", notes: "Looking for upgrades" }],
-			rating: 4.9,
-			ratingCount: 212,
-			tradeCount: 450,
-		},
-		{
-			name: "Frost Dragon (Post-Teen)",
-			potions: ["No Potion"],
-			seller: "RarePetDealer",
-			status: "Last seen 3h ago",
-			listedAgo: "3 days ago",
-			lookingFor: [{ name: "High Tier Legendary", quantity: 1 }],
-			rating: 4.2,
-			ratingCount: 55,
-			tradeCount: 110,
-		},
-		{
-			name: "Frost Dragon (Newborn)",
-			potions: ["FR"],
-			seller: "AdoptMeFan2010",
-			status: "Online",
-			listedAgo: "12 hours ago",
-			lookingFor: [{ name: "FR Griffin", quantity: 1 }],
-			rating: 4.6,
-			ratingCount: 120,
-			tradeCount: 250,
-		},
-		{
-			name: "Frost Dragon (Full Grown)",
-			potions: ["Fly"],
-			seller: "TradeMasterX",
-			status: "Online",
-			listedAgo: "8 hours ago",
-			lookingFor: [{ name: "Bat Dragon", quantity: 1 }],
-			rating: 4.7,
-			ratingCount: 180,
-			tradeCount: 380,
-		},
-	];
+	});
+
+	console.log(data);
 
 	return (
 		<div className="border rounded-lg p-4 bg-zinc-800 text-white">
@@ -92,104 +57,119 @@ export function ListingItem() {
 				</div>
 
 				{/* Listings */}
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-					{listingsDataWithLF.map((listing) => (
-						<div
-							key={listing.seller}
-							className="border rounded-lg p-3 hover:border-pink-500 transition-colors bg-zinc-900"
-						>
-							<div className="flex items-center justify-between mb-2">
-								<div className="flex items-center gap-2">
-									<div className="w-10 h-10 bg-gray-700 rounded-md overflow-hidden">
-										<img
-											src="/placeholder.svg?height=40&width=40"
-											alt={listing.name}
-											width={40}
-											height={40}
-											className="w-full h-full object-cover"
-										/>
-									</div>
-									<div>
-										<h3 className="font-medium text-sm">{listing.name}</h3>
-										<div className="flex items-center gap-1 mt-0.5">
-											{listing.potions?.map((potion) => (
-												<Badge
-													key={potion}
-													className="bg-blue-500 hover:bg-blue-600 text-white text-[10px] px-1 py-0"
-												>
-													{potion}
-												</Badge>
-											))}
-											{listing.rarity && (
-												<Badge className="bg-purple-500 hover:bg-purple-600 text-white text-[10px] px-1 py-0">
-													{listing.rarity}
-												</Badge>
-											)}
-										</div>
-									</div>
-								</div>
-								<Button
-									size="sm"
-									className="bg-pink-500 hover:bg-pink-600 text-white text-xs h-7"
-								>
-									Make Offer
-								</Button>
-							</div>
-
-							<div className="mb-2 text-xs text-zinc-400 flex items-center gap-1">
-								<span className="font-medium text-zinc-300">
-									{listing.seller}
-								</span>
-								{listing.status === "Online" ? (
-									<span className="text-green-500">• Online</span>
-								) : (
-									<span>
-										• Last seen {listing.status.replace("Last seen ", "")}
-									</span>
-								)}
-							</div>
-
-							<div className="mb-1 text-xs text-zinc-500 flex items-center gap-1">
-								<Star className="w-3 h-3 text-yellow-400" />
-								<span>{listing.rating}</span>
-								<span className="text-zinc-400">
-									({listing.ratingCount} ratings)
-								</span>
-								<span className="ml-2">Trades:</span>
-								<span className="font-medium text-zinc-300">
-									{listing.tradeCount}
-								</span>
-							</div>
-
-							{listing.lookingFor && listing.lookingFor.length > 0 && (
-								<div className="mt-1">
-									<span className="text-xs text-zinc-400 block mb-1">
-										Looking For:
-									</span>
-									<div className="flex flex-wrap gap-1">
-										{listing.lookingFor.map((lf) => (
-											<Badge
-												key={lf.name + lf.quantity}
-												variant="outline"
-												className="border-zinc-600 text-zinc-400 text-[10px] px-1 py-0"
-											>
-												{lf.quantity && lf.quantity > 1
-													? `${lf.quantity}x `
-													: ""}
-												{lf.name}
-											</Badge>
-										))}
-									</div>
-								</div>
-							)}
-
-							<div className="text-xs text-zinc-500 mt-2">
-								Listed {listing.listedAgo}
-							</div>
-						</div>
-					))}
-				</div>
+				<InfiniteScrollContainer
+					onBottomReached={() => hasNextPage && !isFetching && fetchNextPage()}
+					className="grid grid-cols-1 md:grid-cols-2 gap-4"
+				>
+					{data?.pages
+						.flatMap((page) => page.nextListings)
+						.map((listing) => (
+							<ListingCard key={listing.id} listing={listing} />
+						))}
+					{isFetchingNextPage && hasNextPage && <div>Loading more...</div>}
+				</InfiniteScrollContainer>
 			</div>
 		</div>
 	);
 }
+
+type MetadataBadgeProp = {
+	metadata: Record<string, boolean> | null;
+};
+const MetadataBadge: React.FC<MetadataBadgeProp> = ({ metadata }) => {
+	if (!metadata) {
+		return null;
+	}
+
+	const badges: React.ReactNode[] = [];
+	for (const key in metadata) {
+		if (metadata[key]) {
+			const parts = key.split("is").filter((part) => part !== "");
+			for (const part of parts) {
+				badges.push(
+					<Badge
+						key={part}
+						className="bg-blue-500 hover:bg-blue-600 text-white text-[10px] px-1 py-0 mr-1"
+					>
+						{part}
+					</Badge>,
+				);
+			}
+		}
+	}
+
+	return <>{badges}</>;
+};
+
+const ListingCard: React.FC<{ listing: listingType }> = ({ listing }) => {
+	return (
+		<div
+			key={listing.id}
+			className="border rounded-lg p-3 hover:border-pink-500 transition-colors bg-zinc-900"
+		>
+			<div className="flex items-center justify-between mb-2">
+				<div className="flex items-center gap-2">
+					<div className="w-10 h-10 bg-gray-700 rounded-md overflow-hidden">
+						<img
+							src="/placeholder.svg?height=40&width=40"
+							alt={"user"}
+							width={40}
+							height={40}
+							className="w-full h-full object-cover"
+						/>
+					</div>
+					<div>
+						<h3 className="font-medium text-sm">Item name + ({listing.age})</h3>
+						<div className="flex items-center gap-1 mt-0.5">
+							<MetadataBadge metadata={listing.metadata} />
+						</div>
+					</div>
+				</div>
+				<Button
+					size="sm"
+					className="bg-pink-500 hover:bg-pink-600 text-white text-xs h-7"
+				>
+					Make Offer
+				</Button>
+			</div>
+
+			<div className="mb-2 text-xs text-zinc-400 flex items-center gap-1">
+				<span className="font-medium text-zinc-300">Username</span>
+				{listing.status === "Online" ? (
+					<span className="text-green-500">• Online</span>
+				) : (
+					<span>• Last seen {listing.status.replace("Last seen ", "")}</span>
+				)}
+			</div>
+
+			<div className="mb-1 text-xs text-zinc-500 flex items-center gap-1">
+				<Star className="w-3 h-3 text-yellow-400" />
+				<span>user review </span>
+				<span className="text-zinc-400">(5 ratings)</span>
+				<span className="ml-2">Trades:</span>
+				<span className="font-medium text-zinc-300">user trade count</span>
+			</div>
+
+			{listing.lookingFor && listing.lookingFor.length > 0 && (
+				<div className="mt-1">
+					<span className="text-xs text-zinc-400 block mb-1">Looking For:</span>
+					<div className="flex flex-wrap gap-1">
+						{listing.lookingFor.map((lf) => (
+							<Badge
+								key={lf}
+								variant="outline"
+								className="border-zinc-600 text-zinc-400 text-[10px] px-1 py-0"
+							>
+								{lf}
+							</Badge>
+						))}
+					</div>
+				</div>
+			)}
+
+			<div className="text-xs text-zinc-500 mt-2">
+				Listed {listing.createdAt.toLocaleDateString()}
+			</div>
+		</div>
+	);
+};

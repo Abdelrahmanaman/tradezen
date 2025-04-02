@@ -38,6 +38,9 @@ export const addListSchema = type({
 	lookingFor: type("string[]").configure({
 		message: "Trade for is invalid",
 	}),
+	slug: type("string").configure({
+		message: "slug is invalid",
+	}),
 });
 
 export type AddListType = typeof addListSchema.infer;

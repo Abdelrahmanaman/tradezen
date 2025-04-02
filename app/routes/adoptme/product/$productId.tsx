@@ -1,15 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { db } from "../../../../db/db";
 import { createServerFn } from "@tanstack/react-start";
-import { ListingItem } from "@/components/adopt-me/listing-item";
+import {
+	ListingItem,
+	type listingType,
+} from "@/components/adopt-me/listing-item";
 import ProductItem from "@/components/adopt-me/product.-item";
 import type { listings } from "../../../../db/schema";
 import type { GameItemType } from ".";
+import { and } from "drizzle-orm";
 
 export type GameItemWithListingsType = GameItemType & {
 	listings: (typeof listings.$inferSelect & {
 		metadata: Record<string, boolean> | null;
 	})[];
+	nextId: number;
+	previousId: number;
 };
 
 export const getAllGames = createServerFn({ method: "GET" }).handler(
@@ -32,16 +38,29 @@ const getGameItem = createServerFn({ method: "GET" })
 		const result = await db.query.items.findFirst({
 			where: (items, { eq }) => eq(items.slug, data.slug),
 			with: {
-				listings: true,
+				listings: {
+					limit: 10,
+					orderBy: (listings, { asc }) => asc(listings.id),
+				},
+				rarityType: true,
 			},
 		});
-		if (!result) {
+		if (!result || !result.listings) {
 			throw new Error("Item not found");
 		}
 
 		const { listings, ...item } = result;
 
-		return { listings, ...item } as GameItemWithListingsType;
+		const nextId =
+			listings.length > 0 ? listings[listings.length - 1].id : null;
+		const previousId = listings.length > 0 ? listings[0].id : null;
+
+		return {
+			listings,
+			...item,
+			nextId,
+			previousId,
+		} as GameItemWithListingsType;
 	});
 
 export const searchItems = createServerFn({ method: "GET" })
@@ -65,17 +84,48 @@ export const searchItems = createServerFn({ method: "GET" })
 		return results as GameItemType[];
 	});
 
+export const getPaginatedListing = createServerFn({ method: "GET" })
+	.validator(({ nextId, slug }: { nextId: number; slug: string }) => {
+		if (typeof nextId !== "number" || typeof slug !== "string") {
+			throw new Error("Invalid nextId or slug");
+		}
+		return { nextId, slug } as { nextId: number; slug: string };
+	})
+	.handler(async ({ data: { nextId, slug } }) => {
+		await new Promise((resolve) => setTimeout(resolve, 1500));
+
+		const pageSize = 10;
+
+		const nextListings = await db.query.listings.findMany({
+			where: (fields, { gt, eq }) =>
+				and(eq(fields.slug, slug), gt(fields.id, nextId)),
+			orderBy: (fields, { asc }) => asc(fields.id),
+			limit: pageSize,
+		});
+		const nextCursor =
+			nextListings.length >= pageSize
+				? nextListings[nextListings.length - 1].id
+				: null;
+		console.log("Returning cursor:", nextCursor);
+		return { nextListings, nextCursor } as {
+			nextListings: listingType[];
+			nextCursor: number | null;
+		};
+	});
+
 export const Route = createFileRoute("/adoptme/product/$productId")({
 	component: RouteComponent,
 	loader: async ({ params: { productId } }) => {
-		const item = await getGameItem({ data: productId });
-		return { item };
+		const { listings, nextId, ...item } = await getGameItem({
+			data: productId,
+		});
+		return { item, listings, nextId };
 	},
 });
 
 function RouteComponent() {
-	const { item } = Route.useLoaderData() as { item: GameItemType };
-	console.log(item);
+	const { item, listings, nextId } = Route.useLoaderData();
+
 	return (
 		<section className="container px-4 mb-6">
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -83,7 +133,7 @@ function RouteComponent() {
 					<ProductItem item={item} />
 				</div>
 				<div className="md:col-span-2">
-					<ListingItem />
+					<ListingItem listings={listings} nextId={nextId} />
 				</div>
 			</div>
 		</section>

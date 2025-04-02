@@ -151,12 +151,16 @@ export const items = pgTable(
 		isActive: boolean("is_active").default(true),
 		slug: text("slug").notNull().unique(),
 		metadata: jsonb("metadata"), // Use jsonb for JSON
+		rarityTypeId: integer("rarity_type_id").references(() => rarityTypes.id, {
+			onDelete: "set null",
+		}),
 		...timestamps,
 	},
 	(table) => [
 		index("idx_items_game_id").on(table.gameId),
 		index("idx_items_category_id").on(table.categoryId),
 		index("idx_items_name").on(table.name),
+		index("idx_items_rarity_type_id").on(table.rarityTypeId), // Add index for the new column
 	],
 );
 
@@ -182,6 +186,7 @@ export const listings = pgTable(
 		),
 		status: text("status").notNull().default("active"),
 		featured: boolean("featured").default(false),
+		slug: text("slug").notNull(),
 		expiresAt: timestamp("expires_at", { withTimezone: true }),
 		metadata: jsonb("metadata"), // Use jsonb for JSON
 		...timestamps,
@@ -503,6 +508,11 @@ export const itemsRelations = relations(items, ({ one, many }) => ({
 	listings: many(listings),
 	transactions: many(transactions),
 	priceHistory: many(priceHistory),
+	rarityType: one(rarityTypes, {
+		// Add relation to rarityTypes
+		fields: [items.rarityTypeId],
+		references: [rarityTypes.id],
+	}),
 }));
 
 export const listingsRelations = relations(listings, ({ one, many }) => ({

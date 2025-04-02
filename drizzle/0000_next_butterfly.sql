@@ -75,6 +75,7 @@ CREATE TABLE "items" (
 	"is_active" boolean DEFAULT true,
 	"slug" text NOT NULL,
 	"metadata" jsonb,
+	"rarity_type_id" integer,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "items_slug_unique" UNIQUE("slug")
@@ -91,6 +92,7 @@ CREATE TABLE "listings" (
 	"listing_rarity_id" integer,
 	"status" text DEFAULT 'active' NOT NULL,
 	"featured" boolean DEFAULT false,
+	"slug" text NOT NULL,
 	"expires_at" timestamp with time zone,
 	"metadata" jsonb,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
@@ -236,6 +238,7 @@ ALTER TABLE "coin_cashouts" ADD CONSTRAINT "coin_cashouts_user_id_user_id_fk" FO
 ALTER TABLE "coin_purchases" ADD CONSTRAINT "coin_purchases_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "items" ADD CONSTRAINT "items_game_id_games_id_fk" FOREIGN KEY ("game_id") REFERENCES "public"."games"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "items" ADD CONSTRAINT "items_category_id_categories_id_fk" FOREIGN KEY ("category_id") REFERENCES "public"."categories"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "items" ADD CONSTRAINT "items_rarity_type_id_rarity_types_id_fk" FOREIGN KEY ("rarity_type_id") REFERENCES "public"."rarity_types"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "listings" ADD CONSTRAINT "listings_seller_id_user_id_fk" FOREIGN KEY ("seller_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "listings" ADD CONSTRAINT "listings_item_id_items_id_fk" FOREIGN KEY ("item_id") REFERENCES "public"."items"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "listings" ADD CONSTRAINT "listings_listing_rarity_id_rarity_types_id_fk" FOREIGN KEY ("listing_rarity_id") REFERENCES "public"."rarity_types"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
@@ -267,6 +270,7 @@ CREATE INDEX "idx_coin_purchases_user_id" ON "coin_purchases" USING btree ("user
 CREATE INDEX "idx_items_game_id" ON "items" USING btree ("game_id");--> statement-breakpoint
 CREATE INDEX "idx_items_category_id" ON "items" USING btree ("category_id");--> statement-breakpoint
 CREATE INDEX "idx_items_name" ON "items" USING btree ("name");--> statement-breakpoint
+CREATE INDEX "idx_items_rarity_type_id" ON "items" USING btree ("rarity_type_id");--> statement-breakpoint
 CREATE INDEX "idx_listings_status" ON "listings" USING btree ("status");--> statement-breakpoint
 CREATE INDEX "idx_listings_seller_id" ON "listings" USING btree ("seller_id");--> statement-breakpoint
 CREATE INDEX "idx_listings_item_id" ON "listings" USING btree ("item_id");--> statement-breakpoint
