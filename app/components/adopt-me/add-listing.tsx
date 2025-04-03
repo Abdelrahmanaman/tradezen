@@ -11,8 +11,13 @@ import {
 import { useAppForm } from "../form";
 import { addListSchema, type AddListType } from "@/lib/validation/add-list";
 import { useAddListing } from "@/hooks/use-add-listing";
+import { Loader2 } from "lucide-react";
+import { useParams } from "@tanstack/react-router";
 
 export default function AddListingForm({ itemId }: { itemId: number }) {
+	const { productId } = useParams({
+		from: "/adoptme/product/$productId",
+	});
 	const { mutateAsync, isPending } = useAddListing();
 	const form = useAppForm({
 		defaultValues: {
@@ -24,6 +29,7 @@ export default function AddListingForm({ itemId }: { itemId: number }) {
 			isMegaNeon: false,
 			age: "Full-Grown",
 			lookingFor: [],
+			slug: productId,
 		} as AddListType,
 		onSubmit: ({ value }) => {
 			console.log("HERE YOU GO", value);
@@ -39,7 +45,7 @@ export default function AddListingForm({ itemId }: { itemId: number }) {
 			<DialogTrigger asChild>
 				<Button variant="outline">List Trade</Button>
 			</DialogTrigger>
-			<DialogContent className="lg:w-96  ">
+			<DialogContent className="lg:w-96 max-h-[40rem] lg:max-h-[47rem] lg:h-full overflow-x-auto ">
 				<div className="flex flex-col items-center gap-2">
 					<DialogHeader>
 						<DialogTitle className="sm:text-center">
@@ -124,7 +130,9 @@ export default function AddListingForm({ itemId }: { itemId: number }) {
 						</div>
 					</div>
 					<form.AppForm>
-						<form.SubmitButton className="w-full">List Trade</form.SubmitButton>
+						<form.SubmitButton className="w-full mb-6">
+							{isPending ? <Loader2 className="animate-spin" /> : "List Trade"}
+						</form.SubmitButton>
 					</form.AppForm>
 				</form>
 			</DialogContent>

@@ -3,7 +3,12 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import GameItem from "@/components/adopt-me/game-item";
 import { db } from "../../../../db/db";
+import type { items, rarityTypes } from "../../../../db/schema";
 
+export type GameItemType = typeof items.$inferSelect & {
+	metadata: Record<string, boolean> | null;
+	rarityType?: typeof rarityTypes.$inferSelect;
+};
 const getGameItems = createServerFn({ method: "GET" }).handler(async () => {
 	const gameItems = await db.query.items.findMany({
 		where: (items, { eq }) => eq(items.gameId, 1),
@@ -21,7 +26,7 @@ export const Route = createFileRoute("/adoptme/product/")({
 
 function RouteComponent() {
 	const { items } = Route.useLoaderData();
-	console.log(items);
+	console.log("items");
 
 	return (
 		<section className="flex md:flex-nowrap flex-wrap">
@@ -35,17 +40,3 @@ function RouteComponent() {
 		</section>
 	);
 }
-
-export type GameItemType = {
-	id: number;
-	name: string;
-	createdAt: string;
-	description: string | null;
-	isActive: boolean | null;
-	gameId: number;
-	categoryId: number;
-	imageUrl: string;
-	slug: string;
-	suggestedPrice: number | null;
-	metadata: Record<string, string> | null;
-};

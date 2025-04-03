@@ -2,7 +2,6 @@ import { Button } from "../ui/button";
 import { ExternalLink, Flag, Heart, Share2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import AddListing from "./add-listing";
-import SelectSearch from "./select-search";
 import type { GameItemType } from "@/routes/adoptme/product";
 
 export default function ProductItem({ item }: { item: GameItemType }) {
@@ -48,7 +47,7 @@ export default function ProductItem({ item }: { item: GameItemType }) {
 				<div className="grid grid-cols-2 gap-2 text-sm">
 					<div className="flex justify-between">
 						<span className="text-gray-500">Rarity:</span>
-						<span className="font-medium">Legendary</span>
+						<span className="font-medium">{item.rarityType?.name}</span>
 					</div>
 					<div className="flex justify-between">
 						<span className="text-gray-500">Origin:</span>
@@ -60,7 +59,9 @@ export default function ProductItem({ item }: { item: GameItemType }) {
 					</div>
 					<div className="flex justify-between">
 						<span className="text-gray-500">Value:</span>
-						<span className="font-medium text-green-600">High</span>
+						<span className="font-medium text-green-600">
+							{item.suggestedPrice}
+						</span>
 					</div>
 				</div>
 			</div>

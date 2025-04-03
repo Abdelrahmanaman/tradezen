@@ -1,9 +1,10 @@
 import { db } from "./db";
-import { games, categories, rarityTypes, items, listings } from "./schema";
-
+import { games, categories, rarityTypes, items } from "./schema";
+import "dotenv/config";
 const IMAGE_URL =
 	"https://azajw5rq3c.ufs.sh/f/YevQZiVtNMeOYEayMHVtNMeOHxsVPkDBrnW6R7gTU3bAIL4w";
 export async function seedAdoptMe() {
+	console.log(process.env.DATABASE_URL);
 	console.log("Seeding Adopt Me data...");
 
 	// 1. Add Adopt Me game
@@ -75,7 +76,7 @@ export async function seedAdoptMe() {
 	}
 	console.log(`Added ${categoriesData.length} categories`);
 
-	// 3. Add Rarities
+	// 3. Add Base Rarities
 	const raritiesData = [
 		{ id: 1, name: "Common", displayName: "Common", colorHex: "#CCCCCC" },
 		{ id: 2, name: "Uncommon", displayName: "Uncommon", colorHex: "#00FF00" },
@@ -91,18 +92,23 @@ export async function seedAdoptMe() {
 		{ id: 7, name: "Event", displayName: "Event", colorHex: "#FFFF00" },
 	];
 
+	const rarityMap: { [key: string]: number } = {};
 	for (const rarity of raritiesData) {
-		await db.insert(rarityTypes).values({
-			gameId,
-			name: rarity.name,
-			displayName: rarity.displayName,
-			colorHex: rarity.colorHex,
-			sortOrder: rarity.id,
-		});
+		const [insertedRarity] = await db
+			.insert(rarityTypes)
+			.values({
+				gameId,
+				name: rarity.name,
+				displayName: rarity.displayName,
+				colorHex: rarity.colorHex,
+				sortOrder: rarity.id,
+			})
+			.returning();
+		rarityMap[rarity.name.toLowerCase().replace(/ /g, "-")] = insertedRarity.id; // Normalize keys for matching
 	}
-	console.log(`Added ${raritiesData.length} rarity types`);
+	console.log(`Added ${raritiesData.length} base rarity types`);
 
-	// 4. Add Items
+	// 4. Add Items with their BASE rarities
 	const itemsData = [
 		// Pets
 		{
@@ -112,6 +118,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Halloween Event 2019",
 			imageUrl: "http://localhost/images/adopt-me/shadow-dragon.webp",
 			suggestedPrice: 5000,
+			rarity: "Legendary",
 		},
 		{
 			categoryId: 4,
@@ -120,6 +127,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Winter Holiday 2019 event",
 			imageUrl: "http://localhost/images/adopt-me/frost-dragon.webp",
 			suggestedPrice: 4200,
+			rarity: "Legendary",
 		},
 		{
 			categoryId: 4,
@@ -128,6 +136,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Safari Egg",
 			imageUrl: "http://localhost/images/adopt-me/giraffe.webp",
 			suggestedPrice: 4800,
+			rarity: "Legendary",
 		},
 		{
 			categoryId: 4,
@@ -136,6 +145,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Halloween Event 2019",
 			imageUrl: "http://localhost/images/adopt-me/bat-dragon.webp",
 			suggestedPrice: 4500,
+			rarity: "Legendary",
 		},
 		{
 			categoryId: 4,
@@ -144,6 +154,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Farm Egg",
 			imageUrl: "http://localhost/images/adopt-me/owl.webp",
 			suggestedPrice: 3800,
+			rarity: "Legendary",
 		},
 		{
 			categoryId: 4,
@@ -152,6 +163,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Jungle Egg",
 			imageUrl: "http://localhost/images/adopt-me/parrot.webp",
 			suggestedPrice: 3500,
+			rarity: "Legendary",
 		},
 		{
 			categoryId: 4,
@@ -160,6 +172,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Halloween Event 2019",
 			imageUrl: "http://localhost/images/adopt-me/evil-unicorn.webp",
 			suggestedPrice: 3400,
+			rarity: "Legendary",
 		},
 		{
 			categoryId: 4,
@@ -168,6 +181,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Farm Egg",
 			imageUrl: "http://localhost/images/adopt-me/crow.webp",
 			suggestedPrice: 3300,
+			rarity: "Legendary",
 		},
 		{
 			categoryId: 4,
@@ -176,6 +190,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Monkey Fairground event",
 			imageUrl: "http://localhost/images/adopt-me/king-monkey.webp",
 			suggestedPrice: 2800,
+			rarity: "Legendary",
 		},
 		{
 			categoryId: 4,
@@ -184,6 +199,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Monkey Fairground event",
 			imageUrl: "http://localhost/images/adopt-me/albino-monkey.webp",
 			suggestedPrice: 2500,
+			rarity: "Legendary",
 		},
 		{
 			categoryId: 4,
@@ -192,6 +208,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Diamond Egg",
 			imageUrl: "http://localhost/images/adopt-me/diamond-unicorn.webp",
 			suggestedPrice: 3000,
+			rarity: "Legendary",
 		},
 		{
 			categoryId: 4,
@@ -200,6 +217,7 @@ export async function seedAdoptMe() {
 			description: "A pet from honey",
 			imageUrl: "http://localhost/images/adopt-me/queen-bee.webp",
 			suggestedPrice: 2200,
+			rarity: "Legendary",
 		},
 		{
 			categoryId: 4,
@@ -208,6 +226,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Christmas Event 2019",
 			imageUrl: "http://localhost/images/adopt-me/dalmatian.webp",
 			suggestedPrice: 1800,
+			rarity: "Ultra-Rare",
 		},
 		{
 			categoryId: 4,
@@ -216,6 +235,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Christmas Event 2019",
 			imageUrl: "http://localhost/images/adopt-me/hedgehog.webp",
 			suggestedPrice: 2000,
+			rarity: "Ultra-Rare",
 		},
 		{
 			categoryId: 4,
@@ -224,6 +244,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Safari Egg",
 			imageUrl: "http://localhost/images/adopt-me/flamingo.webp",
 			suggestedPrice: 1900,
+			rarity: "Ultra-Rare",
 		},
 		{
 			categoryId: 4,
@@ -232,6 +253,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Safari Egg",
 			imageUrl: "http://localhost/images/adopt-me/lion.webp",
 			suggestedPrice: 1850,
+			rarity: "Ultra-Rare",
 		},
 		{
 			categoryId: 4,
@@ -240,6 +262,7 @@ export async function seedAdoptMe() {
 			description: "The first pet in Adopt Me, from the Blue Egg",
 			imageUrl: "http://localhost/images/adopt-me/blue-dog.webp",
 			suggestedPrice: 2100,
+			rarity: "Uncommon",
 		},
 		{
 			categoryId: 4,
@@ -248,6 +271,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Pink Egg",
 			imageUrl: "http://localhost/images/adopt-me/pink-cat.webp",
 			suggestedPrice: 1600,
+			rarity: "Uncommon",
 		},
 		{
 			categoryId: 4,
@@ -256,6 +280,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Christmas Event 2019",
 			imageUrl: "http://localhost/images/adopt-me/brown-bear.webp",
 			suggestedPrice: 950,
+			rarity: "Rare",
 		},
 		{
 			categoryId: 4,
@@ -264,6 +289,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Christmas Event 2019",
 			imageUrl: "http://localhost/images/adopt-me/polar-bear.webp",
 			suggestedPrice: 900,
+			rarity: "Rare",
 		},
 		{
 			categoryId: 4,
@@ -272,6 +298,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Farm Egg",
 			imageUrl: "http://localhost/images/adopt-me/cow.webp",
 			suggestedPrice: 1200,
+			rarity: "Rare",
 		},
 		{
 			categoryId: 4,
@@ -280,6 +307,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Safari Egg",
 			imageUrl: "http://localhost/images/adopt-me/hyena.webp",
 			suggestedPrice: 1100,
+			rarity: "Rare",
 		},
 		{
 			categoryId: 4,
@@ -288,6 +316,7 @@ export async function seedAdoptMe() {
 			description: "An uncommon pet",
 			imageUrl: "http://localhost/images/adopt-me/beaver.webp",
 			suggestedPrice: 150,
+			rarity: "Uncommon",
 		},
 		{
 			categoryId: 4,
@@ -296,6 +325,7 @@ export async function seedAdoptMe() {
 			description: "A common pet",
 			imageUrl: "http://localhost/images/adopt-me/bunny.webp",
 			suggestedPrice: 100,
+			rarity: "Common",
 		},
 		{
 			categoryId: 4,
@@ -304,6 +334,7 @@ export async function seedAdoptMe() {
 			description: "A common pet",
 			imageUrl: "http://localhost/images/adopt-me/chicken.webp",
 			suggestedPrice: 80,
+			rarity: "Common",
 		},
 		{
 			categoryId: 4,
@@ -312,6 +343,7 @@ export async function seedAdoptMe() {
 			description: "A common pet",
 			imageUrl: "http://localhost/images/adopt-me/dog.webp",
 			suggestedPrice: 50,
+			rarity: "Common",
 		},
 		{
 			categoryId: 4,
@@ -320,6 +352,7 @@ export async function seedAdoptMe() {
 			description: "A common pet",
 			imageUrl: "http://localhost/images/adopt-me/cat.webp",
 			suggestedPrice: 60,
+			rarity: "Common",
 		},
 		{
 			categoryId: 4,
@@ -328,6 +361,7 @@ export async function seedAdoptMe() {
 			description: "An uncommon pet",
 			imageUrl: "http://localhost/images/adopt-me/robin.webp",
 			suggestedPrice: 120,
+			rarity: "Uncommon",
 		},
 		{
 			categoryId: 4,
@@ -336,6 +370,7 @@ export async function seedAdoptMe() {
 			description: "An uncommon pet",
 			imageUrl: "http://localhost/images/adopt-me/puma.webp",
 			suggestedPrice: 130,
+			rarity: "Uncommon",
 		},
 		{
 			categoryId: 4,
@@ -344,6 +379,7 @@ export async function seedAdoptMe() {
 			description: "An uncommon pet",
 			imageUrl: "http://localhost/images/adopt-me/snow-cat.webp",
 			suggestedPrice: 140,
+			rarity: "Uncommon",
 		},
 		{
 			categoryId: 4,
@@ -352,6 +388,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Fossil Egg",
 			imageUrl: "http://localhost/images/adopt-me/stegosaurus.webp",
 			suggestedPrice: 300,
+			rarity: "Rare",
 		},
 		{
 			categoryId: 4,
@@ -360,6 +397,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Fossil Egg",
 			imageUrl: "http://localhost/images/adopt-me/triceratops.webp",
 			suggestedPrice: 320,
+			rarity: "Rare",
 		},
 		{
 			categoryId: 4,
@@ -368,6 +406,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Fossil Egg",
 			imageUrl: "http://localhost/images/adopt-me/woolly-mammoth.webp",
 			suggestedPrice: 350,
+			rarity: "Rare",
 		},
 		{
 			categoryId: 4,
@@ -376,6 +415,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Fossil Egg",
 			imageUrl: "http://localhost/images/adopt-me/dodo.webp",
 			suggestedPrice: 800,
+			rarity: "Ultra-Rare",
 		},
 		{
 			categoryId: 4,
@@ -384,6 +424,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Fossil Egg",
 			imageUrl: "http://localhost/images/adopt-me/t-rex.webp",
 			suggestedPrice: 900,
+			rarity: "Ultra-Rare",
 		},
 		{
 			categoryId: 4,
@@ -392,6 +433,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Halloween Event 2020",
 			imageUrl: "http://localhost/images/adopt-me/albino-bat.webp",
 			suggestedPrice: 750,
+			rarity: "Ultra-Rare",
 		},
 		{
 			categoryId: 4,
@@ -400,6 +442,7 @@ export async function seedAdoptMe() {
 			description: "A pet from the Halloween Event 2020",
 			imageUrl: "http://localhost/images/adopt-me/ghost-bunny.webp",
 			suggestedPrice: 400,
+			rarity: "Rare",
 		},
 		// Vehicles
 		{
@@ -409,6 +452,7 @@ export async function seedAdoptMe() {
 			description: "A vehicle from an old gift rotation",
 			imageUrl: "http://localhost/images/adopt-me/bathtub.webp",
 			suggestedPrice: 2500,
+			rarity: "Ultra-Rare",
 		},
 		{
 			categoryId: 9,
@@ -417,6 +461,7 @@ export async function seedAdoptMe() {
 			description: "A vehicle from a limited time offer",
 			imageUrl: "http://localhost/images/adopt-me/cloud-car.webp",
 			suggestedPrice: 2300,
+			rarity: "Legendary",
 		},
 		{
 			categoryId: 9,
@@ -425,6 +470,7 @@ export async function seedAdoptMe() {
 			description: "One of the fastest vehicles in the game",
 			imageUrl: "http://localhost/images/adopt-me/rocket-sled.webp",
 			suggestedPrice: 2700,
+			rarity: "Legendary",
 		},
 		{
 			categoryId: 9,
@@ -433,6 +479,7 @@ export async function seedAdoptMe() {
 			description: "A common vehicle",
 			imageUrl: "http://localhost/images/adopt-me/bicycle.webp",
 			suggestedPrice: 50,
+			rarity: "Common",
 		},
 		{
 			categoryId: 9,
@@ -441,6 +488,7 @@ export async function seedAdoptMe() {
 			description: "An uncommon vehicle",
 			imageUrl: "http://localhost/images/adopt-me/scooter.webp",
 			suggestedPrice: 100,
+			rarity: "Uncommon",
 		},
 		// Eggs
 		{
@@ -450,6 +498,7 @@ export async function seedAdoptMe() {
 			description: "A common egg",
 			imageUrl: "http://localhost/images/adopt-me/cracked-egg.webp",
 			suggestedPrice: 350,
+			rarity: "Common",
 		},
 		{
 			categoryId: 2,
@@ -458,6 +507,7 @@ export async function seedAdoptMe() {
 			description: "An uncommon egg",
 			imageUrl: "http://localhost/images/adopt-me/pet-egg.webp",
 			suggestedPrice: 600,
+			rarity: "Uncommon",
 		},
 		{
 			categoryId: 2,
@@ -466,65 +516,115 @@ export async function seedAdoptMe() {
 			description: "A rare egg",
 			imageUrl: "http://localhost/images/adopt-me/royal-egg.webp",
 			suggestedPrice: 1450,
+			rarity: "Rare",
 		},
 		{
-			categoryId: 3,
+			categoryId: 2,
+			slug: "fossil-egg",
+			name: "Fossil Egg",
+			description: "An ultra-rare egg that hatches fossil pets",
+			imageUrl: "http://localhost/images/adopt-me/fossil-egg.webp",
+			suggestedPrice: 750,
+			rarity: "Ultra-Rare",
+		},
+		{
+			categoryId: 2,
+			slug: "ocean-egg",
+			name: "Ocean Egg",
+			description: "An ultra-rare egg that hatches ocean pets",
+			imageUrl: "http://localhost/images/adopt-me/ocean-egg.webp",
+			suggestedPrice: 750,
+			rarity: "Ultra-Rare",
+		},
+		{
+			categoryId: 2,
 			slug: "safari-egg",
 			name: "Safari Egg",
-			description: "An egg containing Safari pets, no longer available",
+			description: "A legendary egg with rare pets",
 			imageUrl: "http://localhost/images/adopt-me/safari-egg.webp",
-			suggestedPrice: 3500,
+			suggestedPrice: 1800,
+			rarity: "Legendary",
 		},
 		{
-			categoryId: 3,
+			categoryId: 2,
+			slug: "jungle-egg",
+			name: "Jungle Egg",
+			description: "A legendary egg with exotic pets",
+			imageUrl: "http://localhost/images/adopt-me/jungle-egg.webp",
+			suggestedPrice: 1700,
+			rarity: "Legendary",
+		},
+		{
+			categoryId: 2,
 			slug: "farm-egg",
 			name: "Farm Egg",
-			description: "An egg containing Farm pets, no longer available",
+			description: "A legendary egg with farm animals",
 			imageUrl: "http://localhost/images/adopt-me/farm-egg.webp",
-			suggestedPrice: 2800,
-		},
-		// Toys
-		{
-			categoryId: 8,
-			slug: "tombstone",
-			name: "Tombstone",
-			description:
-				"Makes players and pets invisible, from Halloween Event 2019",
-			imageUrl: "http://localhost/images/adopt-me/tombstone.webp",
-			suggestedPrice: 3000,
+			suggestedPrice: 1600,
+			rarity: "Legendary",
 		},
 		{
-			categoryId: 8,
-			slug: "candy-cannon",
-			name: "Candy Cannon",
-			description:
-				"Shoots candies that can be collected, from Halloween Event 2019",
-			imageUrl: "http://localhost/images/adopt-me/candy-cannon.webp",
+			categoryId: 2,
+			slug: "blue-egg",
+			name: "Blue Egg",
+			description: "The first egg in Adopt Me",
+			imageUrl: "http://localhost/images/adopt-me/blue-egg.webp",
+			suggestedPrice: 2500,
+			rarity: "Uncommon",
+		},
+		{
+			categoryId: 2,
+			slug: "pink-egg",
+			name: "Pink Egg",
+			description: "An early egg in Adopt Me",
+			imageUrl: "http://localhost/images/adopt-me/pink-egg.webp",
+			suggestedPrice: 2300,
+			rarity: "Uncommon",
+		},
+		{
+			categoryId: 2,
+			slug: "christmas-egg-2019",
+			name: "Christmas Egg 2019",
+			description: "An event-limited egg",
+			imageUrl: "http://localhost/images/adopt-me/christmas-egg-2019.webp",
+			suggestedPrice: 1500,
+			rarity: "Rare",
+		},
+		{
+			categoryId: 2,
+			slug: "halloween-egg-2020",
+			name: "Halloween Egg 2020",
+			description: "An event-limited egg",
+			imageUrl: "http://localhost/images/adopt-me/halloween-egg-2020.webp",
+			suggestedPrice: 1200,
+			rarity: "Ultra-Rare",
+		},
+		{
+			categoryId: 2,
+			slug: "monkey-egg",
+			name: "Monkey Egg",
+			description: "An egg from the Monkey Fairground event",
+			imageUrl: "http://localhost/images/adopt-me/monkey-egg.webp",
+			suggestedPrice: 650,
+			rarity: "Rare",
+		},
+		{
+			categoryId: 2,
+			slug: "diamond-egg",
+			name: "Diamond Egg",
+			description: "A very rare egg obtained through streaks",
+			imageUrl: "http://localhost/images/adopt-me/diamond-egg.webp",
+			suggestedPrice: 3500,
+			rarity: "Legendary",
+		},
+		{
+			categoryId: 2,
+			slug: "golden-egg",
+			name: "Golden Egg",
+			description: "A rare egg obtained through streaks",
+			imageUrl: "http://localhost/images/adopt-me/golden-egg.webp",
 			suggestedPrice: 3200,
-		},
-		{
-			categoryId: 8,
-			slug: "broomstick",
-			name: "Broomstick",
-			description: "Allows players to fly, from Halloween Event 2019",
-			imageUrl: "http://localhost/images/adopt-me/broomstick.webp",
-			suggestedPrice: 2800,
-		},
-		{
-			categoryId: 8,
-			slug: "rubber-chicken",
-			name: "Rubber Chicken",
-			description: "A common toy",
-			imageUrl: "http://localhost/images/adopt-me/rubber-chicken.webp",
-			suggestedPrice: 50,
-		},
-		{
-			categoryId: 8,
-			slug: "frisbee",
-			name: "Frisbee",
-			description: "An uncommon toy",
-			imageUrl: "http://localhost/images/adopt-me/frisbee.webp",
-			suggestedPrice: 80,
+			rarity: "Legendary",
 		},
 		// Food
 		{
@@ -534,6 +634,16 @@ export async function seedAdoptMe() {
 			description: "A common food item",
 			imageUrl: "http://localhost/images/adopt-me/apple.webp",
 			suggestedPrice: 10,
+			rarity: "Common",
+		},
+		{
+			categoryId: 1,
+			slug: "banana",
+			name: "Banana",
+			description: "A common food item",
+			imageUrl: "http://localhost/images/adopt-me/banana.webp",
+			suggestedPrice: 15,
+			rarity: "Common",
 		},
 		{
 			categoryId: 1,
@@ -541,83 +651,125 @@ export async function seedAdoptMe() {
 			name: "Carrot",
 			description: "An uncommon food item",
 			imageUrl: "http://localhost/images/adopt-me/carrot.webp",
-			suggestedPrice: 15,
+			suggestedPrice: 20,
+			rarity: "Uncommon",
 		},
 		{
 			categoryId: 1,
-			slug: "hotdog",
-			name: "Hotdog",
-			description: "A rare food item",
-			imageUrl: "http://localhost/images/adopt-me/hotdog.webp",
-			suggestedPrice: 20,
+			slug: "honey",
+			name: "Honey",
+			description: "A rare food item that attracts bees",
+			imageUrl: "http://localhost/images/adopt-me/honey.webp",
+			suggestedPrice: 500,
+			rarity: "Rare",
+		},
+		// Toys
+		{
+			categoryId: 8,
+			slug: "rubber-duck",
+			name: "Rubber Duck",
+			description: "A common toy",
+			imageUrl: "http://localhost/images/adopt-me/rubber-duck.webp",
+			suggestedPrice: 5,
+			rarity: "Common",
+		},
+		{
+			categoryId: 8,
+			slug: "ball",
+			name: "Ball",
+			description: "An uncommon toy",
+			imageUrl: "http://localhost/images/adopt-me/ball.webp",
+			suggestedPrice: 10,
+			rarity: "Uncommon",
+		},
+		{
+			categoryId: 8,
+			slug: "frisbee",
+			name: "Frisbee",
+			description: "A rare toy",
+			imageUrl: "http://localhost/images/adopt-me/frisbee.webp",
+			suggestedPrice: 25,
+			rarity: "Rare",
+		},
+		{
+			categoryId: 8,
+			slug: "grappling-hook",
+			name: "Grappling Hook",
+			description: "An ultra-rare toy",
+			imageUrl: "http://localhost/images/adopt-me/grappling-hook.webp",
+			suggestedPrice: 100,
+			rarity: "Ultra-Rare",
+		},
+		// Gifts
+		{
+			categoryId: 3,
+			slug: "small-gift",
+			name: "Small Gift",
+			description: "A common gift",
+			imageUrl: "http://localhost/images/adopt-me/small-gift.webp",
+			suggestedPrice: 150,
+			rarity: "Common",
+		},
+		{
+			categoryId: 3,
+			slug: "medium-gift",
+			name: "Medium Gift",
+			description: "An uncommon gift",
+			imageUrl: "http://localhost/images/adopt-me/medium-gift.webp",
+			suggestedPrice: 400,
+			rarity: "Uncommon",
+		},
+		{
+			categoryId: 3,
+			slug: "big-gift",
+			name: "Big Gift",
+			description: "A rare gift",
+			imageUrl: "http://localhost/images/adopt-me/big-gift.webp",
+			suggestedPrice: 1200,
+			rarity: "Rare",
+		},
+		{
+			categoryId: 3,
+			slug: "star-reward-gift",
+			name: "Star Reward Gift",
+			description: "A gift obtained from star rewards",
+			imageUrl: "http://localhost/images/adopt-me/star-reward-gift.webp",
+			suggestedPrice: 800,
+			rarity: "Ultra-Rare",
 		},
 	];
 
 	for (const item of itemsData) {
+		const rarityKey = item.rarity.toLowerCase().replace(/ /g, "-");
+		const rarityId = rarityMap[rarityKey];
+		if (!rarityId) {
+			console.warn(
+				`Rarity "${item.rarity}" (key: ${rarityKey}) not found for item "${item.name}"`,
+			);
+			continue;
+		}
 		await db.insert(items).values({
 			gameId,
 			categoryId: item.categoryId,
 			name: item.name,
 			description: item.description,
-			slug: item.slug,
-			imageUrl:
-				"https://azajw5rq3c.ufs.sh/f/YevQZiVtNMeOYEayMHVtNMeOHxsVPkDBrnW6R7gTU3bAIL4w",
+			imageUrl: item.imageUrl,
 			suggestedPrice: item.suggestedPrice,
-			isActive: true,
+			slug: item.slug,
+			rarityTypeId: rarityId, // Assign the base rarity ID
 		});
 	}
-
 	console.log(`Added ${itemsData.length} items`);
-	console.log("Adopt Me seed completed!");
+
+	console.log("Adopt Me data seeding completed.");
 }
 
-// async function createRandomListingsForUser(gameId: number, userId: string) {
-// 	console.log(`Creating 5 random listings for user ID: ${userId}`);
+async function updateImage() {
+	await db.update(items).set({
+		imageUrl: IMAGE_URL,
+	});
+	console.log("Image updated");
+}
 
-// 	// Fetch 5 random items for the given game
-// 	const randomItems = await db.query.items.findMany({
-// 		where: (items, { eq }) => eq(items.gameId, gameId),
-// 		limit: 5,
-// 		offset: Math.floor(Math.random() * 30), // Adjust offset for more randomness if needed
-// 	});
-
-// 	if (randomItems.length === 0) {
-// 		console.warn("No items found for Adopt Me to create listings.");
-// 		return;
-// 	}
-
-// 	// Fetch all rarity types for the given game
-// 	const rarities = await db.query.rarityTypes.findMany({
-// 		where: (rarityTypes, { eq }) => eq(rarityTypes.gameId, gameId),
-// 	});
-
-// 	for (const item of randomItems) {
-// 		type MetaData = {
-// 			string: boolean;
-// 		};
-// 		const randomPrice = Math.floor(Math.random() * 5000) + 500; // Random price
-// 		const randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
-// 		const metadata: Record<string, boolean> = {};
-// 		if (Math.random() > 0.5) metadata.isFlyable = true;
-// 		if (Math.random() > 0.5) metadata.isRideable = true;
-// 		if (Math.random() > 0.5) metadata.isNeon = true;
-// 		if (Math.random() > 0.7) metadata.isMegaNeon = true;
-
-// 		await db.insert(listings).values({
-// 			sellerId: userId,
-// 			itemId: item.id,
-// 			price: randomPrice,
-// 			quantity: 1,
-// 			listingRarityId: randomRarity?.id,
-// 			status: "active",
-// 			metadata: metadata as MetaData, // Type assertion for Drizzle
-// 		});
-// 		console.log(`Created random listing for item: ${item.name}`);
-// 	}
-
-// 	console.log("Successfully created 5 random listings.");
-// }
-
-seedAdoptMe();
-
-// createRandomListingsForUser(1, "3ohMpxYuczYEuTk3XZE21ztTBd6nlPex");
+// seedAdoptMe();
+updateImage();

@@ -1,20 +1,33 @@
 import {
-	sqliteTable,
+	pgTable,
 	text,
 	integer,
 	real,
 	index,
-} from "drizzle-orm/sqlite-core";
+	serial, // Use serial for auto-incrementing primary keys in PostgreSQL
+	timestamp,
+	boolean,
+	jsonb, // For JSON data
+} from "drizzle-orm/pg-core";
 
 import { relations, sql } from "drizzle-orm";
 
+export const timestamps = {
+	updatedAt: timestamp("updated_at", { withTimezone: true })
+		.notNull()
+		.default(sql`now()`),
+	createdAt: timestamp("created_at", { withTimezone: true })
+		.notNull()
+		.default(sql`now()`),
+};
+
 // Auth Tables
 
-export const user = sqliteTable("user", {
+export const user = pgTable("user", {
 	id: text("id").primaryKey(),
 	name: text("name"),
 	email: text("email").notNull().unique(),
-	emailVerified: integer("email_verified", { mode: "boolean" }).notNull(),
+	emailVerified: boolean("email_verified").notNull(),
 	image: text("image"),
 	userName: text("user_name").notNull().unique(),
 	totalCoins: integer("total_coins").notNull().default(0),
@@ -25,101 +38,93 @@ export const user = sqliteTable("user", {
 	followersCount: integer("followers_count").notNull().default(0),
 	followingCount: integer("following_count").notNull().default(0),
 	tradeCount: integer("trade_count").notNull().default(0),
-	createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-	updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+	...timestamps,
 });
 
-export const session = sqliteTable("session", {
+export const session = pgTable("session", {
 	id: text("id").primaryKey(),
-	expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
+	expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
 	token: text("token").notNull().unique(),
-	createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-	updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 	ipAddress: text("ip_address"),
 	userAgent: text("user_agent"),
 	userId: text("user_id")
-
 		.notNull()
-
 		.references(() => user.id, { onDelete: "cascade" }),
+	...timestamps,
 });
 
-export const account = sqliteTable("account", {
+export const account = pgTable("account", {
 	id: text("id").primaryKey(),
 	accountId: text("account_id").notNull(),
 	providerId: text("provider_id").notNull(),
 	userId: text("user_id")
-
 		.notNull()
-
 		.references(() => user.id, { onDelete: "cascade" }),
 	accessToken: text("access_token"),
 	refreshToken: text("refresh_token"),
 	idToken: text("id_token"),
-	accessTokenExpiresAt: integer("access_token_expires_at", {
-		mode: "timestamp",
+	accessTokenExpiresAt: timestamp("access_token_expires_at", {
+		withTimezone: true,
 	}),
-	refreshTokenExpiresAt: integer("refresh_token_expires_at", {
-		mode: "timestamp",
+	refreshTokenExpiresAt: timestamp("refresh_token_expires_at", {
+		withTimezone: true,
 	}),
 	scope: text("scope"),
 	password: text("password"),
-	createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-	updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+	...timestamps,
 });
 
-export const verification = sqliteTable("verification", {
+export const verification = pgTable("verification", {
 	id: text("id").primaryKey(),
 	identifier: text("identifier").notNull(),
 	value: text("value").notNull(),
-	expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
-	createdAt: integer("created_at", { mode: "timestamp" }),
-	updatedAt: integer("updated_at", { mode: "timestamp" }),
+	expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+	...timestamps,
 });
 
 // Games Table
 
-export const games = sqliteTable("games", {
-	id: integer("id").primaryKey({ autoIncrement: true }),
+export const games = pgTable("games", {
+	id: serial("id").primaryKey(),
 	name: text("name").notNull().unique(),
 	description: text("description"),
 	logoUrl: text("logo_url"),
-	isActive: integer("is_active", { mode: "boolean" }).default(true),
+	isActive: boolean("is_active").default(true),
 	sortOrder: integer("sort_order").default(0),
+	...timestamps,
 });
 
 // Categories Table
 
-export const categories = sqliteTable(
+export const categories = pgTable(
 	"categories",
 	{
-		id: integer("id").primaryKey({ autoIncrement: true }),
+		id: serial("id").primaryKey(),
 		gameId: integer("game_id")
-
 			.notNull()
-
 			.references(() => games.id, { onDelete: "cascade" }),
 		name: text("name").notNull(),
 		description: text("description"),
 		sortOrder: integer("sort_order").default(0),
+		...timestamps,
 	},
 	(table) => [index("idx_categories_game_id").on(table.gameId)],
 );
 
 // Rarity Types Table (For base rarities and listing-specific rarities)
 
-export const rarityTypes = sqliteTable(
+export const rarityTypes = pgTable(
 	"rarity_types",
 	{
-		id: integer("id").primaryKey({ autoIncrement: true }),
+		id: serial("id").primaryKey(),
 		gameId: integer("game_id")
 			.notNull()
 			.references(() => games.id, { onDelete: "cascade" }),
 		name: text("name").notNull(), // e.g.,"Common","Legendary","Neon","Mega Neon",etc.
-
 		displayName: text("display_name"),
 		colorHex: text("color_hex"),
 		sortOrder: integer("sort_order").default(0),
+		...timestamps,
 	},
 	(table) => [
 		index("idx_rarity_types_game_id").on(table.gameId),
@@ -129,63 +134,62 @@ export const rarityTypes = sqliteTable(
 
 // Items Table (Base Item Information)
 
-export const items = sqliteTable(
+export const items = pgTable(
 	"items",
 	{
-		id: integer("id").primaryKey({ autoIncrement: true }),
+		id: serial("id").primaryKey(),
 		gameId: integer("game_id")
-
 			.notNull()
-
-			.references(() => games.id, { onDelete: "restrict" }),
+			.references(() => games.id, { onDelete: "cascade" }), // Changed to "cascade"
 		categoryId: integer("category_id")
-
 			.notNull()
-
-			.references(() => categories.id, { onDelete: "restrict" }),
+			.references(() => categories.id, { onDelete: "cascade" }), // Changed to "cascade"
 		name: text("name").notNull(),
 		description: text("description"),
 		imageUrl: text("image_url").notNull(),
 		suggestedPrice: integer("suggested_price"),
-		isActive: integer("is_active", { mode: "boolean" }).default(true),
+		isActive: boolean("is_active").default(true),
 		slug: text("slug").notNull().unique(),
-		metadata: text("metadata", { mode: "json" }), // Optional metadata for the base item if needed
-
-		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+		metadata: jsonb("metadata"), // Use jsonb for JSON
+		rarityTypeId: integer("rarity_type_id").references(() => rarityTypes.id, {
+			onDelete: "set null",
+		}),
+		...timestamps,
 	},
 	(table) => [
 		index("idx_items_game_id").on(table.gameId),
 		index("idx_items_category_id").on(table.categoryId),
 		index("idx_items_name").on(table.name),
+		index("idx_items_rarity_type_id").on(table.rarityTypeId), // Add index for the new column
 	],
 );
 
 // Listings Table
 
-export const listings = sqliteTable(
+export const listings = pgTable(
 	"listings",
 	{
-		id: integer("id").primaryKey({ autoIncrement: true }),
+		id: serial("id").primaryKey(),
 		sellerId: text("seller_id")
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),
 		itemId: integer("item_id")
 			.notNull()
-			.references(() => items.id, { onDelete: "restrict" }),
+			.references(() => items.id, { onDelete: "cascade" }), // Changed to "cascade"
 		price: integer("price").notNull(),
 		quantity: integer("quantity").default(1),
 		age: text("age"),
-		lookingFor: text("looking_for").$type<string | null>(), // THIS LINE IS THE CORRECTED ONE
+		lookingFor: text("looking_for").array(), // Use array for string arrays
 		listingRarityId: integer("listing_rarity_id").references(
 			() => rarityTypes.id,
 			{ onDelete: "set null" },
 		),
 		status: text("status").notNull().default("active"),
-		featured: integer("featured", { mode: "boolean" }).default(false),
-		expiresAt: text("expires_at"),
-		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-		updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-		metadata: text("metadata", { mode: "json" }), // Game-specific attributes (Neon,Fly,Affixes,etc.)
+		featured: boolean("featured").default(false),
+		slug: text("slug").notNull(),
+		expiresAt: timestamp("expires_at", { withTimezone: true }),
+		metadata: jsonb("metadata"), // Use jsonb for JSON
+		...timestamps,
 	},
 	(table) => [
 		index("idx_listings_status").on(table.status),
@@ -198,32 +202,27 @@ export const listings = sqliteTable(
 
 // Transactions Table
 
-export const transactions = sqliteTable(
+export const transactions = pgTable(
 	"transactions",
 	{
-		id: integer("id").primaryKey({ autoIncrement: true }),
+		id: serial("id").primaryKey(),
 		listingId: integer("listing_id").references(() => listings.id, {
 			onDelete: "set null",
 		}),
 		buyerId: text("buyer_id")
-
 			.notNull()
-
 			.references(() => user.id, { onDelete: "restrict" }),
 		sellerId: text("seller_id")
-
 			.notNull()
-
 			.references(() => user.id, { onDelete: "restrict" }),
 		itemId: integer("item_id")
-
 			.notNull()
-
 			.references(() => items.id, { onDelete: "restrict" }),
 		price: integer("price").notNull(),
 		quantity: integer("quantity").notNull().default(1),
 		transactionType: text("transaction_type").notNull(),
-		timestamp: text("timestamp").notNull().default(sql`CURRENT_TIMESTAMP`),
+		timestamp: timestamp("timestamp").notNull().default(sql`now()`), // Keep this as it represents the transaction time
+		...timestamps, // Add for tracking when the transaction record itself was created/updated
 	},
 	(table) => [
 		index("idx_transactions_buyer_id").on(table.buyerId),
@@ -233,27 +232,22 @@ export const transactions = sqliteTable(
 
 // Trades Table
 
-export const trades = sqliteTable(
+export const trades = pgTable(
 	"trades",
 	{
-		id: integer("id").primaryKey({ autoIncrement: true }),
+		id: serial("id").primaryKey(),
 		initiatorId: text("initiator_id")
-
 			.notNull()
-
 			.references(() => user.id, { onDelete: "cascade" }),
 		receiverId: text("receiver_id")
-
 			.notNull()
-
 			.references(() => user.id, { onDelete: "cascade" }),
 		initiatorCoinsOffered: integer("initiator_coins_offered").default(0),
 		receiverCoinsRequested: integer("receiver_coins_requested").default(0),
 		status: text("status").notNull().default("pending"),
 		message: text("message"),
-		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-		updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-		completedAt: text("completed_at"),
+		completedAt: timestamp("completed_at", { withTimezone: true }),
+		...timestamps,
 	},
 	(table) => [
 		index("idx_trades_initiator_id").on(table.initiatorId),
@@ -264,31 +258,26 @@ export const trades = sqliteTable(
 
 // Trade Items Table
 
-export const tradeItems = sqliteTable(
+export const tradeItems = pgTable(
 	"trade_items",
 	{
-		id: integer("id").primaryKey({ autoIncrement: true }),
+		id: serial("id").primaryKey(),
 		tradeId: integer("trade_id")
-
 			.notNull()
-
 			.references(() => trades.id, { onDelete: "cascade" }),
 		itemId: integer("item_id")
-
 			.notNull()
-
 			.references(() => items.id, { onDelete: "restrict" }),
 		userId: text("user_id")
-
 			.notNull()
-
 			.references(() => user.id, { onDelete: "cascade" }),
 		quantity: integer("quantity").default(1),
 		userSpecifiedRarityId: integer("user_specified_rarity_id").references(
 			() => rarityTypes.id,
 			{ onDelete: "set null" },
 		),
-		metadata: text("metadata", { mode: "json" }), // Game-specific attributes for the traded item
+		metadata: jsonb("metadata"), // Use jsonb for JSON
+		...timestamps,
 	},
 	(table) => [
 		index("idx_trade_items_trade_id").on(table.tradeId),
@@ -299,44 +288,42 @@ export const tradeItems = sqliteTable(
 
 // Coin Purchases Table
 
-export const coinPurchases = sqliteTable(
+export const coinPurchases = pgTable(
 	"coin_purchases",
 	{
-		id: integer("id").primaryKey({ autoIncrement: true }),
+		id: serial("id").primaryKey(),
 		userId: text("user_id")
-
 			.notNull()
-
 			.references(() => user.id, { onDelete: "cascade" }),
 		coinsAmount: integer("coins_amount").notNull(),
 		cashAmount: real("cash_amount").notNull(),
 		paymentMethod: text("payment_method").notNull(),
 		paymentReference: text("payment_reference"),
 		status: text("status").notNull().default("completed"),
-		timestamp: text("timestamp").notNull().default(sql`CURRENT_TIMESTAMP`),
+		timestamp: timestamp("timestamp").notNull().default(sql`now()`), // Keep this as it represents the purchase time
+		...timestamps, // Add for tracking when the purchase record itself was created/updated
 	},
 	(table) => [index("idx_coin_purchases_user_id").on(table.userId)],
 );
 
 // Coin Cashouts Table (continued)
 
-export const coinCashouts = sqliteTable(
+export const coinCashouts = pgTable(
 	"coin_cashouts",
 	{
-		id: integer("id").primaryKey({ autoIncrement: true }),
+		id: serial("id").primaryKey(),
 		userId: text("user_id")
-
 			.notNull()
-
 			.references(() => user.id, { onDelete: "cascade" }),
 		coinsAmount: integer("coins_amount").notNull(),
 		cashAmount: real("cash_amount").notNull(),
 		paymentMethod: text("payment_method").notNull(),
 		paymentDetails: text("payment_details"),
 		status: text("status").notNull().default("pending"),
-		timestamp: text("timestamp").notNull().default(sql`CURRENT_TIMESTAMP`),
-		processedAt: text("processed_at"),
+		timestamp: timestamp("timestamp").notNull().default(sql`now()`), // Keep this as it represents the request time
+		processedAt: timestamp("processed_at", { withTimezone: true }),
 		notes: text("notes"),
+		...timestamps, // Add for tracking when the cashout record itself was created/updated
 	},
 	(table) => [
 		index("idx_coin_cashouts_user_id").on(table.userId),
@@ -346,14 +333,12 @@ export const coinCashouts = sqliteTable(
 
 // Search History
 
-export const searchHistory = sqliteTable(
+export const searchHistory = pgTable(
 	"search_history",
 	{
-		id: integer("id").primaryKey({ autoIncrement: true }),
+		id: serial("id").primaryKey(),
 		userId: text("user_id")
-
 			.notNull()
-
 			.references(() => user.id, { onDelete: "cascade" }),
 		searchQuery: text("search_query").notNull(),
 		gameId: integer("game_id").references(() => games.id, {
@@ -362,25 +347,25 @@ export const searchHistory = sqliteTable(
 		categoryId: integer("category_id").references(() => categories.id, {
 			onDelete: "set null",
 		}),
-		timestamp: text("timestamp").notNull().default(sql`CURRENT_TIMESTAMP`),
+		timestamp: timestamp("timestamp").notNull().default(sql`now()`), // Keep this as it represents the search time
+		...timestamps, // Add for tracking when the search history record itself was created/updated
 	},
 	(table) => [index("idx_search_history_user_id").on(table.userId)],
 );
 
 // Price History
 
-export const priceHistory = sqliteTable(
+export const priceHistory = pgTable(
 	"price_history",
 	{
-		id: integer("id").primaryKey({ autoIncrement: true }),
+		id: serial("id").primaryKey(),
 		itemId: integer("item_id")
-
 			.notNull()
-
 			.references(() => items.id, { onDelete: "cascade" }),
 		averagePrice: integer("average_price").notNull(),
 		volume: integer("volume").notNull(),
 		date: text("date").notNull(),
+		...timestamps,
 	},
 	(table) => [
 		index("idx_price_history_item_id").on(table.itemId),
@@ -390,32 +375,23 @@ export const priceHistory = sqliteTable(
 
 // User Reviews
 
-export const userReviews = sqliteTable(
+export const userReviews = pgTable(
 	"user_reviews",
 	{
-		id: integer("id").primaryKey({ autoIncrement: true }),
+		id: serial("id").primaryKey(),
 		reviewerId: text("reviewer_id")
-
 			.notNull()
-
 			.references(() => user.id, { onDelete: "cascade" }),
 		targetUserId: text("target_user_id")
-
 			.notNull()
-
 			.references(() => user.id, { onDelete: "cascade" }),
 		tradeId: integer("trade_id").references(() => trades.id, {
 			onDelete: "set null",
 		}),
 		rating: integer("rating").notNull(), // e.g.,1-5 stars
-
 		comment: text("comment"),
-		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-		isVisible: integer("is_visible", { mode: "boolean" })
-
-			.notNull()
-
-			.default(true),
+		isVisible: boolean("is_visible").notNull().default(true),
+		...timestamps,
 	},
 	(table) => [
 		index("idx_user_reviews_reviewer_id").on(table.reviewerId),
@@ -430,21 +406,17 @@ export const userReviews = sqliteTable(
 
 // User Followers Relationship Table
 
-export const userFollows = sqliteTable(
+export const userFollows = pgTable(
 	"user_follows",
 	{
-		id: integer("id").primaryKey({ autoIncrement: true }),
+		id: serial("id").primaryKey(),
 		followerId: text("follower_id")
-
 			.notNull()
-
 			.references(() => user.id, { onDelete: "cascade" }),
 		followingId: text("following_id")
-
 			.notNull()
-
 			.references(() => user.id, { onDelete: "cascade" }),
-		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+		...timestamps,
 	},
 	(table) => [
 		index("idx_user_follows_unique").on(table.followerId, table.followingId),
@@ -536,6 +508,11 @@ export const itemsRelations = relations(items, ({ one, many }) => ({
 	listings: many(listings),
 	transactions: many(transactions),
 	priceHistory: many(priceHistory),
+	rarityType: one(rarityTypes, {
+		// Add relation to rarityTypes
+		fields: [items.rarityTypeId],
+		references: [rarityTypes.id],
+	}),
 }));
 
 export const listingsRelations = relations(listings, ({ one, many }) => ({

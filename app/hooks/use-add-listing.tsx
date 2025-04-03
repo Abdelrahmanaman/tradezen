@@ -38,13 +38,14 @@ export const addListing = createServerFn({ method: "POST" })
 				itemId: values.itemId,
 				price: values.amount,
 				quantity: values.amount,
-				lookingFor: JSON.stringify(values.lookingFor),
+				lookingFor: values.lookingFor,
 				metadata: {
 					isFlyable: values.isFlyable,
 					isRideable: values.isRideable,
 					isNeon: values.isNeon,
 					isMegaNeon: values.isMegaNeon,
 				},
+				slug: values.slug,
 			})
 			.returning();
 		console.log("Insertion Result:", result);
