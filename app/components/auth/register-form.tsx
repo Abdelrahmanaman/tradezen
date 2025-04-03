@@ -28,10 +28,7 @@ export default function LoginForm() {
 			password: "",
 		} as RegisterPayload,
 		onSubmit: ({ value }) => {
-			console.log(value);
 			mutateAsync({ value });
-			console.log("data", data);
-			console.log("error", error);
 		},
 		validators: {
 			onChange: registerPayloadSchema,

@@ -32,7 +32,6 @@ export default function AddListingForm({ itemId }: { itemId: number }) {
 			slug: productId,
 		} as AddListType,
 		onSubmit: ({ value }) => {
-			console.log("HERE YOU GO", value);
 			mutateAsync(value);
 		},
 		validators: {

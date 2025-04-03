@@ -124,7 +124,6 @@ export const getPaginatedListing = createServerFn({ method: "GET" })
 			nextListings.length >= pageSize
 				? nextListings[nextListings.length - 1].id
 				: null;
-		console.log("Returning cursor:", nextCursor);
 		return { nextListings, nextCursor } as {
 			nextListings: listingType[];
 			nextCursor: number | null;

@@ -35,9 +35,14 @@ export const addListSchema = type({
 	age: type.valueOf(ageOptions).configure({
 		message: "Invalid age",
 	}),
-	lookingFor: type("string[]").configure({
-		message: "Trade for is invalid",
-	}),
+	lookingFor: type({
+		name: type("string"),
+		quantity: type("number"),
+	})
+		.array()
+		.configure({
+			message: "Please select items to offer",
+		}),
 	slug: type("string").configure({
 		message: "slug is invalid",
 	}),

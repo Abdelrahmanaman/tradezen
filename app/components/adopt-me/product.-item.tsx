@@ -59,9 +59,7 @@ export default function ProductItem({ item }: { item: GameItemType }) {
 					</div>
 					<div className="flex justify-between">
 						<span className="text-gray-500">Value:</span>
-						<span className="font-medium text-green-600">
-							{item.suggestedPrice}
-						</span>
+						<span className="font-medium text-green-600">TODO: ITEM VALUE</span>
 					</div>
 				</div>
 			</div>

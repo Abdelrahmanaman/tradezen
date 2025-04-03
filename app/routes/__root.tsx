@@ -58,7 +58,6 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
-	console.log("hello from document");
 	const { user } = Route.useRouteContext();
 	return (
 		<html suppressHydrationWarning lang="en">

@@ -24,7 +24,6 @@ export default function LoginForm() {
 			password: "",
 		} as LoginPayload,
 		onSubmit: ({ value }) => {
-			console.log(value);
 			mutateAsync({ value });
 		},
 		validators: {

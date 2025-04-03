@@ -14,8 +14,6 @@ function RouteComponent() {
 					event.preventDefault();
 					const formData = new FormData(event.currentTarget);
 					const response = await uploadImage({ data: formData });
-
-					console.log(response);
 				}}
 			>
 				<input type="file" name="file" />

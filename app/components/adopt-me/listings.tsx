@@ -64,19 +64,6 @@ export default function ListingCard({
 		}).format(amount);
 	};
 
-	const getStatusColor = (status: string) => {
-		switch (status) {
-			case "active":
-				return "bg-green-500";
-			case "expired":
-				return "bg-red-500";
-			case "sold":
-				return "bg-blue-500";
-			default:
-				return "bg-gray-500";
-		}
-	};
-
 	const metadata = listing.metadata as {
 		isFlyable: boolean;
 		isRideable: boolean;

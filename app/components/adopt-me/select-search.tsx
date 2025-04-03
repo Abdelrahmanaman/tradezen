@@ -17,25 +17,20 @@ import { Skeleton } from "../ui/skeleton";
 import { useFieldContext } from "../form";
 import { FieldErrors } from "../form/field-errors";
 
-interface QuantityItem {
+export interface OfferItem {
 	name: string;
 	quantity: number;
 }
 
-interface SelectSearchProps<T extends string | QuantityItem = string> {
-	/**
-	 * When true, the component will use a quantity UI.
-	 * In this mode the field value is expected to be an array of objects
-	 * with a name and a quantity.
-	 */
-	withQuantity?: boolean;
+interface SelectSearchProps {
 	label?: string;
+	withQuantity?: boolean;
 }
 
-export default function SelectSearch<T extends string | QuantityItem = string>({
-	withQuantity = false,
+export default function SelectSearch({
 	label = "Looking for",
-}: SelectSearchProps<T>) {
+	withQuantity = false,
+}: SelectSearchProps) {
 	const [open, setOpen] = useState<boolean>(false);
 	const [search, setSearch] = useState<string>("");
 
@@ -43,7 +38,8 @@ export default function SelectSearch<T extends string | QuantityItem = string>({
 	const [debouncedSearch] = useDebounce(search, 500);
 	const defaultQuery = debouncedSearch === "" ? "a" : debouncedSearch;
 
-	const field = useFieldContext<T[]>();
+	// The field value is now a structured array.
+	const field = useFieldContext<OfferItem[]>();
 	const selectedItems = field.state.value;
 
 	const {
@@ -53,33 +49,28 @@ export default function SelectSearch<T extends string | QuantityItem = string>({
 	} = useQuery({
 		queryKey: ["adoptme-items", defaultQuery],
 		queryFn: async () => searchItems({ data: defaultQuery }),
-		// Only enabled if a query exists or if the popover is open.
 		enabled: !!defaultQuery || open,
 	});
 
-	// Function to update the quantity of an item.
+	// Update quantity of an item at a given index.
 	const updateQuantity = (index: number, newQuantity: number) => {
 		if (newQuantity < 1) return;
 		if (typeof field.setValue === "function") {
-			const updatedItems = selectedItems.map((item, idx) => {
-				if (idx === index) {
-					return {
-						...(item as QuantityItem),
-						quantity: newQuantity,
-					} as T;
-				}
-				return item;
-			});
+			const updatedItems = selectedItems.map((item, idx) =>
+				idx === index ? { ...item, quantity: newQuantity } : item,
+			);
 			field.setValue(updatedItems);
 		}
 	};
 
-	// Check whether an item is already selected.
-	const isItemSelected = (value: string): boolean => {
-		return withQuantity
-			? (selectedItems as QuantityItem[]).some((item) => item.name === value)
-			: (selectedItems as string[]).includes(value);
+	// Remove an item from the selection.
+	const removeItem = (index: number) => {
+		field.removeValue(index);
 	};
+
+	// Check if an item is already selected.
+	const isItemSelected = (value: string): boolean =>
+		selectedItems.some((item) => item.name === value);
 
 	return (
 		<div className="*:not(:first-child):mt-2">
@@ -87,64 +78,39 @@ export default function SelectSearch<T extends string | QuantityItem = string>({
 
 			{/* Render selected items as tags */}
 			<div className="flex flex-wrap gap-2 mb-2">
-				{selectedItems.map((item, index) =>
-					withQuantity ? (
-						<div
-							key={(item as QuantityItem).name}
-							className="flex border bg-zinc-900 px-1 w-fit py-1 text-sm font-semibold rounded-md items-center"
-						>
-							<span>{(item as QuantityItem).name}</span>
+				{selectedItems.map((item, index) => (
+					<div
+						key={item.name}
+						className="flex border bg-zinc-900 px-1 w-fit py-1 text-sm font-semibold rounded-md items-center"
+					>
+						<span>{item.name}</span>
+						{withQuantity && (
 							<div className="flex items-center ml-2">
 								<Button
 									type="button"
-									onClick={() =>
-										updateQuantity(
-											index,
-											((item as QuantityItem).quantity || 1) - 1,
-										)
-									}
+									onClick={() => updateQuantity(index, item.quantity - 1)}
 									className="px-1 size-5"
 								>
 									-
 								</Button>
-								<span className="mx-1 text-xs">
-									{(item as QuantityItem).quantity}
-								</span>
+								<span className="mx-1 text-xs">{item.quantity}</span>
 								<Button
 									type="button"
-									onClick={() =>
-										updateQuantity(
-											index,
-											((item as QuantityItem).quantity || 1) + 1,
-										)
-									}
+									onClick={() => updateQuantity(index, item.quantity + 1)}
 									className="px-1 size-5"
 								>
 									+
 								</Button>
 							</div>
-							<Button
-								onClick={() => field.removeValue(index)}
-								className="ml-2 focus:outline-none p-0 h-fit bg-transparent mt-0.5 hover:bg-transparent"
-							>
-								<XIcon size={12} className="text-white" />
-							</Button>
-						</div>
-					) : (
-						<div
-							key={(item as string).toString()}
-							className="flex border bg-zinc-900 px-1 w-fit py-1 text-sm font-semibold rounded-md"
+						)}
+						<Button
+							onClick={() => removeItem(index)}
+							className="ml-2 focus:outline-none p-0 h-fit bg-transparent mt-0.5 hover:bg-transparent"
 						>
-							<span>{(item as string).toString()}</span>
-							<Button
-								onClick={() => field.removeValue(index)}
-								className="ml-2 focus:outline-none p-0 h-fit bg-transparent mt-0.5 hover:bg-transparent"
-							>
-								<XIcon size={12} className="text-white" />
-							</Button>
-						</div>
-					),
-				)}
+							<XIcon size={12} className="text-white" />
+						</Button>
+					</div>
+				))}
 			</div>
 
 			<Command>
@@ -179,11 +145,8 @@ export default function SelectSearch<T extends string | QuantityItem = string>({
 								value={item.name}
 								onSelect={(currentValue) => {
 									if (!isItemSelected(currentValue)) {
-										if (withQuantity) {
-											field.pushValue({ name: currentValue, quantity: 1 } as T);
-										} else {
-											field.pushValue(currentValue as T);
-										}
+										// When an item is selected, add it with a default quantity of 1.
+										field.pushValue({ name: currentValue, quantity: 1 });
 									}
 								}}
 							>

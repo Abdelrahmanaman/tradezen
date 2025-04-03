@@ -7,6 +7,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { getPaginatedListing } from "@/routes/adoptme/product/$productId";
 import InfiniteScrollContainer from "../infinte-scroll-container";
+import { useSession } from "@/lib/auth/auth-client";
 
 export type listingType = typeof listings.$inferSelect & {
 	metadata: Record<string, boolean> | null;
@@ -39,7 +40,6 @@ export function ListingItem({
 		isLoading,
 		isFetching,
 		isError,
-		error,
 	} = useInfiniteQuery({
 		queryKey: ["listings", productId],
 		queryFn: async ({ pageParam }) => {
@@ -55,8 +55,6 @@ export function ListingItem({
 			pageParams: [initialNextId],
 		},
 	});
-
-	console.log(data);
 
 	return (
 		<div className="border rounded-lg p-4 bg-zinc-800 text-white">
@@ -127,6 +125,8 @@ const ListingCard: React.FC<{
 	listing: listingType;
 	onMakeOffer: (items: listingType) => void;
 }> = ({ listing, onMakeOffer }) => {
+	const { data } = useSession();
+	const userId = data?.user?.id as string;
 	return (
 		<div
 			key={listing.id}
@@ -144,19 +144,23 @@ const ListingCard: React.FC<{
 						/>
 					</div>
 					<div>
-						<h3 className="font-medium text-sm">Item name + ({listing.age})</h3>
+						<h3 className="font-medium text-sm">
+							{listing.slug.split("-").join(" ")} ({listing.age})
+						</h3>
 						<div className="flex items-center gap-1 mt-0.5">
 							<MetadataBadge metadata={listing.metadata} />
 						</div>
 					</div>
 				</div>
-				<Button
-					size="sm"
-					className="bg-pink-500 hover:bg-pink-600 text-white text-xs h-7"
-					onClick={() => onMakeOffer(listing)}
-				>
-					Make Offer
-				</Button>
+				{userId !== listing.sellerId && (
+					<Button
+						size="sm"
+						className="bg-pink-500 hover:bg-pink-600 text-white text-xs h-7"
+						onClick={() => onMakeOffer(listing)}
+					>
+						Make Offer
+					</Button>
+				)}
 			</div>
 
 			<div className="mb-2 text-xs text-zinc-400 flex items-center gap-1">
@@ -188,11 +192,11 @@ const ListingCard: React.FC<{
 					<div className="flex flex-wrap gap-1">
 						{listing.lookingFor.map((lf) => (
 							<Badge
-								key={lf}
+								key={lf.name}
 								variant="outline"
 								className="border-zinc-600 text-zinc-400 text-[10px] px-1 py-0"
 							>
-								{lf}
+								{lf.name}
 							</Badge>
 						))}
 					</div>

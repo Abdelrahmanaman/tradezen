@@ -1,22 +1,15 @@
-"use client";
 
-import * as React from "react";
-import { Minus, Plus } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
 import {
 	Drawer,
-	DrawerClose,
 	DrawerContent,
 	DrawerDescription,
-	DrawerFooter,
 	DrawerHeader,
 	DrawerTitle,
-	DrawerTrigger,
 } from "@/components/ui/drawer";
 import { useAppForm } from "../form";
-import type { AddOfferType } from "@/lib/validation/add-offer";
+import { addOfferSchema, type AddOfferType } from "@/lib/validation/add-offer";
 import type { listingType } from "./listing-item";
+import { useAddOffer } from "@/hooks/use-add-offer";
 
 export function MakeOfferForm({
 	listing,
@@ -27,8 +20,18 @@ export function MakeOfferForm({
 	onClose: () => void;
 	open: boolean;
 }) {
+	const { mutateAsync, isPending } = useAddOffer();
 	const form = useAppForm({
-		defaultValues: { offer: [] } as AddOfferType,
+		defaultValues: {
+			listingId: listing.id,
+			offer: [],
+		} as AddOfferType,
+		onSubmit: ({ value }) => {
+			mutateAsync({ data: value });
+		},
+		validators: {
+			onChange: addOfferSchema,
+		},
 	});
 
 	return (
@@ -39,7 +42,12 @@ export function MakeOfferForm({
 						<DrawerTitle>Make Offer</DrawerTitle>
 						<DrawerDescription>Set your daily activity goal.</DrawerDescription>
 					</DrawerHeader>
-					<form>
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							form.handleSubmit(e);
+						}}
+					>
 						<div>
 							<form.AppField name="offer">
 								{(field) => <field.SelectSearch withQuantity label="Offer" />}
