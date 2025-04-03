@@ -1,0 +1,111 @@
+import { jsx, jsxs } from 'react/jsx-runtime';
+import { c } from 'react/compiler-runtime';
+import { b as Ee, Q } from '../../index.mjs';
+import { m, g, u, x } from './card-tRlVEYGk.mjs';
+import { V, B, P as P$1, L, D, T, U } from './label-y2IlTGIT.mjs';
+import { h } from './checkbox-aRDEe1GE.mjs';
+import { Outlet, Link } from '@tanstack/react-router';
+import { useState } from 'react';
+import { Heart } from 'lucide-react';
+import 'node:events';
+import 'node:buffer';
+import 'vinxi/lib/invariant';
+import 'vinxi/lib/path';
+import 'node:url';
+import 'node:fs';
+import '@tanstack/router-core';
+import 'tiny-invariant';
+import '@tanstack/start-server-core';
+import '@tanstack/start-client-core';
+import '@radix-ui/react-slot';
+import 'class-variance-authority';
+import 'clsx';
+import 'tailwind-merge';
+import '@radix-ui/react-dialog';
+import '@radix-ui/react-tooltip';
+import 'motion/react';
+import '@radix-ui/react-avatar';
+import '@radix-ui/react-dropdown-menu';
+import '@tanstack/react-query';
+import 'next-themes';
+import 'sonner';
+import '@tanstack/react-query-devtools';
+import '@tanstack/react-router-with-query';
+import 'node:stream';
+import 'isbot';
+import 'react-dom/server';
+import 'node:path';
+import 'node:crypto';
+import 'node:async_hooks';
+import '@radix-ui/react-select';
+import '@radix-ui/react-label';
+import '@radix-ui/react-checkbox';
+
+function G() {
+  const l = c(16);
+  let e;
+  l[0] === Symbol.for("react.memo_cache_sentinel") ? (e = jsx("h1", { className: "text-3xl font-bold mb-6 text-center", children: "Adopt Me Item Search" }), l[0] = e) : e = l[0];
+  let r, o;
+  l[1] === Symbol.for("react.memo_cache_sentinel") ? (r = jsxs("div", { children: [jsx(V, { htmlFor: "search", className: "block text-sm font-medium", children: "Search" }), jsx(B, { type: "text", id: "search", placeholder: "Neon Unicorn..." })] }), o = jsx(V, { className: "block text-sm font-medium", children: "Price Range" }), l[1] = r, l[2] = o) : (r = l[1], o = l[2]);
+  let a;
+  l[3] === Symbol.for("react.memo_cache_sentinel") ? (a = jsxs("div", { children: [o, jsxs("div", { className: "grid grid-cols-2 gap-4", children: [jsx(B, { type: "number", placeholder: "Min" }), jsx(B, { type: "number", placeholder: "Max" })] })] }), l[3] = a) : a = l[3];
+  let c$1;
+  l[4] === Symbol.for("react.memo_cache_sentinel") ? (c$1 = jsx(V, { htmlFor: "category", className: "block text-sm font-medium", children: "Category" }), l[4] = c$1) : c$1 = l[4];
+  let s;
+  l[5] === Symbol.for("react.memo_cache_sentinel") ? (s = jsx(P$1, { children: jsx(L, { placeholder: "Select category" }) }), l[5] = s) : s = l[5];
+  let m$1, n;
+  l[6] === Symbol.for("react.memo_cache_sentinel") ? (m$1 = jsxs("div", { children: [c$1, jsxs(D, { children: [s, jsxs(T, { children: [jsx(U, { value: "all", children: "All Categories" }), jsx(U, { value: "pets", children: "Pets" }), jsx(U, { value: "vehicles", children: "Vehicles" })] })] })] }), n = jsx(V, { htmlFor: "rarity", className: "block text-sm font-medium", children: "Rarity" }), l[6] = m$1, l[7] = n) : (m$1 = l[6], n = l[7]);
+  let d;
+  l[8] === Symbol.for("react.memo_cache_sentinel") ? (d = jsx(P$1, { children: jsx(L, { placeholder: "Select rarity" }) }), l[8] = d) : d = l[8];
+  let h$1, g$1;
+  l[9] === Symbol.for("react.memo_cache_sentinel") ? (g$1 = jsxs("div", { className: "grid grid-cols-2 gap-4", children: [m$1, jsxs("div", { children: [n, jsxs(D, { children: [d, jsxs(T, { children: [jsx(U, { value: "all", children: "All Rarities" }), jsx(U, { value: "common", children: "Common" }), jsx(U, { value: "uncommon", children: "Uncommon" })] })] })] })] }), h$1 = jsx(V, { className: "block text-sm font-medium", children: "Glow Effect" }), l[9] = h$1, l[10] = g$1) : (h$1 = l[9], g$1 = l[10]);
+  let f;
+  l[11] === Symbol.for("react.memo_cache_sentinel") ? (f = jsxs("div", { className: "flex items-center space-x-2", children: [jsx(h, { id: "neon" }), jsx(V, { htmlFor: "neon", children: "Neon" })] }), l[11] = f) : f = l[11];
+  let v, p;
+  l[12] === Symbol.for("react.memo_cache_sentinel") ? (v = jsxs("div", { children: [h$1, jsxs("div", { className: "grid grid-cols-2 gap-4", children: [f, jsxs("div", { className: "flex items-center space-x-2", children: [jsx(h, { id: "mega-neon" }), jsx(V, { htmlFor: "mega-neon", children: "Mega Neon" })] })] })] }), p = jsx(V, { className: "block text-sm font-medium", children: "Special Attributes" }), l[12] = v, l[13] = p) : (v = l[12], p = l[13]);
+  let b;
+  l[14] === Symbol.for("react.memo_cache_sentinel") ? (b = jsxs("div", { className: "flex items-center space-x-2", children: [jsx(h, { id: "flyable" }), jsx(V, { htmlFor: "flyable", children: "Flyable" })] }), l[14] = b) : b = l[14];
+  let x;
+  return l[15] === Symbol.for("react.memo_cache_sentinel") ? (x = jsxs("div", { className: " mx-auto py-6 size-fit top-0 transition-all sticky ", children: [e, jsx("div", { className: "grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6", children: jsx(m, { children: jsxs(g, { className: "space-y-6", children: [r, a, g$1, v, jsxs("div", { children: [p, jsxs("div", { className: "grid grid-cols-2 gap-4", children: [b, jsxs("div", { className: "flex items-center space-x-2", children: [jsx(h, { id: "rideable" }), jsx(V, { htmlFor: "rideable", children: "Rideable" })] })] })] }), jsx(Q, { className: "w-full", children: "Search" })] }) }) })] }), l[15] = x) : x = l[15], x;
+}
+function H(l) {
+  const e = c(21), { game: r } = l, [o, a] = useState(false);
+  let c$1;
+  e[0] !== o ? (c$1 = () => a(!o), e[0] = o, e[1] = c$1) : c$1 = e[1];
+  const s = o ? "Remove from wishlist" : "Add to wishlist", m$1 = `h-5 w-5 ${o ? "fill-red-500 text-red-500" : "text-gray-600"}`;
+  let n;
+  e[2] !== m$1 ? (n = jsx(Heart, { className: m$1 }), e[2] = m$1, e[3] = n) : n = e[3];
+  let d;
+  e[4] !== c$1 || e[5] !== s || e[6] !== n ? (d = jsx("div", { className: "absolute top-2 right-2 z-10", children: jsx(Q, { variant: "ghost", size: "icon", className: "rounded-full bg-white/80 backdrop-blur-sm hover:bg-white/90 transition-colors", onClick: c$1, "aria-label": s, children: n }) }), e[4] = c$1, e[5] = s, e[6] = n, e[7] = d) : d = e[7];
+  let h;
+  e[8] !== r.slug ? (h = { productId: r.slug }, e[8] = r.slug, e[9] = h) : h = e[9];
+  let g$1;
+  e[10] === Symbol.for("react.memo_cache_sentinel") ? (g$1 = jsx("span", { className: "  absolute inset-0 z-20" }), e[10] = g$1) : g$1 = e[10];
+  let f;
+  e[11] !== r.name || e[12] !== h ? (f = jsx(u, { className: "p-0  ", children: jsx(x, { className: "text-left p-0  ", children: jsxs(Link, { to: "/adoptme/product/$productId", params: h, children: [g$1, r.name] }) }) }), e[11] = r.name, e[12] = h, e[13] = f) : f = e[13];
+  const v = `${r.name}`;
+  let p;
+  e[14] !== r.imageUrl || e[15] !== v ? (p = jsx(g, { className: "p-0", children: jsx("div", { className: " relative h-40 overflow-hidden ", children: jsx("img", { src: r.imageUrl, alt: v, className: "object-contain w-full h-full transition-transform group-hover:scale-105" }) }) }), e[14] = r.imageUrl, e[15] = v, e[16] = p) : p = e[16];
+  let b;
+  return e[17] !== p || e[18] !== d || e[19] !== f ? (b = jsxs(m, { className: "w-full max-w-sm overflow-hidden group  p-2 relative isolate  border-zinc-700 ", children: [d, f, p] }), e[17] = p, e[18] = d, e[19] = f, e[20] = b) : b = e[20], b;
+}
+const xe = function() {
+  const e = c(8), { items: r } = Ee.useLoaderData();
+  console.log("items");
+  let o;
+  e[0] === Symbol.for("react.memo_cache_sentinel") ? (o = jsx(G, {}), e[0] = o) : o = e[0];
+  let a;
+  e[1] !== r ? (a = r.map(P), e[1] = r, e[2] = a) : a = e[2];
+  let c$1;
+  e[3] !== a ? (c$1 = jsx("div", { className: "grid grid-cols-1 bg-black md:grid-cols-4 gap-4 grow", children: a }), e[3] = a, e[4] = c$1) : c$1 = e[4];
+  let s;
+  e[5] === Symbol.for("react.memo_cache_sentinel") ? (s = jsx(Outlet, {}), e[5] = s) : s = e[5];
+  let m;
+  return e[6] !== c$1 ? (m = jsxs("section", { className: "flex md:flex-nowrap flex-wrap", children: [o, c$1, s] }), e[6] = c$1, e[7] = m) : m = e[7], m;
+};
+function P(l) {
+  return jsx(H, { game: l }, l.id);
+}
+
+export { xe as component };
+//# sourceMappingURL=index-QkHsVuCT.mjs.map

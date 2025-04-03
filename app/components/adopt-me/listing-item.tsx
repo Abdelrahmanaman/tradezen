@@ -1,7 +1,7 @@
 import type { listings } from "../../../db/schema";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
-import { Star } from "lucide-react";
+import { Loader, Star } from "lucide-react";
 import { ListingFilter } from "./listing-filter";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
@@ -10,12 +10,23 @@ import InfiniteScrollContainer from "../infinte-scroll-container";
 
 export type listingType = typeof listings.$inferSelect & {
 	metadata: Record<string, boolean> | null;
+	seller: {
+		userName: string;
+		tradeCount: number;
+		reputationScore: number;
+		image: string;
+	};
 };
 
 export function ListingItem({
 	listings: initialListings,
 	nextId: initialNextId,
-}: { listings: listingType[]; nextId: number }) {
+	onMakeOffer,
+}: {
+	listings: listingType[];
+	nextId: number;
+	onMakeOffer: (items: listingType) => void;
+}) {
 	const { productId } = useParams({
 		from: "/adoptme/product/$productId",
 	});
@@ -64,9 +75,20 @@ export function ListingItem({
 					{data?.pages
 						.flatMap((page) => page.nextListings)
 						.map((listing) => (
-							<ListingCard key={listing.id} listing={listing} />
+							<ListingCard
+								key={listing.id}
+								listing={listing}
+								onMakeOffer={onMakeOffer}
+							/>
 						))}
-					{isFetchingNextPage && hasNextPage && <div>Loading more...</div>}
+					{isFetchingNextPage && hasNextPage && (
+						<div className="w-full col-span-full">
+							<Loader className="animate-spin mx-auto size-8" />
+						</div>
+					)}
+					{isError && (
+						<div className="w-full col-span-full">Error loading listings</div>
+					)}
 				</InfiniteScrollContainer>
 			</div>
 		</div>
@@ -101,7 +123,10 @@ const MetadataBadge: React.FC<MetadataBadgeProp> = ({ metadata }) => {
 	return <>{badges}</>;
 };
 
-const ListingCard: React.FC<{ listing: listingType }> = ({ listing }) => {
+const ListingCard: React.FC<{
+	listing: listingType;
+	onMakeOffer: (items: listingType) => void;
+}> = ({ listing, onMakeOffer }) => {
 	return (
 		<div
 			key={listing.id}
@@ -128,13 +153,16 @@ const ListingCard: React.FC<{ listing: listingType }> = ({ listing }) => {
 				<Button
 					size="sm"
 					className="bg-pink-500 hover:bg-pink-600 text-white text-xs h-7"
+					onClick={() => onMakeOffer(listing)}
 				>
 					Make Offer
 				</Button>
 			</div>
 
 			<div className="mb-2 text-xs text-zinc-400 flex items-center gap-1">
-				<span className="font-medium text-zinc-300">Username</span>
+				<span className="font-medium text-zinc-300">
+					{listing.seller.userName}
+				</span>
 				{listing.status === "Online" ? (
 					<span className="text-green-500">• Online</span>
 				) : (
@@ -145,9 +173,13 @@ const ListingCard: React.FC<{ listing: listingType }> = ({ listing }) => {
 			<div className="mb-1 text-xs text-zinc-500 flex items-center gap-1">
 				<Star className="w-3 h-3 text-yellow-400" />
 				<span>user review </span>
-				<span className="text-zinc-400">(5 ratings)</span>
+				<span className="text-zinc-400">
+					({listing.seller.reputationScore})
+				</span>
 				<span className="ml-2">Trades:</span>
-				<span className="font-medium text-zinc-300">user trade count</span>
+				<span className="font-medium text-zinc-300">
+					{listing.seller.tradeCount}
+				</span>
 			</div>
 
 			{listing.lookingFor && listing.lookingFor.length > 0 && (

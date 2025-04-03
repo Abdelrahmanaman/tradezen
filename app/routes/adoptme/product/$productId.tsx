@@ -9,11 +9,11 @@ import ProductItem from "@/components/adopt-me/product.-item";
 import type { listings } from "../../../../db/schema";
 import type { GameItemType } from ".";
 import { and } from "drizzle-orm";
+import { MakeOfferForm } from "@/components/adopt-me/make-offer-form";
+import { useState } from "react";
 
 export type GameItemWithListingsType = GameItemType & {
-	listings: (typeof listings.$inferSelect & {
-		metadata: Record<string, boolean> | null;
-	})[];
+	listings: listingType[];
 	nextId: number;
 	previousId: number;
 };
@@ -41,6 +41,16 @@ const getGameItem = createServerFn({ method: "GET" })
 				listings: {
 					limit: 10,
 					orderBy: (listings, { asc }) => asc(listings.id),
+					with: {
+						seller: {
+							columns: {
+								userName: true,
+								tradeCount: true,
+								reputationScore: true,
+								image: true,
+							},
+						},
+					},
 				},
 				rarityType: true,
 			},
@@ -92,13 +102,21 @@ export const getPaginatedListing = createServerFn({ method: "GET" })
 		return { nextId, slug } as { nextId: number; slug: string };
 	})
 	.handler(async ({ data: { nextId, slug } }) => {
-		await new Promise((resolve) => setTimeout(resolve, 1500));
-
 		const pageSize = 10;
 
 		const nextListings = await db.query.listings.findMany({
 			where: (fields, { gt, eq }) =>
 				and(eq(fields.slug, slug), gt(fields.id, nextId)),
+			with: {
+				seller: {
+					columns: {
+						userName: true,
+						tradeCount: true,
+						reputationScore: true,
+						image: true,
+					},
+				},
+			},
 			orderBy: (fields, { asc }) => asc(fields.id),
 			limit: pageSize,
 		});
@@ -125,15 +143,29 @@ export const Route = createFileRoute("/adoptme/product/$productId")({
 
 function RouteComponent() {
 	const { item, listings, nextId } = Route.useLoaderData();
-
+	const [selectedListing, setSelectedListing] = useState<listingType | null>(
+		null,
+	);
 	return (
 		<section className="container px-4 mb-6">
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 				<div className="md:col-span-1">
+					{/* <MakeOfferForm /> */}
 					<ProductItem item={item} />
 				</div>
 				<div className="md:col-span-2">
-					<ListingItem listings={listings} nextId={nextId} />
+					<ListingItem
+						listings={listings}
+						nextId={nextId}
+						onMakeOffer={setSelectedListing}
+					/>
+					{selectedListing && (
+						<MakeOfferForm
+							listing={selectedListing}
+							onClose={() => setSelectedListing(null)}
+							open={true}
+						/>
+					)}
 				</div>
 			</div>
 		</section>
