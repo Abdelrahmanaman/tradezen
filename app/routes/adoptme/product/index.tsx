@@ -29,7 +29,7 @@ function RouteComponent() {
 
 	return (
 		<section className="flex md:flex-nowrap flex-wrap">
-			<SearchForm />
+			{/* <SearchForm /> */}
 			<div className="grid grid-cols-1 bg-black md:grid-cols-4 gap-4 grow">
 				{items.map((item) => (
 					<GameItem game={item} key={item.id} />
