@@ -194,8 +194,9 @@ const ListingCard: React.FC<{
 							<Badge
 								key={lf.name}
 								variant="outline"
-								className="border-zinc-600 text-zinc-400 text-[10px] px-1 py-0"
+								className="border-zinc-600 text-zinc-400 font-semibold text-[10px] p-1 flex items-center gap-1"
 							>
+								<img src={lf.imageUrl} alt={lf.name} className="size-5" />
 								{lf.name}
 							</Badge>
 						))}

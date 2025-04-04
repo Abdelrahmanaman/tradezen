@@ -38,6 +38,9 @@ export const addListSchema = type({
 	lookingFor: type({
 		name: type("string"),
 		quantity: type("number"),
+		imageUrl: type("string").configure({
+			message: "Invalid image URL",
+		}),
 	})
 		.array()
 		.configure({

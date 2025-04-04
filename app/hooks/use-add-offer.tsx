@@ -34,6 +34,7 @@ const addOffer = createServerFn({ method: "POST" })
 			listingId,
 			offeredItems: offer,
 			offererId: userId,
+			status: "pending",
 		});
 	});
 

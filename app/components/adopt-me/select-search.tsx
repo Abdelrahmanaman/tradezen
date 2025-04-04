@@ -20,6 +20,7 @@ import { FieldErrors } from "../form/field-errors";
 export interface OfferItem {
 	name: string;
 	quantity: number;
+	imageUrl: string;
 }
 
 interface SelectSearchProps {
@@ -83,7 +84,10 @@ export default function SelectSearch({
 						key={item.name}
 						className="flex border bg-zinc-900 px-1 w-fit py-1 text-sm font-semibold rounded-md items-center"
 					>
-						<span>{item.name}</span>
+						<div className="flex items-center gap-1">
+							<img src={item.imageUrl} alt={item.name} className="size-5" />
+							<span>{item.name}</span>
+						</div>
 						{withQuantity && (
 							<div className="flex items-center ml-2">
 								<Button
@@ -146,11 +150,16 @@ export default function SelectSearch({
 								onSelect={(currentValue) => {
 									if (!isItemSelected(currentValue)) {
 										// When an item is selected, add it with a default quantity of 1.
-										field.pushValue({ name: currentValue, quantity: 1 });
+										field.pushValue({
+											name: currentValue,
+											quantity: 1,
+											imageUrl: item.imageUrl,
+										});
 									}
 								}}
 							>
-								{item.name}
+								<img src={item.imageUrl} alt={item.name} className="size-5" />
+								<span>{item.name}</span>
 								{isItemSelected(item.name) && (
 									<CheckIcon size={16} className="ml-auto" />
 								)}

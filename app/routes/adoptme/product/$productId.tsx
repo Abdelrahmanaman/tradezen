@@ -87,6 +87,7 @@ export const searchItems = createServerFn({ method: "GET" })
 			columns: {
 				id: true,
 				name: true,
+				imageUrl: true,
 			},
 			limit: 5,
 		});

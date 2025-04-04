@@ -7,6 +7,9 @@ export const addOfferSchema = type({
 	offer: type({
 		name: type("string"),
 		quantity: type("number"),
+		imageUrl: type("string").configure({
+			message: "Invalid image URL",
+		}),
 	})
 		.array()
 		.configure({
@@ -19,4 +22,5 @@ export type AddOfferType = typeof addOfferSchema.infer;
 export type OfferItem = {
 	name: string;
 	quantity: number;
+	imageUrl: string;
 };
